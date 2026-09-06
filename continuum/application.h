@@ -16,8 +16,6 @@ namespace app_graphics3d_continuum
 
       bool m_bAbsoluteMousePosition;
 
-      ::string_array m_straSkybox;
-      ::string m_strSkybox;
 
       ::pointer_array < ::user::check_box> m_checkboxaSkyBox;
 
@@ -26,8 +24,15 @@ namespace app_graphics3d_continuum
       ::user::document* m_pdocMenu;
       //::pointer<::user::single_document_template>  m_ptemplateSimpleDrawingMain;
       //pane_impact *                                     m_ppaneimpact;
-      main_scene* m_pmainscene;
+      impact *                                     m_pimpact;
+      impact *                                     m_pimpactSwitcher;
+      impact *                                     m_pimpactSkybox;
+      main_scene *                                 m_pmainscene;
+      main_scene *                                 m_pmainsceneSwitcher;
+      main_scene *                                 m_pmainsceneSkybox;
       ::pointer < ::user::plain_edit >             m_peditYeeColor;
+
+
 
       application();
       ~application() override;

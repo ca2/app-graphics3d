@@ -102,13 +102,13 @@ namespace app_graphics3d_continuum
 //
 //   //   reset_mouse_last_position();
 //
-//   //   ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
+//   //   ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pgraphics3dengineinstance->m_pimmersionlayer;
 //
 //
 //   //               if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
 //   //   {
 //
-//   //      //m_pengine->m_pinput->_001OnMouseOut();
+//   //      //m_pgraphics3dengineinstance->m_pinput->_001OnMouseOut();
 //   //   }
 //
 //
@@ -190,7 +190,7 @@ namespace app_graphics3d_continuum
 //      auto angleΔYaw = xOffset * m_angleCursorPixel;
 //      auto angleΔPitch = yOffset * m_angleCursorPixel;
 //
-//      auto pengine = m_pengine;
+//      auto pengine = m_pgraphics3dengineinstance;
 //
 //      auto pimmersionlayer = pengine->m_pimmersionlayer;
 //
@@ -244,10 +244,10 @@ namespace app_graphics3d_continuum
 //   void input::process_mouse_input()
 //   {
 //
-//      //m_pengine->m_pusergraphics3d->process_mouse_input();
+//      //m_pgraphics3dengineinstance->m_pusergraphics3d->process_mouse_input();
 //      //_001PrepareMouseInput();
 //
-//                     ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
+//                     ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pgraphics3dengineinstance->m_pimmersionlayer;
 //
 //
 //      if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
@@ -263,10 +263,10 @@ namespace app_graphics3d_continuum
 //   void input::process_keyboard_input()
 //   {
 //
-//      //m_pengine->m_pusergraphics3d->process_keyboard_input();
+//      //m_pgraphics3dengineinstance->m_pusergraphics3d->process_keyboard_input();
 //
 //      
-//      ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
+//      ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pgraphics3dengineinstance->m_pimmersionlayer;
 //      if (pimmersion->m_ekeyboard == ::app_graphics3d_continuum::e_keyboard_updateMovement)
 //      {
 //
@@ -275,7 +275,7 @@ namespace app_graphics3d_continuum
 //      else if (pimmersion->m_ekeyboard == ::app_graphics3d_continuum::e_keyboard_spaceExplorer)
 //      {
 //
-//         ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
+//         ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pgraphics3dengineinstance->m_pimmersionlayer;
 //         process_keyboard_input_spaceExplorer();
 //      }
 //
@@ -286,9 +286,9 @@ namespace app_graphics3d_continuum
 //   void input::process_keyboard_input_updateMovement()
 //   {
 //
-//      //auto& transform = m_pengine->m_transform;
+//      //auto& transform = m_pgraphics3dengineinstance->m_transform;
 //
-//      auto pgpucamera = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
+//      auto pgpucamera = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
 //
 //      ::cast<::app_graphics3d_continuum::camera> pcamera = pgpucamera;
 //
@@ -302,7 +302,7 @@ namespace app_graphics3d_continuum
 //         //const floating_sequence3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
 //         //const floating_sequence3 upDir{0.f, -1.f, 0.f};
 //
-//         auto pinput = m_pengine->m_pinput;
+//         auto pinput = m_pgraphics3dengineinstance->m_pinput;
 //
 //         floating_sequence3 moveDir{0.f};
 //         {
@@ -323,9 +323,9 @@ namespace app_graphics3d_continuum
 //            if (moveDir.squared_modulus() > std::numeric_limits<float>::epsilon())
 //            {
 //
-//               ::cast<camera> pcameraCurrent = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
+//               ::cast<camera> pcameraCurrent = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
 //
-//               auto translation = m_fMoveSpeed * m_pengine->dt() * moveDir.normalized();
+//               auto translation = m_fMoveSpeed * m_pgraphics3dengineinstance->dt() * moveDir.normalized();
 //
 //               pcameraCurrent->m_sequence3Position += translation;
 //
@@ -334,7 +334,7 @@ namespace app_graphics3d_continuum
 //            if (pinput->key(e_key_Exit) == ::user::e_key_state_pressed)
 //            {
 //
-//               m_pengine->gpu_context()->set_finish();
+//               m_pgraphics3dengineinstance->gpu_context()->set_finish();
 //            }
 //         }
 //      }
@@ -346,12 +346,12 @@ namespace app_graphics3d_continuum
 //   void input::process_keyboard_input_spaceExplorer()
 //   {
 //
-//      ::cast<camera> pcamera = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
+//      ::cast<camera> pcamera = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
 //
 //      if (key(::graphics3d::e_key_moveForward) == ::user::e_key_state_pressed)
 //      {
 //
-//         pcamera->ProcessKeyboardInput(::graphics3d::e_key_moveForward, m_pengine->dt());
+//         pcamera->ProcessKeyboardInput(::graphics3d::e_key_moveForward, m_pgraphics3dengineinstance->dt());
 //
 //         if (IsKeyPressed(::user::e_key_left_shift))
 //         {
@@ -366,7 +366,7 @@ namespace app_graphics3d_continuum
 //      {
 //
 //         pcamera->ProcessKeyboardInput(
-//            ::graphics3d::e_key_moveBackward, m_pengine->dt());
+//            ::graphics3d::e_key_moveBackward, m_pgraphics3dengineinstance->dt());
 //
 //         if (IsKeyPressed(::user::e_key_left_shift))
 //         {
@@ -382,7 +382,7 @@ namespace app_graphics3d_continuum
 //      {
 //
 //         pcamera->ProcessKeyboardInput(::graphics3d::e_key_moveLeft,
-//                                                                                        m_pengine->dt());
+//                                                                                        m_pgraphics3dengineinstance->dt());
 //
 //         if (IsKeyPressed(::user::e_key_left_shift))
 //         {
@@ -397,7 +397,7 @@ namespace app_graphics3d_continuum
 //      {
 //
 //         pcamera->ProcessKeyboardInput(::graphics3d::e_key_moveRight,
-//                                                                                        m_pengine->dt());
+//                                                                                        m_pgraphics3dengineinstance->dt());
 //
 //         if (IsKeyPressed(::user::e_key_left_shift))
 //         {
@@ -411,13 +411,13 @@ namespace app_graphics3d_continuum
 //      if (IsKeyPressed(::user::e_key_escape))
 //      {
 //
-//         m_pengine->gpu_context()->set_finish();
+//         m_pgraphics3dengineinstance->gpu_context()->set_finish();
 //
 //      }
 //
 //      if (IsKeyPressed(::user::e_key_4))
 //      {
-//         m_pengine->m_bWireframeMode = !m_pengine->m_bWireframeMode;
+//         m_pgraphics3dengineinstance->m_bWireframeMode = !m_pgraphics3dengineinstance->m_bWireframeMode;
 //
 //      }
 //      // Check for jump (Space key)
@@ -430,7 +430,7 @@ namespace app_graphics3d_continuum
 //      //if (IsKeyPressed(::user::e_key_left_shift))
 //      //{
 //      //   float teleportDistance = 0.1081f;  // Define the downward distance
-//      //   m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->TeleportDownward(teleportDistance);
+//      //   m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene->m_pcameraCurrent->TeleportDownward(teleportDistance);
 //      //}
 //
 //      // Idle movement
@@ -462,9 +462,9 @@ namespace app_graphics3d_continuum
 //////m_mousestate.m_buttons.left = true;
 //////         pmouse->m_p
 ////
-////      double w = m_pengine->m_pusergraphics3d->m_iWidth;
+////      double w = m_pgraphics3dengineinstance->m_pusergraphics3d->m_iWidth;
 ////
-////      double h = m_pengine->m_pusergraphics3d->m_iHeight;
+////      double h = m_pgraphics3dengineinstance->m_pusergraphics3d->m_iHeight;
 ////
 ////      if (m_bLastMouse)
 ////      {
@@ -499,9 +499,9 @@ namespace app_graphics3d_continuum
 ////
 ////      m_dCursorY = yCursor;
 ////
-////      m_pengine->m_pusergraphics3d->track_mouse_leave();
+////      m_pgraphics3dengineinstance->m_pusergraphics3d->track_mouse_leave();
 ////
-////      m_pengine->m_pusergraphics3d->m_pengine->on_mouse_move((float)xCursor, (float)yCursor);
+////      m_pgraphics3dengineinstance->m_pusergraphics3d->m_pgraphics3dengineinstance->on_mouse_move((float)xCursor, (float)yCursor);
 ////
 ////   }
 //
@@ -623,10 +623,10 @@ namespace app_graphics3d_continuum
 //   void input::prepare_mouse_input()
 //   {
 //
-//         //m_pengine->m_pusergraphics3d->prepare_mouse_input();
+//         //m_pgraphics3dengineinstance->m_pusergraphics3d->prepare_mouse_input();
 //
 //
-//      //   ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
+//      //   ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pgraphics3dengineinstance->m_pimmersionlayer;
 //   
 //      //if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
 //      //{

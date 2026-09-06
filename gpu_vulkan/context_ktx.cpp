@@ -13,7 +13,7 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/types.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"

@@ -2,20 +2,19 @@
 #pragma once
 
 
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 
 
-//#include "scene_object.h"
+#include "scene_object.h"
 
 
-// libs
-
-//  // Optional — depends on your conventions//// std
+//// libs
+//// std
 //#include <memory>
 //#include <unordered_map>
 
 
-namespace graphics3d_vulkan 
+namespace graphics3d_directx11 
 {
 
 	//class SimpleRenderSystem;
@@ -23,21 +22,21 @@ namespace graphics3d_vulkan
 	class buffer;
 
 
-	class CLASS_DECL_GRAPHICS3D_VULKAN engine :
-		virtual public ::graphics3d::engine
+	class CLASS_DECL_GRAPHICS3D_DIRECTX11 engine_instance :
+		virtual public ::graphics3d::engine_instance
 	{
 	public:
 
 
 		//::pointer < context >             m_pgpucontext;
-		//::pointer < ::gpu_vulkan::renderer >		m_prenderer;
+		//::pointer < ::gpu_directx11::renderer >		m_prenderer;
 
 
 
 
 
-		engine();
-		~engine() override;
+		engine_instance();
+		~engine_instance() override;
 
 
 		//::file::path _translate_shader_path(const ::file::path& pathShader);
@@ -55,16 +54,21 @@ namespace graphics3d_vulkan
 
 		void on_begin_frame() override;
 
+		void on_after_done_frame_step(::draw2d::graphics_pointer& pdraw2dgraphics);
+
 
 		//void on_render_frame() override;
       void on_render_layer() override;
+
+      
+      floating_matrix4 perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar) override;
 
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//void on_render_frame() override;
 
-      void calculate_impact(::floating_matrix4 &matrixImpact, const ::graphics3d::camera &camera) override;
-      floating_matrix4 perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar) override;
+		//floating_sequence3 camera_pole_up() override;
+
 		
 	};
 

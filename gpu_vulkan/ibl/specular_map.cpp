@@ -14,7 +14,7 @@
 #include "bred/gpu/context_lock.h"
 #include "gpu/full_screen_quad.h"
 #include "bred/graphics3d/_functions.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/render_system.h"
 #include "bred/graphics3d/scene_base.h"
@@ -82,14 +82,14 @@ namespace gpu_vulkan
       }
 
 
-            void specular_map::initialize_specular_map(::graphics3d::scene_base *pscenebase)
+            void specular_map::initialize_specular_map(::graphics3d::scene_base *pscenebase, ::gpu::context * pgpucontext)
       //,
       //::graphics3d::renderable * prenderableSkybox)
       // const ::scoped_string & scopedstrengineRoot, const unsigned int uEnvironmentCubemapId)
       {
                //initialize_scene_object(pscenebase);
 
-               ::gpu::ibl::specular_map::initialize_specular_map(pscenebase);
+               ::gpu::ibl::specular_map::initialize_specular_map(pscenebase, pgpucontext);
 
       }
             
@@ -134,10 +134,10 @@ namespace gpu_vulkan
       }
 
 
-      void specular_map::computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer)
+      void specular_map::computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer, ::graphics3d::scene_base * pscenebase)
       {
 
-         ::gpu::ibl::specular_map::computePrefilteredEnvMap(pgpucommandbuffer);
+         ::gpu::ibl::specular_map::computePrefilteredEnvMap(pgpucommandbuffer, pscenebase);
 
          //::bred::Timer timer;
 
@@ -155,7 +155,7 @@ namespace gpu_vulkan
          //                                   lookAt(origin, unitZ, -unitY), lookAt(origin, -unitZ, -unitY)};
 
          //floating_matrix4 projection =
-         //   m_pgpucontext->m_pengine->perspective(90.0f_degrees, // 90 degrees to cover one face
+         //   m_pgpucontext->m_pgraphics3dengineinstance->perspective(90.0f_degrees, // 90 degrees to cover one face
          //                                         1.0f, // its a square
          //                                         0.1f, 2.0f);
 
@@ -168,7 +168,7 @@ namespace gpu_vulkan
          //// auto pcube = createø < ::gpu::cube >();
          ////::cast < ::gpu_gpu::context > pcontext = m_pgpucontext;
          //// auto pcube = createø<::gpu::cube>();
-         //auto prenderableCube = m_pgpucontext->m_pengine->shape_factory()->create_cube_001(m_pgpucontext, 2.f);
+         //auto prenderableCube = m_pgpucontext->m_pgraphics3dengineinstance->shape_factory()->create_cube_001(m_pgpucontext, 2.f);
          //// pcube->initialize_gpu_cube(m_pgpucontext);
          ////::cast<::gpu_opengl::texture> ptextureSkybox = ptexture;
          //auto ptextureSkybox = ptexture;
@@ -283,7 +283,7 @@ namespace gpu_vulkan
 //
 //         auto pphysicaldevice = pdevice->m_pphysicaldevice;
 //
-//         auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
+//         auto pscene = pgpucontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 //
 //         auto prenderableSkybox = pskybox->m_prenderable;
 //
@@ -636,7 +636,7 @@ namespace gpu_vulkan
 //               vkCmdSetScissor(pcommandbufferCmd->m_vkcommandbuffer, 0, 1, &scissor);
 //
 //               // push constants (projection * view)
-//               pushBlock.mvp = m_pgpucontext->m_pengine->perspective(
+//               pushBlock.mvp = m_pgpucontext->m_pgraphics3dengineinstance->perspective(
 //                  90f_degrees, 1.0f, 0.1f, 512.0f) * matrices[f];
 //               pushBlock.mvp[1][1] *= -1.0f; // flip y
 //

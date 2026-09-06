@@ -333,6 +333,24 @@ namespace draw2d_vkvg
    }
 
 
+   bool draw2d::write_text_supports_raster_fonts()
+   {
+
+      // This backend resolves file-backed outline faces, not GDI bitmap fonts.
+      return false;
+
+   }
+
+
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      // Keep legacy GDI-only faces out of the shared Windows enumeration.
+      return false;
+
+   }
+
+
    ::string draw2d::defer_load_font(
       VkvgContext pdc,
       VkvgDevice pdevice,

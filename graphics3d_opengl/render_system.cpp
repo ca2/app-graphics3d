@@ -8,7 +8,7 @@
 #include "app/gpu_opengl/render_target.h"
 #include "app/gpu_opengl/texture.h"
 //#include "app/gpu_opengl/vk_init.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/texture_site.h"
 
@@ -26,7 +26,7 @@ namespace graphics3d_opengl
    // ::gpu_opengl::render_pass *render_system::render_pass2()
    // {
    //
-   //  ::cast<::gpu_opengl::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
+   //  ::cast<::gpu_opengl::renderer> prenderer = m_pgraphics3dengineinstance->gpu_context()->m_pgpurenderer;
    //
    //  return prenderer->render_pass2();
    //
@@ -35,7 +35,7 @@ namespace graphics3d_opengl
    //
    //    //         constructø(m_pgpurenderpass);
    //
-   //    //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
+   //    //         m_pgpurenderpass->initialize_gpu_context_object(m_pgraphics3dengineinstance->gpu_context());
    //
    //    //   m_pgpurenderpass->m_bLoadClearOp = false;
    //    //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
@@ -60,7 +60,7 @@ namespace graphics3d_opengl
 
       }
       
-      ::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
+      ::cast<::gpu_opengl::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       
       ::cast<::gpu_opengl::renderer> prenderer = pcontext->m_pgpurenderer;
       

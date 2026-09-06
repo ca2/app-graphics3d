@@ -30,6 +30,8 @@ namespace app_graphics3d_continuum
 
       m_iImpactSerial = 2;
 
+      m_strGpuStatisticsTitle = "switcher";
+
    }
 
 
@@ -40,10 +42,29 @@ namespace app_graphics3d_continuum
    }
 
 
+   skybox_impact::skybox_impact()
+   {
+
+      m_iImpactSerial = 5;
+
+      m_strGpuStatisticsTitle = "Skybox";
+
+   }
+
+
+   skybox_impact::~skybox_impact()
+   {
+
+
+   }
+
+
    impact::impact()
    {
 
       m_iImpactSerial = 1;
+
+      m_strGpuStatisticsTitle = "app-graphics3d/continuum";
       
       m_enonclient -= ::user::e_non_client_background;
       m_iSequence = 0;
@@ -122,6 +143,33 @@ namespace app_graphics3d_continuum
 
       }
 
+      int iImpactSerial = m_iImpactSerial;
+
+      if (iImpactSerial == 1)
+      {
+
+         m_papp->m_pimpact = this;
+
+         m_papp->register_user_graphics3d(0, this);
+
+      }
+      else if (iImpactSerial == 2)
+      {
+
+         m_papp->m_pimpactSwitcher = this;
+
+         m_papp->register_user_graphics3d(1, this);
+
+      }
+      else if (iImpactSerial == 5)
+      {
+
+         m_papp->m_pimpactSkybox = this;
+
+         m_papp->register_user_graphics3d(2, this);
+
+      }
+
       ////if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       ////{
 
@@ -137,7 +185,7 @@ namespace app_graphics3d_continuum
 
 
 
-      //   auto prendererEngine = m_pengine->m_pgpucontext->m_pgpurenderer;
+      //   auto prendererEngine = m_pgraphics3dengineinstance->m_pgpucontext->m_pgpurenderer;
 
       //   pgpuwindowattachment->set_render_target(prendererEngine->render_target());
 
@@ -192,29 +240,34 @@ namespace app_graphics3d_continuum
          return;
          
       }
-      
+
+
 #if 1
 
-      ::f64_rectangle rectangleClipBox;
+         ::f64_rectangle rectangleClipBox;
 
-      // pdraw2dgraphics->reset_clip();
+         // pdraw2dgraphics->reset_clip();
 
-      // pdraw2dgraphics->get_clip_box(rectangleClipBox);
+         // pdraw2dgraphics->get_clip_box(rectangleClipBox);
 
-      auto matrix = pdraw2dgraphics->m_matrix;
+         auto matrix = pdraw2dgraphics->m_matrix;
 
-      // auto origin = pdraw2dgraphics->origin();
+         // auto origin = pdraw2dgraphics->origin();
 
-      pdraw2dgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
-      ::get_task()->payload("debug") = 123;
-      pdraw2dgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
-      ::get_task()->payload("debug") = 0;
+         if (m_iImpactSerial == 5)
+         {
 
-      ::user::graphics3d::_001OnDraw(pdraw2dgraphics);
+            pdraw2dgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+            ::get_task()->payload("debug") = 123;
+            pdraw2dgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
+            ::get_task()->payload("debug") = 0;
+
+         }
+
+         ::user::graphics3d::_001OnDraw(pdraw2dgraphics);
 
 #endif
-      
-      draw_gpu_statistics(pdraw2dgraphics);
+
 
    }
 
@@ -249,32 +302,32 @@ namespace app_graphics3d_continuum
 
             print_line("on_click : e_element_client");
             
-            ::file::file_dialog_filter filterdialogfilter;
-            
-            filterdialogfilter.add_item({"application.txt", "application.txt"});
-            
-            pick_single_file_to_open(filterdialogfilter, 
-               [ this ] (::file::file_dialog * pdialog)
-                             {
+            //::file::file_dialog_filter filterdialogfilter;
+            //
+            //filterdialogfilter.add_item({"application.txt", "application.txt"});
+            //
+            //pick_single_file_to_open(filterdialogfilter, 
+            //   [ this ] (::file::file_dialog * pdialog)
+            //                 {
 
-                  auto path = pdialog->get_file_path();
-               
-               try {
-                  auto memory = file()->as_memory(path);
-                  
-                  auto size = memory.size();
-                  
-                  informationf("got file with %d bytes", size);
-                  
-                  file()->put_memory(m_papp->m_pathApplicationText, memory);
-                  
+            //      auto path = pdialog->get_file_path();
+            //   
+            //   try {
+            //      auto memory = file()->as_memory(path);
+            //      
+            //      auto size = memory.size();
+            //      
+            //      informationf("got file with %d bytes", size);
+            //      
+            //      file()->put_memory(m_papp->m_pathApplicationText, memory);
+            //      
 
-               } catch (...) {
-                  auto pmessagebox = message_box("No file loaded...");
-                  post(pmessagebox);
-               }
-               
-            });
+            //   } catch (...) {
+            //      auto pmessagebox = message_box("No file loaded...");
+            //      post(pmessagebox);
+            //   }
+            //   
+            //});
 
             return true;
 

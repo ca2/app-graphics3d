@@ -2,7 +2,8 @@
 #include "platform.h"
 #include "camera.h"
 //#include "context.h"
-#include "engine.h"
+#include "engine_instance.h"
+#include "graphics3d.h"
 //#include "frame.h"
 //#include "model.h"
 //#include "shader.h"
@@ -30,8 +31,9 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
    // pfactory->add_factory_item < ::graphics3d_opengl::model, ::graphics3d::model >();
 
    //pfactory->add_factory_item < ::graphics3d_opengl::shader, ::graphics3d::shader >();
+   pfactory->add_factory_item < ::graphics3d_opengl::graphics3d, ::graphics3d::graphics3d >();
 
-   pfactory->add_factory_item < ::graphics3d_opengl::engine, ::graphics3d::engine >();
+   pfactory->add_factory_item < ::graphics3d_opengl::engine_instance, ::graphics3d::engine_instance >();
 
    //pfactory->add_factory_item < ::graphics3d_opengl::context, ::gpu::context >();
 

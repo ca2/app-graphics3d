@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 
 
 //#include <memory>
@@ -24,8 +24,8 @@ namespace graphics3d_opengl
 	class point_light_system;
 
 
-	class engine :
-		virtual public ::graphics3d::engine
+	class engine_instance :
+		virtual public ::graphics3d::engine_instance
 	{
 	public:
 
@@ -62,8 +62,8 @@ namespace graphics3d_opengl
 		//::pointer<::gpu::context>             m_pgpucontext;
 
 
-		engine();
-		~engine();
+		engine_instance();
+		~engine_instance();
 
 
 		void defer_start(::user::graphics3d * pusergraphics3d, const ::i32_rectangle& rectanglePlacement) override;
@@ -101,7 +101,7 @@ namespace graphics3d_opengl
 		//private:
 		//void ProcessInput(float deltaTime);
 		//static void MouseCallback(::user::graphics3d* pglContainer, double xpos, double ypos);
-		void initialize_engine(::user::graphics3d* pimpact) override;
+		void initialize_graphics3d_engine_instance(::user::graphics3d* pimpact) override;
 
 		//virtual void handle_mouse_move(double dCursorX, double dCursorY) override;
 

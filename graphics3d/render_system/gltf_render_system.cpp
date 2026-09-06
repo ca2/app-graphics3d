@@ -5,7 +5,7 @@
 #include "bred/gpu/context.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/types.h"
@@ -113,7 +113,7 @@ namespace graphics3d
       //// m_pshader->m_bClearColor = true;
       //// m_pshader->m_colorClear = argb(0.8f, 0.1f, 0.5f, 0.1f);
 
-      // auto pcontext = m_pengine->gpu_context();
+      // auto pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       // constructø(m_pshaderOpaque);
       // constructø(m_pshaderMask);
@@ -240,9 +240,9 @@ namespace graphics3d
       ////m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
 
-      ////auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
+      ////auto passetmanager = m_pgraphics3dengineinstance->m_pimmersionlayer->m_passetmanager;
 
-      ////::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
+      ////::cast<::graphics3d::scene> pscene = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
       ////for (uint32_t i = 0; i < frameCount; i++)
       ////{
@@ -295,7 +295,7 @@ namespace graphics3d
       ////      auto &scenerenderables = pscene->scene_renderables();
 
       ////      //   //// xxxxxxxxxxxxxxxxx
-      ////      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      ////      ::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       ////      ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
 
       ////      ////// xxxxxxxxxxxxxxxxx
@@ -514,7 +514,7 @@ namespace graphics3d
    }
 
 
-::gpu::binding_set * gltf_render_system::pbr_binding_set() { auto pcontext = m_pengine->gpu_context();
+::gpu::binding_set * gltf_render_system::pbr_binding_set() { auto pcontext = m_pgraphics3dengineinstance->gpu_context();
 
 auto pbindingsetGltfPbr = pcontext->gltf_pbr_binding_set();
 

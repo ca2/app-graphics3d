@@ -31,7 +31,7 @@
     <ClCompile Include="_.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
+    <ClCompile Include="engine_instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="_factory.cpp">
@@ -58,6 +58,9 @@
     <ClCompile Include="render_system\texture_render_system.cpp">
       <Filter>Source Files\render_system</Filter>
     </ClCompile>
+    <ClCompile Include="graphics3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="platform.h">
@@ -66,7 +69,7 @@
     <ClInclude Include="_.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine.h">
+    <ClInclude Include="engine_instance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="system\basic_render_system.h">
@@ -98,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="render_system\texture_render_system.h">
       <Filter>Header Files\render_system</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

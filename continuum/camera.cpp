@@ -8,7 +8,7 @@
 //
 #include "aura/platform/application.h"
 #include "bred/gpu/context.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "acme/prototype/geometry2d/angle.h"
 
 
@@ -123,12 +123,12 @@ namespace app_graphics3d_continuum
    //void camera::setPerspectiveProjection(const f32_angle & angleFovY, float aspect, float fNear, float fFar)
    //{
 
-   //   auto pgpucontext = m_pengine->get_gpu_context();
+   //   auto pgpucontext = m_pgraphics3dengineinstance->get_gpu_context();
    //   
-   //   m_matrixProjection = pgpucontext->m_pengine->perspective(angleFovY, aspect, fNear, fFar);
+   //   m_matrixProjection = pgpucontext->m_pgraphics3dengineinstance->perspective(angleFovY, aspect, fNear, fFar);
 
 
-   //   //if (m_pengine->m_fYScale < 0.f)
+   //   //if (m_pgraphics3dengineinstance->m_fYScale < 0.f)
    //   //{
 
    //      //m_matrixProjection = glm::perspectiveRH_ZO(fovy, aspect, fNear, fFar);
@@ -239,13 +239,13 @@ namespace app_graphics3d_continuum
    //floating_matrix4 camera::GetViewMatrix() const
    //{
 
-   //   // if (m_pengine->m_fYScale < 0.f)
+   //   // if (m_pgraphics3dengineinstance->m_fYScale < 0.f)
    //   //{
    //   //    return glm::lookAtRH(m_sequence3Position, m_sequence3Position + m_sequence3Front, m_sequence3Up);
    //   // }
    //   // else
    //   {
-   //      auto pgpucontext = m_pengine->get_gpu_context();
+   //      auto pgpucontext = m_pgraphics3dengineinstance->get_gpu_context();
    //      return pgpucontext->lookAt(m_sequence3Position, m_sequence3Position + m_sequence3Front, m_sequence3Up);
    //   }
    //}

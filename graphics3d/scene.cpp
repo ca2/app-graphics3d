@@ -8,7 +8,7 @@
 #include "bred/gpu/texture.h"
 #include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/asset_manager.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 //#include "gpu/ibl/brdf_convolution_framebuffer.h"
 //#include "gpu/ibl/cubemap_framebuffer.h"
@@ -62,7 +62,7 @@ namespace graphics3d
    //   }
 
    //   // Now generate irradiance and prefiltered maps using environmentCube (must be valid)
-   //   if (!m_pgpucontext->m_pengine->m_pimmersionlayer->m_passetmanager->m_ptextureEnvironmentCube)
+   //   if (!m_pgpucontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_passetmanager->m_ptextureEnvironmentCube)
    //   {
    //      error("[scene] environmentCube is null - aborting IBL generation to avoid descriptor errors.");
    //   }
@@ -85,29 +85,29 @@ namespace graphics3d
    //}
 
 
-   void scene::generateIblBRDFlut()
+   void scene::generateIblBRDFlut(::gpu::context * pgpucontext)
    {
 
       defer_construct_newø(m_ptexturesiteLuBrdf);
-      m_ptexturesiteLuBrdf->m_pgputextureSite = generate_ibl_brdf_lut();
+      m_ptexturesiteLuBrdf->m_pgputextureSite = generate_ibl_brdf_lut(pgpucontext);
 
    }
 
 
-   void scene::generateIblIrradianceMap()
+   void scene::generateIblIrradianceMap(::gpu::context * pgpucontext)
    {
 
       defer_construct_newø(m_ptexturesiteIrradianceCube);
-      m_ptexturesiteIrradianceCube->m_pgputextureSite = generate_ibl_irradiance_map(m_prenderableSkyboxModel);
+      m_ptexturesiteIrradianceCube->m_pgputextureSite = generate_ibl_irradiance_map(m_prenderableSkyboxModel, pgpucontext);
 
    }
 
 
-   void scene::generateIblPrefilteredEnvMap()
+   void scene::generateIblPrefilteredEnvMap(::gpu::context * pgpucontext)
    {
 
       defer_construct_newø(m_ptexturesitePrefilteredCube);
-      m_ptexturesitePrefilteredCube->m_pgputextureSite = generate_ibl_prefiltered_env_map(m_prenderableSkyboxModel);
+      m_ptexturesitePrefilteredCube->m_pgputextureSite = generate_ibl_prefiltered_env_map(m_prenderableSkyboxModel, pgpucontext);
 
    }
 
@@ -160,7 +160,7 @@ namespace graphics3d
    //}
 
    
-   gpu::ibl::specular_map *scene::ibl_specular_map()
+   gpu::ibl::specular_map *scene::ibl_specular_map(::gpu::context * pgpucontext)
    {
       
       if (!m_piblspecularmap)
@@ -169,7 +169,7 @@ namespace graphics3d
          constructø(m_piblspecularmap);
 
          //m_piblspecularmap->initialize_specular_map(this, m_prenderableSkybox);
-         m_piblspecularmap->initialize_specular_map(this);
+         m_piblspecularmap->initialize_specular_map(this, pgpucontext);
 
       }
 
@@ -179,16 +179,16 @@ namespace graphics3d
 
 
    ::pointer<::gpu::texture_site> scene::generate_ibl_prefiltered_env_map(
-                                                                ::graphics3d::renderable *prenderableSkybox)
+                                                                ::graphics3d::renderable *prenderableSkybox, ::gpu::context * pgpucontext)
    {
 
-      auto piblspecularmap = ibl_specular_map();
+      auto piblspecularmap = ibl_specular_map(pgpucontext);
 
       //if (!piblspecularmap->m_pframebufferPrefilteredEnvMap)
       {
          auto pcommandbuffer = m_pgpucontext->m_pcommandbufferMain;
          m_pgpucontext->start_debug_happening(pcommandbuffer, "compute ibl_prefiltered_env_map");
-         piblspecularmap->computePrefilteredEnvMap(pcommandbuffer);
+         piblspecularmap->computePrefilteredEnvMap(pcommandbuffer, this);
          m_pgpucontext->end_debug_happening(pcommandbuffer);
       }
 
@@ -200,7 +200,7 @@ namespace graphics3d
    ::pointer<::gpu::texture_site> scene::generate_ibl_irradiance_map(
       //         ::gpu::texture * irradianceCube,
       //::gpu::texture *environmentCube,
-      ::graphics3d::renderable *prenderableSkybox)
+      ::graphics3d::renderable *prenderableSkybox, ::gpu::context * pgpucontext)
    {
 
       if (!m_pibldiffuseirradiancemap)
@@ -210,7 +210,7 @@ namespace graphics3d
          //m_pibldiffuseirradiancemap->initialize_diffuse_irradiance_map(
            // this, m_prenderableSkybox);
          m_pibldiffuseirradiancemap->initialize_diffuse_irradiance_map(
-          this);
+          this, pgpucontext);
       }
 
       //if (!m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer)
@@ -220,7 +220,7 @@ namespace graphics3d
          // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
          auto pcommandbuffer = m_pgpucontext->m_pcommandbufferMain;
          m_pgpucontext->start_debug_happening(pcommandbuffer, "compute irradianceMap");
-         m_pibldiffuseirradiancemap->computeIrradianceMap(pcommandbuffer);
+         m_pibldiffuseirradiancemap->computeIrradianceMap(pcommandbuffer, this);
          m_pgpucontext->end_debug_happening(pcommandbuffer);
          //m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
@@ -238,9 +238,9 @@ namespace graphics3d
    //     ::gpu::texture * lutBrdf);
    /// generate lutBrdf
    /// @return lutBrdf
-   ::pointer<::gpu::texture> scene::generate_ibl_brdf_lut()
+   ::pointer<::gpu::texture> scene::generate_ibl_brdf_lut(::gpu::context * pgpucontext)
    {
-      auto piblspecularmap = ibl_specular_map();
+      auto piblspecularmap = ibl_specular_map(pgpucontext);
       //if (!piblspecularmap->m_pbrdfconvolutionframebuffer)
       {
 

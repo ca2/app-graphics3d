@@ -24,6 +24,11 @@
 #include "app-graphics3d/gpu_vulkan/device.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/queue.h"
+#include "../../../port/graphics3d/vkvg/include/vkvg_queue_host_sync.h"
+#include "../../../port/graphics3d/vkvg/include/vkvg_source_image.h"
+#include "bred/gpu/bitmap.h"
+#include "bred/gpu/context_lock.h"
+#include "aura/graphics/image/drawing.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "aura/graphics/graphics/buffer_item.h"
@@ -154,6 +159,7 @@ namespace draw2d_vkvg
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
       m_size.set(0, 0);
+      m_bBeginFigure = false;
       //m_hdc = nullptr;
       //m_hdcGraphics = nullptr;
       m_ewritetextrendering = ::write_text::e_rendering_anti_alias_grid_fit;
@@ -242,6 +248,88 @@ namespace draw2d_vkvg
    }
 
 
+   void graphics::absorb_user_interaction_affinity(
+      ::acme::user::interaction * pacmeuserinteractionAffinity)
+   {
+
+      if (!m_pacmeuserinteractionAffinity && pacmeuserinteractionAffinity)
+      {
+
+         m_pacmeuserinteractionAffinity = pacmeuserinteractionAffinity;
+
+      }
+
+   }
+
+
+   ::acme::windowing::window * graphics::require_gpu_window(
+      ::acme::windowing::window * pacmewindowingwindowPreferred)
+   {
+
+      if (pacmewindowingwindowPreferred)
+      {
+
+         return pacmewindowingwindowPreferred;
+
+      }
+
+      if (m_pacmeuserinteractionAffinity)
+      {
+
+         auto pacmewindowingwindow =
+            m_pacmeuserinteractionAffinity->acme_windowing_window();
+
+         if (pacmewindowingwindow)
+         {
+
+            return pacmewindowingwindow;
+
+         }
+
+      }
+
+      auto pgpucontext = gpu_context();
+
+      if (pgpucontext
+         && pgpucontext->m_pgpudevice
+         && pgpucontext->m_pgpudevice->m_pwindow)
+      {
+
+         return pgpucontext->m_pgpudevice->m_pwindow;
+
+      }
+
+      if (m_pwindow)
+      {
+
+         return m_pwindow;
+
+      }
+
+      auto pacmeuserinteractionMain = application()->main_acme_user_interaction();
+
+      if (pacmeuserinteractionMain)
+      {
+
+         auto pacmewindowingwindow =
+            pacmeuserinteractionMain->acme_windowing_window();
+
+         if (pacmewindowingwindow)
+         {
+
+            return pacmewindowingwindow;
+
+         }
+
+      }
+
+      throw ::exception(
+         error_wrong_state,
+         "No window is available to acquire the Vulkan GPU device for VKVG graphics.");
+
+   }
+
+
    VkvgDevice graphics::get_vkvg_device()
    {
 
@@ -254,11 +342,14 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
-
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(require_gpu_window());
 
 
+
+      // Serialize publication separately from queue access. Never acquire a
+      // VKVG cache/device mutex while retaining ca2's queue mutex after setup.
+      static std::mutex mutexVkvgDeviceCreation;
+      std::lock_guard<std::mutex> creationLock(mutexVkvgDeviceCreation);
 
       auto & uVkVg = pgpudevice->property_set()["vkvgdevice"].u64_reference();
 
@@ -282,11 +373,27 @@ namespace draw2d_vkvg
          createinfo.vkdev = pcontextVulkan->logicalDevice();
          createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
          createinfo.qIndex = 0;
-         createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+         createinfo.threadAware = true;
 
+         ::cast < ::gpu_vulkan::queue > pqueueGraphics =
+            pcontextVulkan->m_pgpudevice->graphics_queue();
+         auto pqueueState = pqueueGraphics->m_pqueuehostcalldiagnosticstate;
+         std::lock_guard<std::recursive_mutex> initializationLock(pqueueState->m_mutexHostCall);
 
-         uVkVg = (::u64) vkvg_device_create(&createinfo);
-         m_vkvgdevice2 = (VkvgDevice)uVkVg;
+         auto device = vkvg_device_create(&createinfo);
+         if (!device || vkvg_device_status(device) != VKVG_STATUS_SUCCESS)
+         {
+            throw ::exception(error_failed, "VKVG device creation failed.");
+         }
+
+         // VKVG submits from drawing, measurement, and surface upload paths.
+         // All of them must share the queue lock used by gpu_vulkan.
+         vkvg_device_set_queue_host_synchronization(
+            device, &pqueueState->m_mutexHostCall,
+            [](void *p) noexcept { static_cast<std::recursive_mutex *>(p)->lock(); },
+            [](void *p) noexcept { static_cast<std::recursive_mutex *>(p)->unlock(); });
+         uVkVg = (::u64)device;
+         m_vkvgdevice2 = device;
 
       }
 
@@ -317,7 +424,9 @@ namespace draw2d_vkvg
 
       //vulkan_create_offscreen_buffer(rectanglePlacement);
 
-      m_pacmeuserinteractionAffinity = pacmeuserinteractionAffinity;
+      absorb_user_interaction_affinity(pacmeuserinteractionAffinity);
+
+      auto pacmewindowingwindow = require_gpu_window();
 
       //if (m_puserinteractionDraw2dGraphics == nullptr)
       //{
@@ -338,7 +447,7 @@ namespace draw2d_vkvg
 
       //}
 
-      on_gpu_context_placement_change({}, {}, sizeParameter, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow, this);
+      on_gpu_context_placement_change({}, {}, sizeParameter, pacmewindowingwindow, this);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -365,14 +474,6 @@ namespace draw2d_vkvg
       //   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
 
       //}
-
-      auto pgpuapproach = application()->get_gpu_approach();
-
-      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
-
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
-
-
 
       //auto & uVkVg = pgpudevice->property_set()["vkvgdevice"].u64_reference();
 
@@ -569,6 +670,59 @@ namespace draw2d_vkvg
    }
 
 
+   void graphics::on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage,
+      const ::i32_size & size, ::acme::user::interaction * affinity)
+   {
+      ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, affinity);
+      m_bVkvgMemoryImage = false;
+      if (!pimage)
+         return; // Measurement-only lease continues to use its private surface.
+
+      ::gpu::context_lock contextlock(gpu_context());
+      auto texture = m_pgputexturesiteTarget ? m_pgputexturesiteTarget->gpu_texture() : nullptr;
+      if (!texture)
+         throw ::exception(error_wrong_state, "VKVG image lease has no target texture.");
+      texture->wait_fence();
+      {
+         auto commands = gpu_context()->beginSingleTimeCommands();
+         texture->set_state(commands, ::gpu::e_texture_state_color_attachment);
+         commands.commit();
+      }
+      prepare_vkvg_render_target(texture, true);
+      m_bVkvgMemoryImage = true;
+      m_egraphics = ::e_graphics_draw;
+      reset_clip();
+      set_target_rectangle({pimage->m_point, pimage->size()});
+      update_matrix();
+   }
+
+   void graphics::on_release_memory_graphics()
+   {
+      ::gpu::context_lock contextlock(gpu_context());
+      // Flush the actual image destination before releasing the graphics lease.
+      // The base GPU release path does not submit VKVG's command buffers.
+      auto ctx = vkvg_context();
+      if (ctx)
+      {
+         vkvg_flush(ctx);
+         if (vkvg_status(ctx) != VKVG_STATUS_SUCCESS)
+            throw ::exception(error_failed, "VKVG memory graphics flush failed.");
+      }
+      if (m_bVkvgMemoryImage && m_pdirecttargetActive)
+      {
+         auto texture = m_pdirecttargetActive->m_ptexture;
+         texture->from_external_state(::gpu::e_texture_state_color_attachment,
+                                      ::gpu::e_texture_state_color_attachment);
+         auto commands = gpu_context()->beginSingleTimeCommands();
+         texture->set_state(commands, ::gpu::e_texture_state_shader_read);
+         commands.commit();
+      }
+      ::gpu::graphics::on_release_memory_graphics();
+      if (m_bVkvgMemoryImage)
+         m_pdirecttargetActive.release();
+      m_bVkvgMemoryImage = false;
+   }
+
    void graphics::set_target_image(::image::image * pimage)
    {
 
@@ -579,6 +733,8 @@ namespace draw2d_vkvg
 
    void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size)
    {
+
+      absorb_user_interaction_affinity(puserinteraction);
 
       ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
@@ -600,7 +756,7 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(require_gpu_window(pwindow));
 
       auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
@@ -949,7 +1105,7 @@ namespace draw2d_vkvg
 
       //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(require_gpu_window(pwindow));
 
       auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
@@ -1884,13 +2040,24 @@ namespace draw2d_vkvg
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle, const ::color::color& color)
    {
 
-      ::draw2d::graphics::fill_rectangle(rectangle, color);
+      auto pbrushSolidColor = createø < ::draw2d::brush >();
+
+      pbrushSolidColor->create_solid(color);
+
+      fill_rectangle(rectangle, pbrushSolidColor);
 
    }
 
 
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pdraw2dbrush)
    {
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       auto vkvgcontext = vkvg_context();
 
@@ -2619,49 +2786,92 @@ namespace draw2d_vkvg
    //}
 
 
-   void graphics::fill_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
+   void graphics::fill_polygon(
+      const ::f64_point * lpPoints,
+      ::collection::count nCount)
    {
 
-      //   if(nCount <= 0)
-      //      return true;
+      if (!lpPoints || nCount < 3)
+      {
 
-      //   bool bOk1 = false;
+         return;
 
-      //   plusplus::PointF * ppoints = ___new plusplus::PointF[nCount];
+      }
 
-      //   try
-      //   {
+      auto vkvgcontext = vkvg_context();
 
-      //      for(double i = 0; i < nCount; i++)
-      //      {
-      //         ppoints[i].X = (plusplus::REAL) lpPoints[i].x;
-      //         ppoints[i].Y = (plusplus::REAL) lpPoints[i].y;
-      //      }
+      if (!vkvgcontext)
+      {
 
-      //      m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
+         return;
 
-      //      set_smooth_mode(::draw2d::e_smooth_mode_high);
+      }
 
+      auto pdraw2dbrush = m_pdraw2dbrush;
 
-      //      bOk1 = m_pgraphics->FillPolygon(vk2d_brush(), ppoints, (::double) nCount, vk2d_get_fill_mode()) == plusplus::Status::Ok;
+      if (!pdraw2dbrush)
+      {
 
-      //   }
-      //   catch(...)
-      //   {
-      //   }
+         return;
 
-      //   try
-      //   {
-      //      delete ppoints;
-      //   }
-      //   catch(...)
-      //   {
-      //   }
+      }
 
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      //   return bOk1;
+      //
+      // Start a fresh path.
+      //
+      vkvg_new_path(vkvgcontext);
 
-      //return true;
+      check_vkvg(vkvgcontext);
+
+      //
+      // First vertex.
+      //
+      vkvg_move_to(
+         vkvgcontext,
+         (float)lpPoints[0].x,
+         (float)lpPoints[0].y);
+
+      check_vkvg(vkvgcontext);
+
+      //
+      // Remaining vertices.
+      //
+      for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         vkvg_line_to(
+            vkvgcontext,
+            (float)lpPoints[i].x,
+            (float)lpPoints[i].y);
+
+      }
+
+      check_vkvg(vkvgcontext);
+
+      //
+      // A polygon is implicitly a closed shape.
+      //
+      vkvg_close_path(vkvgcontext);
+
+      check_vkvg(vkvgcontext);
+
+      //
+      // Current implementation: solid brush.
+      //
+      vkvg_set_source_rgba(
+         vkvgcontext,
+         __expand_f32_rgba(pdraw2dbrush->m_color));
+
+      check_vkvg(vkvgcontext);
+
+      //
+      // Fill the polygon.
+      //
+      vkvg_fill(vkvgcontext);
+
+      check_vkvg(vkvgcontext);
 
    }
 
@@ -6504,7 +6714,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::prepare_vkvg_render_target(::gpu::texture * pgputexture)
+   void graphics::prepare_vkvg_render_target(::gpu::texture * pgputexture, bool bMemoryImage)
    {
 
       m_pdirecttargetActive.release();
@@ -6543,7 +6753,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
           ptexture->mip_count() != 1 || ptexture->layer_count() != 1 ||
           ptexture->size().is_empty() ||
           sizeRaw.is_empty() ||
-          ptexture->size() != pgpucontext->size())
+          (!bMemoryImage && ptexture->size() != pgpucontext->size()))
       {
 
          throw ::exception(error_wrong_state, "VKVG composed layer texture is incompatible.");
@@ -6655,9 +6865,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
                VK_IMAGE_VIEW_TYPE_2D,
                VK_IMAGE_ASPECT_COLOR_BIT);
 
-            vkvgsurface = vkvg_surface_create_for_VkhImage(
-               get_vkvg_device(),
-               vkhimage);
+            vkvgsurface = bMemoryImage
+               ? vkvg_surface_create_target_for_VkhImage(get_vkvg_device(), vkhimage)
+               : vkvg_surface_create_for_VkhImage(get_vkvg_device(), vkhimage);
 
             if (!vkvgsurface || vkvg_surface_status(vkvgsurface) != VKVG_STATUS_SUCCESS)
             {
@@ -6755,10 +6965,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       auto pgpuwindowattachment = ::gpu::window_attachment::get(gpu_context());
-      auto iFrameCount = pgpuwindowattachment->get_frame_count();
+      auto iFrameCount = pgpuwindowattachment ? pgpuwindowattachment->get_frame_count() : 1;
       auto cComposedLayer = 0;
 
-      if (pgpuwindowattachment->m_pgpulayera)
+      if (pgpuwindowattachment && pgpuwindowattachment->m_pgpulayera)
       {
 
          for (auto pgpulayer : *pgpuwindowattachment->m_pgpulayera)
@@ -7677,6 +7887,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::draw_text(const ::scoped_string& str, const ::f64_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
+      if (str.is_empty() || rectangle.is_empty())
+         return;
+
+      ::gpu::context_lock contextlock(gpu_context());
+      internal_draw_text(str, rectangle, ealign, edrawtext);
+
       //::f64_rectangle rectangle;
 
       //copy(rectangle,&rectangleParam);
@@ -7689,6 +7905,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::draw_text(const ::scoped_string& str, const ::i32_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
+
+      draw_text(str, ::f64_rectangle(rectangle), ealign, edrawtext);
 
       //try
       //{
@@ -8383,6 +8601,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       _set(m_pwritetextfont);
 
+      // Selecting a draw2d brush only updates the logical graphics state.
+      // Bind it before VKVG records glyph colors, not after showing the text.
+      if (!m_pdraw2dbrush || m_pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
+         return;
+      _set(m_pdraw2dbrush);
+
       vkvg_font_extents_t e;
 
       vkvg_font_extents(vkvgcontext, &e);
@@ -8793,10 +9017,109 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::f64_point& pointSrc)
+   void graphics::_draw_raw(const ::image::image_drawing & imagedrawing)
    {
+      auto rectangleSource = imagedrawing.source_rectangle();
+      auto rectangleTarget = imagedrawing.target_rectangle();
+      if (imagedrawing.m_bIntegerPlacement)
+      {
+         rectangleTarget.left = (::i32)rectangleTarget.left;
+         rectangleTarget.top = (::i32)rectangleTarget.top;
+         rectangleTarget.right = (::i32)rectangleTarget.right;
+         rectangleTarget.bottom = (::i32)rectangleTarget.bottom;
+      }
+      if (rectangleSource.is_empty() || rectangleTarget.is_empty())
+         return;
 
+      auto pimage = imagedrawing.image();
+      if (!::is_ok(pimage))
+         throw ::exception(error_bad_argument, "VKVG image source is invalid.");
+      auto pimageSource = pimage->get_source_image();
+      ::cast<::gpu::image> pgpuimage = pimageSource;
+      if (!pgpuimage)
+         throw ::exception(error_wrong_state, "VKVG requires a GPU-backed source image.");
 
+      auto pcontext = gpu_context();
+      ::gpu::context_lock contextlock(pcontext);
+      ::cast<::gpu::bitmap> pbitmap = pgpuimage->get_bitmap_as_source(this);
+      ::cast<::gpu_vulkan::texture> ptexture = pbitmap ? pbitmap->gpu_texture(pcontext) : nullptr;
+      auto ctx = vkvg_context();
+      if (!ptexture || !ctx || ptexture->mip_count() != 1 || ptexture->layer_count() != 1)
+         throw ::exception(error_wrong_state, "VKVG source texture is incompatible.");
+      auto targetSurface = m_pdirecttargetActive ? m_pdirecttargetActive->m_vkvgsurface : m_vkvgsurface;
+      VkImage vkimageTarget = vkvg_surface_get_vk_image(targetSurface);
+      if (vkimageTarget == ptexture->m_vkimage)
+         throw ::exception(error_wrong_state, "VKVG cannot sample its active render target.");
+      if (imagedrawing.is_matrix_filter() && !imagedrawing.is_identity())
+         throw ::exception(error_not_supported, "VKVG image color matrices are not supported.");
+
+      ptexture->wait_fence();
+      {
+         auto commands = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->graphics_queue());
+         ptexture->set_state(commands, ::gpu::e_texture_state_color_attachment);
+         //ptexture->set_state(commands, ::gpu::e_texture_state_shader_read);
+         if (m_pdirecttargetActive && m_pdirecttargetActive->m_ptexture)
+         {
+
+            m_pdirecttargetActive->m_ptexture->set_state(commands, ::gpu::e_texture_state_color_attachment);
+
+         }
+            //ptexture->set_state(commands, ::gpu::e_texture_state_shader_read);
+         commands.commit();
+      }
+      // Import only a sampled view: creating a normal render surface here would
+      // transition from UNDEFINED and discard the cached preview's pixels.
+      ::cast<::gpu_vulkan::context> pvulkancontext = pcontext;
+      auto vkhdevice = reinterpret_cast<VkhDevice>(&pvulkancontext->m_pgpudevice->m_vkdevice);
+      struct source_view
+      {
+         VkhImage image = nullptr;
+         VkvgSurface surface = nullptr;
+         ~source_view()
+         {
+            if (surface) vkvg_surface_destroy(surface);
+            if (image) vkh_image_destroy(image);
+         }
+      } source;
+      const auto sizeRaw = ptexture->raw_size();
+      source.image = vkh_image_import(vkhdevice, ptexture->m_vkimage, ptexture->m_vkformat, sizeRaw.cx, sizeRaw.cy);
+      vkh_image_create_view(source.image, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
+      source.surface = vkvg_surface_create_source_for_VkhImage(get_vkvg_device(), source.image);
+      if (vkvg_surface_status(source.surface) != VKVG_STATUS_SUCCESS)
+         throw ::exception(error_failed, "VKVG could not wrap the source image.");
+
+      {
+         vkvg_keep keep(ctx);
+         auto scaleX = rectangleTarget.width() / rectangleSource.width();
+         auto scaleY = rectangleTarget.height() / rectangleSource.height();
+         vkvg_translate(ctx, (float)rectangleTarget.left, (float)rectangleTarget.top);
+         vkvg_scale(ctx, (float)scaleX, (float)scaleY);
+         vkvg_set_opacity(ctx, imagedrawing.opacity().f32_opacity());
+         vkvg_matrix_t deviceToSource;
+         vkvg_get_matrix(ctx, &deviceToSource);
+         vkvg_matrix_translate(&deviceToSource,
+            (float)(-rectangleSource.left - pimageSource->m_point.x),
+            (float)(-rectangleSource.top - pimageSource->m_point.y));
+         if (vkvg_matrix_invert(&deviceToSource) != VKVG_STATUS_SUCCESS)
+            throw ::exception(error_bad_argument, "VKVG image transform is singular.");
+         vkvg_set_source_surface_transform(ctx, source.surface, &deviceToSource);
+         vkvg_new_path(ctx);
+         vkvg_rectangle(ctx, 0, 0, (float)rectangleSource.width(), (float)rectangleSource.height());
+         vkvg_fill(ctx);
+         // Flush and unbind before releasing the imported view/source texture.
+         vkvg_set_source_rgb(ctx, 0, 0, 0);
+      }
+      ptexture->from_external_state(::gpu::e_texture_state_shader_read, ::gpu::e_texture_state_shader_read);
+      if (vkvg_status(ctx) != VKVG_STATUS_SUCCESS)
+         throw ::exception(error_failed, "VKVG image drawing failed.");
+   }
+
+   void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& options, const ::f64_point& pointSrc)
+   {
+      ::image::image_drawing_options targetOptions(options);
+      targetOptions.m_rectangleTarget = rectangleTarget;
+      ::image::image_source source(pimage, ::f64_rectangle(pointSrc, rectangleTarget.size()));
+      _draw_raw(::image::image_drawing(targetOptions, source));
    }
 
 
@@ -9306,49 +9629,27 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteraction)
    {
 
+      absorb_user_interaction_affinity(puserinteraction);
+
       thread_select();
 
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
-      ::cast < ::gpu_vulkan::queue > pqueueGraphics =
-         pcontextVulkan->m_pgpudevice->graphics_queue();
+      ::gpu::graphics::start_layer(bFirstLayer, puserinteraction);
 
-      m_queuehostcalllock = std::unique_lock<std::recursive_mutex>(
-         pqueueGraphics->m_pqueuehostcalldiagnosticstate->m_mutexHostCall);
-
-      try
+      if (m_egraphics & e_graphics_draw)
       {
 
-         ::gpu::graphics::start_layer(bFirstLayer, puserinteraction);
+         reset_clip();
 
-         if (m_egraphics & e_graphics_draw)
-         {
+         //set_target_rectangle(pcontextVulkan->input_placement());
 
-            reset_clip();
+         m_pointTarget = puserinteraction->host_origin();
 
-            //set_target_rectangle(pcontextVulkan->input_placement());
+         update_matrix();
 
-            m_pointTarget = puserinteraction->host_origin();
-
-            update_matrix();
-
-            set_alpha_mode(::draw2d::e_alpha_mode_blend);
-
-         }
+         set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
       }
-      catch (...)
-      {
 
-         if (m_queuehostcalllock.owns_lock())
-         {
-
-            m_queuehostcalllock.unlock();
-
-         }
-
-         throw;
-
-      }
 
    }
 
@@ -9356,98 +9657,73 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::end_layer(bool bClosingLayer)
    {
 
-      try
+      if (m_egraphics & e_graphics_draw)
       {
 
-         if (m_egraphics & e_graphics_draw)
+         auto vkvgcontext = vkvg_context();
+
+         vkvg_flush(vkvgcontext);
+
+         if (m_pdirecttargetActive)
          {
 
-            auto vkvgcontext = vkvg_context();
-
-            vkvg_flush(vkvgcontext);
-
-            if (m_pdirecttargetActive)
-            {
-
-               auto ptexture = m_pdirecttargetActive->m_ptexture;
-               ptexture->from_external_state(
-                  ::gpu::e_texture_state_color_attachment,
-                  ::gpu::e_texture_state_color_attachment);
+            auto ptexture = m_pdirecttargetActive->m_ptexture;
+            ptexture->from_external_state(
+               ::gpu::e_texture_state_color_attachment,
+               ::gpu::e_texture_state_color_attachment);
 
 #ifdef _DEBUG
 
-               auto pgpulayer = ::gpu::current_layer();
+            auto pgpulayer = ::gpu::current_layer();
 
-               informationf(
-                  "draw2d_vkvg direct end layer=%d composed=%d texture=%p image=0x%llx surface=%p context=%p layout=%d access=0x%llx bypass=1",
-                  pgpulayer ? pgpulayer->m_iGpuLayerIndex : -1,
-                  pgpulayer && pgpulayer->m_bIncludeInFrameComposition ? 1 : 0,
-                  ptexture.m_p,
-                  (::u64)ptexture->m_vkimage,
-                  m_pdirecttargetActive->m_vkvgsurface,
-                  m_pdirecttargetActive->m_vkvgcontext,
-                  (::i32)ptexture->mip_layer_state(0, 0).m_vkimagelayout,
-                  (::u64)ptexture->mip_layer_state(0, 0).m_vkaccessflags);
+            informationf(
+               "draw2d_vkvg direct end layer=%d composed=%d texture=%p image=0x%llx surface=%p context=%p layout=%d access=0x%llx bypass=1",
+               pgpulayer ? pgpulayer->m_iGpuLayerIndex : -1,
+               pgpulayer && pgpulayer->m_bIncludeInFrameComposition ? 1 : 0,
+               ptexture.m_p,
+               (::u64)ptexture->m_vkimage,
+               m_pdirecttargetActive->m_vkvgsurface,
+               m_pdirecttargetActive->m_vkvgcontext,
+               (::i32)ptexture->mip_layer_state(0, 0).m_vkimagelayout,
+               (::u64)ptexture->mip_layer_state(0, 0).m_vkaccessflags);
 
 #endif
 
-            }
-
-            //::i32_rectangle rectangle;
-
-            //if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
-            //{
-
-            //   rectangle = m_puserinteractionDraw2dGraphics->host_rectangle();
-
-            //}
-            //else
-            //{
-
-            //   rectangle = { 0, 0, 1920, 1080 };
-
-            //}
-
-            if (!m_pgpucontextOutput)
-            {
-
-               //constructø(m_pgpucontextOutput);
-
-               //::cast < ::windowing::window > pwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow;
-
-               //m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
-
-            }
-
          }
 
-         // Keep the shared Vulkan queue locked across the handoff from Vkvg's
-         // final flush to the layer copy.  Otherwise the compositor can submit
-         // work that samples the layer while the copy still contains only a
-         // prefix of the current frame.
-         ::gpu::graphics::end_layer(bClosingLayer);
+         //::i32_rectangle rectangle;
 
-      }
-      catch (...)
-      {
+         //if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
+         //{
 
-         if (m_queuehostcalllock.owns_lock())
+         //   rectangle = m_puserinteractionDraw2dGraphics->host_rectangle();
+
+         //}
+         //else
+         //{
+
+         //   rectangle = { 0, 0, 1920, 1080 };
+
+         //}
+
+         if (!m_pgpucontextOutput)
          {
 
-            m_queuehostcalllock.unlock();
+            //constructø(m_pgpucontextOutput);
+
+            //::cast < ::windowing::window > pwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow;
+
+            //m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
 
          }
 
-         throw;
-
       }
 
-      if (m_queuehostcalllock.owns_lock())
-      {
+      // VKVG has completed its flush. Queue calls acquire the shared host
+      // mutex internally; no queue lock may span VKVG's cache/device locks.
+      ::gpu::graphics::end_layer(bClosingLayer);
 
-         m_queuehostcalllock.unlock();
 
-      }
 
    }
 

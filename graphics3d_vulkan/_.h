@@ -28,7 +28,7 @@ namespace graphics3d_vulkan
    //class camera;
    class pipeline;
 
-   class engine;
+   class engine_instance;
 
    //class descriptor_pool;
 

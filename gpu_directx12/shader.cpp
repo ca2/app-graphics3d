@@ -21,7 +21,7 @@
 #include "acme/operating_system/windows_common/com/hresult_exception.h"
 #include <d3dcompiler.h>
 
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 //#include "bred/user/user/graphics3d.h"
@@ -286,7 +286,7 @@ namespace gpu_directx12
                   if (pbindingslotset->m_pbindingset->first()->is_global_ubo())
                   {
 
-                     // auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
+                     // auto pscene = pgpucontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
                      // auto pblockGlobalUbo1 = pscene->global_ubo1(pgpucontext);
                      ////    auto globalSetLayout =
@@ -1646,7 +1646,7 @@ namespace gpu_directx12
       {
 
 
-         auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
+         auto pscene = pcontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
          auto pgpublockGlobalUbo1 = pscene->global_ubo1(pcontext);
 

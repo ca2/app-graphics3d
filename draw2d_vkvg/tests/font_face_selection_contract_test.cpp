@@ -31,6 +31,14 @@ int main()
    const auto graphicsSource = read_file("draw2d_vkvg/graphics.cpp");
 
    assert(draw2dHeader.find("defer_load_font(") != std::string::npos);
+   for (const auto capability : {"write_text_supports_raster_fonts", "write_text_supports_legacy_gdi_fonts"})
+   {
+      assert(draw2dHeader.find(std::string(capability) + "() override") != std::string::npos);
+      const auto start = draw2dSource.find(std::string("bool draw2d::") + capability + "()");
+      assert(start != std::string::npos);
+      const auto end = draw2dSource.find('}', start);
+      assert(draw2dSource.substr(start, end - start).find("return false;") != std::string::npos);
+   }
    assert(draw2dHeader.find("VkvgDevice pdevice") != std::string::npos);
    assert(draw2dSource.find("font_face_request request") != std::string::npos);
    assert(draw2dSource.find("request.m_fontweight = pwritetextfont->m_fontweight") != std::string::npos);

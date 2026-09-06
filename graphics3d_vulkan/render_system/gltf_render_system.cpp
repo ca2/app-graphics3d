@@ -16,7 +16,7 @@
 #include "app-graphics3d/graphics3d/scene.h"
 #include "bred/gpu/layer.h"
 #include "bred/graphics3d/asset_manager.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
@@ -78,7 +78,7 @@ namespace graphics3d_vulkan
       ::graphics3d::pbr_with_ibl_render_system::on_prepare(pgpucontext);
 
 
-      //::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       //constructø(m_pshaderOpaque);
       //constructø(m_pshaderMask);
@@ -187,9 +187,9 @@ namespace graphics3d_vulkan
       ////m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
 
-      ////auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
+      ////auto passetmanager = m_pgraphics3dengineinstance->m_pimmersionlayer->m_passetmanager;
 
-      ////::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
+      ////::cast<::graphics3d::scene> pscene = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
       ////for (uint32_t i = 0; i < frameCount; i++)
       ////{
@@ -239,7 +239,7 @@ namespace graphics3d_vulkan
       ////      auto &scenerenderables = pscene->scene_renderables();
 
       ////      //   //// xxxxxxxxxxxxxxxxx
-      ////      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      ////      ::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       ////      ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
 
       ////      ////// xxxxxxxxxxxxxxxxx
@@ -360,7 +360,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //
       //    auto &scenerenderables = pscene->scene_renderables();
       // //   //// xxxxxxxxxxxxxxxxx
-      // ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      // ::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       //    ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
       //
       // ////// xxxxxxxxxxxxxxxxx

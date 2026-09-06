@@ -726,7 +726,8 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cube_map.cpp" />
-    <ClCompile Include="engine.cpp" />
+    <ClCompile Include="graphics3d.cpp" />
+    <ClCompile Include="engine_instance.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="render_system.cpp" />
@@ -754,7 +755,8 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="cube_map.h" />
-    <ClInclude Include="engine.h" />
+    <ClInclude Include="graphics3d.h" />
+    <ClInclude Include="engine_instance.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model_mesh.h" />

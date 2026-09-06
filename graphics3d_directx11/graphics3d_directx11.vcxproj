@@ -744,6 +744,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="graphics3d.cpp" />
     <ClCompile Include="render_system.cpp" />
     <ClCompile Include="render_system\gltf_render_system.cpp" />
     <ClCompile Include="render_system\scene_render_system.cpp" />
@@ -761,7 +762,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="engine.cpp" />
+    <ClCompile Include="engine_instance.cpp" />
     <ClCompile Include="initializers.cpp" />
     <ClCompile Include="aaa_model.cpp" />
     <ClCompile Include="offscreen.cpp" />
@@ -777,6 +778,7 @@
     <ClInclude Include="aaa_vkc_types.h" />
     <ClInclude Include="aaa_window.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="graphics3d.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="render_system.h" />
     <ClInclude Include="render_system\gltf_render_system.h" />
@@ -786,7 +788,7 @@
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="descriptors.h" />
-    <ClInclude Include="engine.h" />
+    <ClInclude Include="engine_instance.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="aaa_model.h" />

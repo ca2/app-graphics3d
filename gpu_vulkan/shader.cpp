@@ -17,7 +17,7 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/frame_storage.h"
 #include "bred/gpu/texture_site.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 
@@ -365,7 +365,7 @@ namespace gpu_vulkan
             if (pbindingslotset->m_pbindingset->first()->is_global_ubo())
             {
 
-               // auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
+               // auto pscene = pgpucontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
                // auto pblockGlobalUbo1 = pscene->global_ubo1(pgpucontext);
                //    auto globalSetLayout =
@@ -1473,9 +1473,9 @@ namespace gpu_vulkan
    //      //   ASSERT(pbindingslotset->size() == 1);
    //      //      ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
 
-   //      //      auto pengine = pcontext->m_pengine;
+   //      //      auto pengine = pcontext->m_pgraphics3dengineinstance;
 
-   //      //      auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
+   //      //      auto pscene = pcontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
    //      //      ::cast<::gpu_vulkan::block> pblockGlobalUbo1 = pscene->global_ubo1(pcontext);
 

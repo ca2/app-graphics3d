@@ -20,7 +20,7 @@
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/layer.h"
 #include "bred/graphics3d/asset_manager.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
@@ -73,7 +73,7 @@ namespace graphics3d_directx12
 
       ::graphics3d::gltf_render_system::on_prepare(pgpucontext);
       
-      //::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       //constructø(m_pshaderOpaque);
       //constructø(m_pshaderMask);
@@ -94,7 +94,7 @@ namespace graphics3d_directx12
       //auto ppropertiesPush = ::gpu_properties<push_constants>();
       //auto pinputlayout = pgpucontext->input_layout < ::gpu::gltf::vertex >();
 
-      ////::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+      ////::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       ////m_pdescriptorsetlayoutIbl =
       ////   ::gpu_directx11::descriptor_set_layout::Builder(pcontext)
@@ -198,9 +198,9 @@ namespace graphics3d_directx12
       ////m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
 
-      //auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
+      //auto passetmanager = m_pgraphics3dengineinstance->m_pimmersionlayer->m_passetmanager;
 
-      //::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
+      //::cast<::graphics3d::scene> pscene = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
       ////for (uint32_t i = 0; i < frameCount; i++)
       ////{
@@ -250,7 +250,7 @@ namespace graphics3d_directx12
       ////      auto &scenerenderables = pscene->scene_renderables();
 
       ////      //   //// xxxxxxxxxxxxxxxxx
-      ////      ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+      ////      ::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       ////      ::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
 
       ////      ////// xxxxxxxxxxxxxxxxx
@@ -360,7 +360,7 @@ namespace graphics3d_directx12
    //void gltf_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout)
    //{
 
-   //   ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+   //   ::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 
    //   auto descriptorsetlayout0 = globalSetLayout;
    //   auto descriptorsetlayout1 = pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout;
@@ -394,7 +394,7 @@ namespace graphics3d_directx12
    //void gltf_render_system::createPipeline(VkRenderPass renderPass)
    //{
 
-   //   ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+   //   ::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
    //   ::cast<::gpu_directx11::device> pgpudevice = pcontext->m_pgpudevice;
 
    //   assert(m_pipelineLayout != VK_NULL_HANDLE);
@@ -772,7 +772,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //      
 //         auto &scenerenderables = pscene->scene_renderables();
 //      //   //// xxxxxxxxxxxxxxxxx
-//      ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+//      ::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 //
 //      ::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
 //      

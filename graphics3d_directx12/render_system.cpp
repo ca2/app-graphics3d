@@ -8,7 +8,7 @@
 //#include "gpu_directx11/render_target.h"
 #include "gpu_directx12/texture.h"
 //#include "gpu_directx11/vk_init.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/texture_site.h"
 
@@ -26,7 +26,7 @@ namespace graphics3d_directx12
    //::gpu_directx11::render_pass *render_system::render_pass2()
    //{
 
-   // ::cast<::gpu_directx11::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
+   // ::cast<::gpu_directx11::renderer> prenderer = m_pgraphics3dengineinstance->gpu_context()->m_pgpurenderer;
 
    // return prenderer->render_pass2();
 
@@ -35,7 +35,7 @@ namespace graphics3d_directx12
 
    //   //         constructø(m_pgpurenderpass);
 
-   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
+   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pgraphics3dengineinstance->gpu_context());
 
    //   //   m_pgpurenderpass->m_bLoadClearOp = false;
    //   //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
@@ -53,7 +53,7 @@ namespace graphics3d_directx12
    void render_system::render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
       
-      ::cast<::gpu_directx12::context> pcontext = m_pengine->gpu_context();
+      ::cast<::gpu_directx12::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       
       ::cast<::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
       

@@ -72,6 +72,9 @@ namespace draw2d_vkvg
 
       virtual string write_text_get_default_implementation_name() override;
 
+      bool write_text_supports_raster_fonts() override;
+      bool write_text_supports_legacy_gdi_fonts() override;
+
 
       //virtual private_font * get_file_private_font(::platform::context * pcontext, const ::file::path & path);
       virtual int  vulkan_init();

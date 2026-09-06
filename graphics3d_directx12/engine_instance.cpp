@@ -1,7 +1,8 @@
+
 // From application_object by camilo on 2025-05-17 01:10 <3ThomasBorregaardSorensen!!
 #include "platform.h"
 #include "buffer.h"
-#include "engine.h"
+#include "engine_instance.h"
 #include "frame.h"
 #include "input.h"
 #include "offscreen_render_pass.h"
@@ -35,21 +36,21 @@ namespace graphics3d_directx12
 
 
 
-   engine::engine()
+   engine_instance::engine_instance()
    {
       m_fYScale = -1.0f;
 
    }
 
 
-   engine::~engine()
+   engine_instance::~engine_instance()
    {
 
 
    }
 
 
-   void engine::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
+   void engine_instance::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
    {
 
       auto pcontext = gpu_context();
@@ -58,11 +59,11 @@ namespace graphics3d_directx12
 
       prenderer->defer_update_renderer();
 
-      ::graphics3d::engine::defer_update_engine(rectanglePlacement);
+      ::graphics3d::engine_instance::defer_update_engine(rectanglePlacement);
 
       //      construct_newø(m_prenderer);
       //
-      //      //::graphics3d::engine::m_prenderer = m_prenderer;
+      //      //::graphics3d::engine_instance::m_prenderer = m_prenderer;
       //
       //      m_prenderer->initialize_renderer(m_pgpucontextCompositor);
       //
@@ -97,7 +98,7 @@ namespace graphics3d_directx12
    }
 
 
-   void engine::on_begin_frame()
+   void engine_instance::on_begin_frame()
    {
 
       //int frameIndex = m_prenderer->getFrameIndex();
@@ -120,7 +121,7 @@ namespace graphics3d_directx12
    }
 
 
-   //void engine::create_global_ubo(::gpu::context * pgpucontext)
+   //void engine_instance::create_global_ubo(::gpu::context * pgpucontext)
    //{
 
    //   int iGlobalUboSize = m_pimpact->global_ubo_block().size();
@@ -135,7 +136,7 @@ namespace graphics3d_directx12
    //}
 
 
-   //void engine::update_global_ubo(::gpu::context* pgpucontext)
+   //void engine_instance::update_global_ubo(::gpu::context* pgpucontext)
    //{
 
    //   if (m_pimpact->global_ubo_block().size() > 0)
@@ -150,10 +151,10 @@ namespace graphics3d_directx12
    //}
 
 
-   void engine::on_render_layer()
+   void engine_instance::on_render_layer()
    {
 
-      graphics3d::engine::on_render_layer();
+      ::graphics3d::engine_instance::on_render_layer();
 
    }
 
@@ -187,7 +188,7 @@ namespace graphics3d_directx12
    ////}
 
 
-   //::file::path engine::_translate_shader_path(const ::file::path& pathShader)
+   //::file::path engine_instance::_translate_shader_path(const ::file::path& pathShader)
    //{
 
    //   auto pathFolder = pathShader.folder();
@@ -196,7 +197,7 @@ namespace graphics3d_directx12
 
    //}
 
-   //floating_sequence3 engine::camera_pole_up()
+   //floating_sequence3 engine_instance::camera_pole_up()
    //{
 
    //   return { 0.0f, -1.0f, 0.0f };
@@ -204,10 +205,10 @@ namespace graphics3d_directx12
    //}
 
 
-   void engine::do_draw_layer()
+   void engine_instance::do_draw_layer()
    {
 
-      ::graphics3d::engine::do_draw_layer();
+      ::graphics3d::engine_instance::do_draw_layer();
 
       //if (m_rectanglePlacementNew.is_empty())
       //{
@@ -234,7 +235,7 @@ namespace graphics3d_directx12
       //      try
       //      {
 
-      //         m_pgpucontextCompositor->m_pengine->_do_frame_step();
+      //         m_pgpucontextCompositor->m_pgraphics3dengineinstance->_do_frame_step();
 
       //      }
       //      catch (...)
@@ -322,7 +323,7 @@ namespace graphics3d_directx12
 
 
 
-   void engine::_engine_on_frame_context_initialization()
+   void engine_instance::_engine_on_frame_context_initialization()
    {
 
       ::cast < ::gpu_directx12::approach> papproach = m_papplication->get_gpu_approach();
@@ -340,10 +341,10 @@ namespace graphics3d_directx12
    }
 
 
-   void engine::engine_on_after_load_scene(::graphics3d::scene_base* pscene)
+   void engine_instance::engine_on_after_load_scene(::graphics3d::scene_base* pscene)
    {
 
-      ::graphics3d::engine::engine_on_after_load_scene(pscene);
+      ::graphics3d::engine_instance::engine_on_after_load_scene(pscene);
       //::cast < ::gpu_directx12::context > pcontext = m_pgpucontextCompositor;
 
       //auto pcontext = gpu_context();
@@ -369,18 +370,18 @@ namespace graphics3d_directx12
    }
 
 
-   void engine::_prepare_frame()
+   void engine_instance::_prepare_frame()
    {
 
-      ::graphics3d::engine::_prepare_frame();
+      ::graphics3d::engine_instance::_prepare_frame();
 
    }
 
 
-   void engine::run()
+   void engine_instance::run()
    {
 
-      ::graphics3d::engine::run();
+      ::graphics3d::engine_instance::run();
 
       //auto papp = get_app();
 
@@ -575,17 +576,17 @@ namespace graphics3d_directx12
    }
 
 
-   void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pdraw2dgraphics)
+   void engine_instance::on_after_done_frame_step(::draw2d::graphics_pointer& pdraw2dgraphics)
    {
       
-      ::graphics3d::engine::on_after_done_frame_step(pdraw2dgraphics);
+      ::graphics3d::engine_instance::on_after_done_frame_step(pdraw2dgraphics);
 
       //on_after_done_frame_step2(pdraw2dgraphics);
 
    }
 
 
-      floating_matrix4 engine::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
+      floating_matrix4 engine_instance::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
    {
 
       floating_matrix4 M(0.f);

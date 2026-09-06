@@ -702,7 +702,7 @@ namespace gpu_vulkan
    int h,
    int channel_count,
    int bit_count_per_channel,
-   bool bFloat)
+   bool bFloat, bool bTopDown)
    {
 
       information("texture::_set_image_data");
@@ -854,6 +854,30 @@ namespace gpu_vulkan
 
 
          iBytesPerPixel = 4;
+
+         if (!bTopDown)
+         {
+
+            size_t pixelCount =
+               (size_t)w * h;
+
+            memoryData.set_size(
+               pixelCount
+               * 4);
+
+            auto pFlippedSource =
+               (image32_t *)memoryData.data();
+
+
+            pFlippedSource->y_swap_copy({ w, h }, w * 4, (::image32_t *)pDataSource, w * 4);
+
+
+            pDataSource =
+               pFlippedSource;
+
+         }
+
+
 
       }
       else
@@ -1264,7 +1288,7 @@ namespace gpu_vulkan
 
             auto pimage = data.pixmapa().first();
 
-            _set_image_data(bSync, pimage->data(), pimage->width(), pimage->height(), 4, 8, false);
+            _set_image_data(bSync, pimage->data(), pimage->width(), pimage->height(), 4, 8, false, true);
 
          }
 
@@ -1274,7 +1298,7 @@ namespace gpu_vulkan
          
          auto & pixmap = data.raw_scoped_pixmap();
 
-         _set_image_data(bSync, pixmap.data(), pixmap.width(), pixmap.height(), 4, 8, false);
+         _set_image_data(bSync, pixmap.data(), pixmap.width(), pixmap.height(), 4, 8, false, pixmap.m_bTopLeft);
 
       }
       else if (data.is_gpu_texture())
@@ -4843,7 +4867,7 @@ void texture::create_sampler()
          m_vkdevicememory);
 
 
-      _set_image_data(true, imagedata, width, height, channels, 32, true);
+      _set_image_data(true, imagedata, width, height, channels, 32, true, true);
 
       //VkMemoryRequirements memoryRequirements;
       //vkGetImageMemoryRequirements(pcontext->logicalDevice(), m_vkimage, &memoryRequirements);

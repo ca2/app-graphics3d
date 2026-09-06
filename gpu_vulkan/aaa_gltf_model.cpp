@@ -54,7 +54,7 @@
 #include "gpu_vulkan/physical_device.h"
 #include "gpu_vulkan/queue.h"
 #include "gpu_vulkan/texture.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "vk_init.h"
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -1626,7 +1626,7 @@ namespace gpu_vulkan
             // for (auto pnode: m_nodea)
             // {
             //
-            //    ::cast < ::gpu_vulkan::binding_set > pbindingset = pcontext->m_pengine->global_ubo1_binding_set();
+            //    ::cast < ::gpu_vulkan::binding_set > pbindingset = pcontext->m_pgraphics3dengineinstance->global_ubo1_binding_set();
             //
             //    auto pdescriptorsetlayout = pbindingset->descriptor_set_layout(pgpucommandbufferCopy);
             //
@@ -1807,7 +1807,7 @@ namespace gpu_vulkan
    //   //{
    //      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
-   //      auto pengine = m_pgpucontext->m_pengine;
+   //      auto pengine = m_pgpucontext->m_pgraphics3dengineinstance;
 
    //      ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingset;
 

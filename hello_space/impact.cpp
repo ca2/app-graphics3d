@@ -180,7 +180,7 @@ namespace app_graphics3d_hello_space
 
 #endif
       
-      draw_gpu_statistics(pdraw2dgraphics);
+      draw_gpu_statistics(0, "hello_space", pdraw2dgraphics);
 
    }
 

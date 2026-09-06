@@ -1,6 +1,6 @@
 #include "platform.h"
 #include "scene_render_system.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
 //#include "gpu_directx11/command_buffer.h"

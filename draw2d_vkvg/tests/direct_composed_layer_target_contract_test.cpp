@@ -44,13 +44,30 @@ int main()
    const auto header = read(draw2dVkvg / "graphics.h");
    const auto source = read(draw2dVkvg / "graphics.cpp");
 
+   assert(header.find("void _draw_raw(const ::image::image_drawing & imagedrawing) override;") != std::string::npos);
+   const auto imageDraw = section(source,
+      "void graphics::_draw_raw(const ::image::image_drawing & imagedrawing)",
+      "void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget");
+   assert(imageDraw.find("::gpu::graphics::_draw_raw") == std::string::npos);
+   assert(imageDraw.find("vkvg_surface_create_source_for_VkhImage") != std::string::npos);
+   assert(imageDraw.find("vkvg_set_source_surface_transform") != std::string::npos);
+   assert(imageDraw.find("ptexture->wait_fence()") != std::string::npos);
+   assert(imageDraw.find("ptexture->from_external_state") != std::string::npos);
+
    assert(header.find(
       "bool renders_layer_externally(::gpu::layer * pgpulayer) override;") !=
       std::string::npos);
    assert(header.find("class direct_target") != std::string::npos);
    assert(header.find("m_pdirecttargetActive") != std::string::npos);
-   assert(header.find("prepare_vkvg_render_target(::gpu::texture * pgputexture)") !=
+   assert(header.find("prepare_vkvg_render_target(::gpu::texture * pgputexture, bool bMemoryImage = false)") !=
       std::string::npos);
+   const auto acquire = section(source, "void graphics::on_acquire_memory_graphics(",
+      "void graphics::on_release_memory_graphics()");
+   assert(acquire.find("prepare_vkvg_render_target(texture, true)") != std::string::npos);
+   const auto release = section(source, "void graphics::on_release_memory_graphics()",
+      "void graphics::set_target_image(");
+   assert(release.find("vkvg_flush(ctx)") < release.find("::gpu::graphics::on_release_memory_graphics()"));
+   assert(release.find("texture->from_external_state") != std::string::npos);
 
    const auto targetSelection = section(
       source,

@@ -1,8 +1,9 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "platform.h"
 #include "camera.h"
-#include "engine.h"
+#include "engine_instance.h"
 #include "frame.h"
+#include "graphics3d.h"
 //#include "model.h"
 //#include "shader.h"
 #include "bred/graphics3d/scene_object.h"
@@ -29,7 +30,9 @@ IMPLEMENT_FACTORY(graphics3d_directx11)
 
    //pfactory->add_factory_item < ::graphics3d_directx11::shader, ::graphics3d::shader >();
 
-   pfactory->add_factory_item < ::graphics3d_directx11::engine, ::graphics3d::engine >();
+   pfactory->add_factory_item < ::graphics3d_directx11::graphics3d, ::graphics3d::graphics3d >();
+
+   pfactory->add_factory_item < ::graphics3d_directx11::engine_instance, ::graphics3d::engine_instance >();
 
    //pfactory->add_factory_item < ::graphics3d_directx11::context, ::gpu::context >();
 

@@ -40,11 +40,11 @@ namespace app_graphics3d_continuum
       //pinput->m_fMoveSpeed = 3.f;
       //pinput->m_fLookSpeed = 1.5f;
 
-      m_pengine->m_pinput = pinput;
+      m_pgraphics3dengineinstance->m_pinput = pinput;
 
-      //m_pengine->m_pinput->m_pusergraphics3d = m_pengine->m_pusergraphics3d;
-      pinput->m_pengine = m_pengine;
-      //m_pengine->m_pinput->m_pkeymap = m_pengine->m_pusergraphics3d->m_pkeymap;
+      //m_pgraphics3dengineinstance->m_pinput->m_pusergraphics3d = m_pgraphics3dengineinstance->m_pusergraphics3d;
+      pinput->m_pgraphics3dengineinstance = m_pgraphics3dengineinstance;
+      //m_pgraphics3dengineinstance->m_pinput->m_pkeymap = m_pgraphics3dengineinstance->m_pusergraphics3d->m_pkeymap;
 
       auto psceneMain = create_scene<main_scene>("main");
 
@@ -63,11 +63,11 @@ namespace app_graphics3d_continuum
 
          ::cast<::app_graphics3d_continuum::camera> pcamera = pcameraScene;
 
-         m_pengine->m_transform.m_sequence3Position = pcamera->m_sequence3Position;
+         m_pgraphics3dengineinstance->m_transform.m_sequence3Position = pcamera->m_sequence3Position;
 
-         m_pengine->m_transform.m_rotation = pcamera->m_rotation;
+         m_pgraphics3dengineinstance->m_transform.m_rotation = pcamera->m_rotation;
 
-         //m_pengine->m_transform.m_quaternionRotation.y = pcamera->m_angleYaw;
+         //m_pgraphics3dengineinstance->m_transform.m_quaternionRotation.y = pcamera->m_angleYaw;
 
       }
 

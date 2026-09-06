@@ -8,7 +8,7 @@
 #include "app-graphics3d/gpu_vulkan/render_target.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/texture_site.h"
 
@@ -26,7 +26,7 @@ namespace graphics3d_vulkan
    //::gpu_vulkan::render_pass *render_system::render_pass2()
    //{
 
-   // ::cast<::gpu_vulkan::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
+   // ::cast<::gpu_vulkan::renderer> prenderer = m_pgraphics3dengineinstance->gpu_context()->m_pgpurenderer;
 
    // return prenderer->render_pass2();
 
@@ -35,7 +35,7 @@ namespace graphics3d_vulkan
 
    //   //         constructø(m_pgpurenderpass);
 
-   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
+   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pgraphics3dengineinstance->gpu_context());
 
    //   //   m_pgpurenderpass->m_bLoadClearOp = false;
    //   //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
@@ -53,7 +53,7 @@ namespace graphics3d_vulkan
    void render_system::render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
       
-      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      ::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       
       ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
       

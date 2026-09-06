@@ -1,6 +1,6 @@
 #include "platform.h"
 //#include "context.h"
-#include "engine.h"
+#include "engine_instance.h"
 #include "bred/graphics3d/input.h"
 #include "bred/graphics3d/scene_base.h"
 #include "mesh.h"
@@ -34,7 +34,7 @@ namespace graphics3d_opengl
 {
 
 
-   engine::engine()
+   engine_instance::engine_instance()
       : m_Running(true)
    {
 
@@ -43,58 +43,58 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::on_initialize_particle()
+   void engine_instance::on_initialize_particle()
    {
 
-      ::graphics3d::engine::on_initialize_particle();
+      ::graphics3d::engine_instance::on_initialize_particle();
 
    }
 
    
-   engine::~engine()
+   engine_instance::~engine_instance()
    {
 
 
    }
 
 
-   void engine::initialize_engine(::user::graphics3d* pimpact)
+   void engine_instance::initialize_graphics3d_engine_instance(::user::graphics3d* pimpact)
    {
 
       //m_fYScale = -1.0f;
 
-      ::graphics3d::engine::initialize_engine(pimpact);
+      ::graphics3d::engine_instance::initialize_graphics3d_engine_instance(pimpact);
 
    }
 
 
-   void engine::on_render_layer()
+   void engine_instance::on_render_layer()
    {
 
       //auto pcontext = gpu_context();
 
-      ::graphics3d::engine::on_render_layer();
+      ::graphics3d::engine_instance::on_render_layer();
 
    }
 
 
-   void engine::defer_start(::user::graphics3d* pusergraphics3d, const ::i32_rectangle& rectanglePlacement)
+   void engine_instance::defer_start(::user::graphics3d* pusergraphics3d, const ::i32_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine::defer_start(pusergraphics3d, rectanglePlacement);
+      ::graphics3d::engine_instance::defer_start(pusergraphics3d, rectanglePlacement);
 
    }
 
 
-   void engine::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
+   void engine_instance::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine::defer_update_engine(rectanglePlacement);
+      ::graphics3d::engine_instance::defer_update_engine(rectanglePlacement);
 
    }
 
 
-   void engine::on_begin_frame()
+   void engine_instance::on_begin_frame()
    {
 
       auto pcontext = gpu_context();
@@ -109,7 +109,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::on_end_frame()
+   void engine_instance::on_end_frame()
    {
 
       auto pcontext = gpu_context();
@@ -124,37 +124,37 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::do_draw_layer()
+   void engine_instance::do_draw_layer()
    {
 
-      ::graphics3d::engine::do_draw_layer();
+      ::graphics3d::engine_instance::do_draw_layer();
 
    }
 
 
-   void engine::on_mouse_move(float x, float y)
+   void engine_instance::on_mouse_move(float x, float y)
    {
 
 
    }
 
 
-   void engine::on_layout(const ::i32_rectangle& rectanglePlacement)
+   void engine_instance::on_layout(const ::i32_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine::on_layout(rectanglePlacement);
+      ::graphics3d::engine_instance::on_layout(rectanglePlacement);
 
    }
 
    
-   void engine::Render(renderer* prenderer, ::graphics3d::camera* pcamera)
+   void engine_instance::Render(renderer* prenderer, ::graphics3d::camera* pcamera)
    {
 
 
    }
 
 
-   floating_matrix4 engine::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
+   floating_matrix4 engine_instance::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
    {
       float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
 

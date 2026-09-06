@@ -29,7 +29,7 @@ namespace graphics3d_directx12
    //class camera;
    class pipeline;
 
-   class engine;
+   class engine_instance;
 
    //class descriptor_pool;
 

@@ -14,7 +14,7 @@
 // #include "app/gpu_opengl/vk_init.h"
 #include "app-graphics3d/graphics3d/scene.h"
 #include "bred/gpu/layer.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
@@ -70,7 +70,7 @@ namespace graphics3d_opengl
       ::graphics3d::gltf_render_system::on_prepare(pgpucontext);
       //// m_pdescriptorsetlayoutUbo = globalSetLayout;
 
-      //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_opengl::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       //constructø(m_pshaderOpaque);
       //constructø(m_pshaderMask);
@@ -120,7 +120,7 @@ namespace graphics3d_opengl
       //auto &scenerenderables = pscenebase->scene_renderables();
 
       ////   //// xxxxxxxxxxxxxxxxx
-      //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_opengl::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       //::cast<::gpu_opengl::renderer> prenderer = pcontext->m_pgpurenderer;
       //auto pshader = pcontext->m_pshaderBound;
       //::cast<::graphics3d::scene> pscene = pscenebase;

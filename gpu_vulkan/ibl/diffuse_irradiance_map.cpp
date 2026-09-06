@@ -4,7 +4,7 @@
 #include "diffuse_irradiance_map.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "bred/graphics3d/_functions.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/skybox.h"
@@ -66,18 +66,18 @@ namespace gpu_vulkan
       }
 
       
-      void diffuse_irradiance_map::initialize_diffuse_irradiance_map(::graphics3d::scene_base * pscenebase)
+      void diffuse_irradiance_map::initialize_diffuse_irradiance_map(::graphics3d::scene_base * pscenebase, ::gpu::context * pgpucontext)
       {
 
-         ::gpu::ibl::diffuse_irradiance_map::initialize_diffuse_irradiance_map(pscenebase);
+         ::gpu::ibl::diffuse_irradiance_map::initialize_diffuse_irradiance_map(pscenebase, pgpucontext);
 
       }
 
 
-      void diffuse_irradiance_map::computeIrradianceMap(::gpu::command_buffer *pgpucommandbuffer)
+      void diffuse_irradiance_map::computeIrradianceMap(::gpu::command_buffer *pgpucommandbuffer, ::graphics3d::scene_base * pscenebase)
       {
 
-         ::gpu::ibl::diffuse_irradiance_map::computeIrradianceMap(pgpucommandbuffer);
+         ::gpu::ibl::diffuse_irradiance_map::computeIrradianceMap(pgpucommandbuffer, pscenebase);
 
          //::cast<::gpu_vulkan::context> pgpucontext = m_pgpucontext;
 
@@ -102,7 +102,7 @@ namespace gpu_vulkan
 
          //}
 
-         //auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
+         //auto pscene = pgpucontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
          //auto prenderableSkybox = pskybox->m_prenderable;
 
@@ -415,7 +415,7 @@ namespace gpu_vulkan
          //      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
          //      // push constants
-         //      pushBlock.mvp = m_pgpucontext->m_pengine->perspective(90f_degrees, 1.0f, 0.1f, 512.0f) * matrices[face];
+         //      pushBlock.mvp = m_pgpucontext->m_pgraphics3dengineinstance->perspective(90f_degrees, 1.0f, 0.1f, 512.0f) * matrices[face];
          //      vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, ppipelineIrradiance->_pipeline_layout(),
          //                         VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock),
          //                         &pushBlock);

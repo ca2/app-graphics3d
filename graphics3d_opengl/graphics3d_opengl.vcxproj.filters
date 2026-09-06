@@ -40,7 +40,7 @@
     <ClCompile Include="_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
+    <ClCompile Include="engine_instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
@@ -73,6 +73,9 @@
     <ClCompile Include="render_system\texture_render_system.cpp">
       <Filter>Source Files\render_system</Filter>
     </ClCompile>
+    <ClCompile Include="graphics3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="platform.h">
@@ -93,7 +96,7 @@
     <ClInclude Include="scene_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine.h">
+    <ClInclude Include="engine_instance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
@@ -177,6 +180,9 @@
     <ClInclude Include="render_system\shader\texture.frag.h">
       <Filter>Header Files\render_system\shader</Filter>
     </ClInclude>
+    <ClInclude Include="graphics3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="render_system\shader\gltf.frag">
@@ -212,10 +218,6 @@
     <CustomBuild Include="render_system\shader\texture.frag">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="render_system\shader\texture.vert">
-      <Filter>Source Files\render_system\shader</Filter>
-    </None>
+    <CustomBuild Include="render_system\shader\texture.vert" />
   </ItemGroup>
 </Project>

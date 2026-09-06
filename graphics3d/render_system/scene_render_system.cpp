@@ -7,7 +7,7 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/renderer.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/scene_base.h"
 #include "gpu/model/model.h"
@@ -65,7 +65,7 @@ namespace graphics3d
 
    ::gpu::binding_set *scene_render_system::pbr_binding_set()
    {
-      auto pcontext = m_pengine->gpu_context();
+      auto pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       auto pbindingsetSceneGltfPbr = pcontext->scene_gltf_pbr_binding_set();
 
@@ -102,7 +102,7 @@ namespace graphics3d
 //
 //         //{
 //
-//         auto pcontext = m_pengine->gpu_context();
+//         auto pcontext = m_pgraphics3dengineinstance->gpu_context();
 //
 //         constructø(m_pshaderOpaque);
 //         constructø(m_pshaderMask);
@@ -214,9 +214,9 @@ namespace graphics3d
          //m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
 
-         auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
+         auto passetmanager = m_pgraphics3dengineinstance->m_pimmersionlayer->m_passetmanager;
 
-         //::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
+         //::cast<::graphics3d::scene> pscene = m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
          // for (uint32_t i = 0; i < frameCount; i++)
          //{
@@ -275,7 +275,7 @@ namespace graphics3d
          //      auto &scenerenderables = pscene->scene_renderables();
 
          //      //   //// xxxxxxxxxxxxxxxxx
-         //      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+         //      ::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
          //      ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
 
          //      ////// xxxxxxxxxxxxxxxxx
@@ -486,7 +486,7 @@ namespace graphics3d
    void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscenebase)
    {
 
-      graphics3d::pbr_with_ibl_render_system::on_render(pgpucontext, pscenebase);
+      ::graphics3d::pbr_with_ibl_render_system::on_render(pgpucontext, pscenebase);
 
       //static bool warnedThisFrame = false;
 
@@ -737,7 +737,7 @@ namespace graphics3d
       // auto &scenerenderables = pscenebase->scene_renderables();
 
       ////   //// xxxxxxxxxxxxxxxxx
-      //auto pcontext = m_pengine->gpu_context();
+      //auto pcontext = m_pgraphics3dengineinstance->gpu_context();
       //auto prenderer = pcontext->m_pgpurenderer;
 
       //////// xxxxxxxxxxxxxxxxx

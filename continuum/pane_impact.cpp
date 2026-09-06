@@ -8,6 +8,7 @@
 //#include "slide_show.h"
 //#include "hello_multiverse.h"
 #include "acme/constant/id.h"
+#include "acme/constant/impact.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/handler/request.h"
 #include "acme/handler/topic.h"
@@ -79,8 +80,10 @@ namespace app_graphics3d_continuum
       set_tab("Options", APP_OPTIONS_IMPACT);
       set_tab("GPU", "options_impact_handler://gpu");
       //set_tab("gcom", GCOM_IMPACT);
+      set_tab("Statistics", e_impact_statistics);
       set_tab("app_graphics3d/continuum", MAIN_IMPACT);
-      set_tab("switcher", MAIN_SWITCHER_IMPACT);
+      set_tab("Switcher", MAIN_SWITCHER_IMPACT);
+      set_tab("Skybox", e_impact_skybox);
       set_tab("Font", "font_selection_impact");
       set_tab("Color", "color_selection_impact");
 #if 1
@@ -97,7 +100,9 @@ namespace app_graphics3d_continuum
 
 #else
 
+      set_current_tab_by_id(e_impact_skybox);
       set_current_tab_by_id(MAIN_IMPACT);
+      set_current_tab_by_id(e_impact_statistics);
 
 #endif
 
@@ -221,14 +226,14 @@ namespace app_graphics3d_continuum
 
             //m_pimpactLastImpact = ptabpaneMain->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
 
-            auto ptabpaneMainSwitcher = get_tab_by_id(MAIN_SWITCHER_IMPACT);
+            //auto ptabpaneMainSwitcher = get_tab_by_id(MAIN_SWITCHER_IMPACT);
 
-            if (ptabpaneMainSwitcher && ptabpaneMainSwitcher->m_pplaceholder)
-            {
+            //if (ptabpaneMainSwitcher && ptabpaneMainSwitcher->m_pplaceholder)
+            //{
 
-               ptabpaneMainSwitcher->m_pplaceholder->display(::e_display_hide, {});
+            //   ptabpaneMainSwitcher->m_pplaceholder->display(::e_display_hide, {});
 
-            }
+            //}
 
          }
          else if (get_impact_id() == MAIN_SWITCHER_IMPACT)
@@ -242,14 +247,14 @@ namespace app_graphics3d_continuum
 
             //m_pimpactLastImpact = ptabpaneMainSwitcher->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
 
-            auto ptabpaneMain = get_tab_by_id(MAIN_IMPACT);
+            //auto ptabpaneMain = get_tab_by_id(MAIN_IMPACT);
 
-            if (ptabpaneMain && ptabpaneMain->m_pplaceholder)
-            {
+            //if (ptabpaneMain && ptabpaneMain->m_pplaceholder)
+            //{
 
-               ptabpaneMain->m_pplaceholder->display(::e_display_hide, {});
+            //   ptabpaneMain->m_pplaceholder->display(::e_display_hide, {});
 
-            }
+            //}
 
 
          }
@@ -381,6 +386,46 @@ namespace app_graphics3d_continuum
                information() << "pane_impact::on_create_impact MAIN_SWITCHER_IMPACT";
 
                get_app()->impact_system("switcher_impact")->open_document_file(papp, payloadFile, true,
+                                                                      pimpactdata->m_pplaceholder);
+
+               // create_impact < switcher_impact >(
+               //    get_app()->impact_system("impact")->get_document(),
+               //    pimpactdata->m_pplaceholder);
+
+               // get_app()->impact_system("impact")->get_document()->id_update_all_impacts(id_update_render);
+            }
+            break;
+            case e_impact_skybox:
+            {
+               auto prequest = m_pusersystem->m_prequest;
+
+               auto & payloadFile = prequest->m_payloadFile;
+
+               auto papp = get_app();
+
+               information() << "pane_impact::on_create_impact e_impact_skybox";
+
+               get_app()->impact_system("skybox_impact")->open_document_file(papp, payloadFile, true,
+                                                                      pimpactdata->m_pplaceholder);
+
+               // create_impact < switcher_impact >(
+               //    get_app()->impact_system("impact")->get_document(),
+               //    pimpactdata->m_pplaceholder);
+
+               // get_app()->impact_system("impact")->get_document()->id_update_all_impacts(id_update_render);
+            }
+            break;
+            case e_impact_statistics:
+            {
+               auto prequest = m_pusersystem->m_prequest;
+
+               auto & payloadFile = prequest->m_payloadFile;
+
+               auto papp = get_app();
+
+               information() << "pane_impact::on_create_impact e_impact_statistics";
+
+               get_app()->impact_system("statistics_impact")->open_document_file(papp, payloadFile, true,
                                                                       pimpactdata->m_pplaceholder);
 
                // create_impact < switcher_impact >(

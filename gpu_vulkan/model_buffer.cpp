@@ -791,7 +791,7 @@ namespace gpu_vulkan
             }
 
             vkCmdDrawIndexed(
-               pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->index_count(), 1, 0, 0, 0);
+               pcommandbuffer->m_vkcommandbuffer, (uint32_t) m_pmodeldatabase2->index_count(), 1, 0, 0, 0);
 
          }
          else
@@ -812,7 +812,7 @@ namespace gpu_vulkan
             //}
 
             vkCmdDraw(
-               pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->vertex_count(), 1, 0, 0);
+               pcommandbuffer->m_vkcommandbuffer, (uint32_t)m_pmodeldatabase2->vertex_count(), 1, 0, 0);
          }
 
       }

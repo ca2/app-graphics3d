@@ -2870,6 +2870,8 @@ namespace draw2d_vkvg
    void image::_unmap(::image_pixmap_lease * pimagepixmaplease)
    {
 
+      ::gpu::image::_unmap(pimagepixmaplease);
+
       //if (!m_bMapped)
       //{
 
@@ -2888,14 +2890,14 @@ namespace draw2d_vkvg
 
       //}
 
-      if (m_size.is_empty())
-      {
+      //if (m_size.is_empty())
+      //{
 
-         //return false;
+      //   //return false;
 
-         return;
+      //   return;
 
-      }
+      //}
 
       //if (::is_null(m_pimage32Raw))
       //{

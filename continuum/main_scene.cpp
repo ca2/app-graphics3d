@@ -23,7 +23,8 @@
 #include "bred/gpu/texture.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/camera.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/graphics3d.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
 #include "bred/graphics3d/render_system/wavefront_obj_render_system.h"
@@ -55,7 +56,26 @@ namespace app_graphics3d_continuum
 
       scene::on_initialize_particle();
 
-      m_papp->m_pmainscene = this;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+
+      if (iImpactSerial == 1)
+      {
+
+         m_papp->m_pmainscene = this;
+
+      }
+      else if (iImpactSerial == 2)
+      {
+
+         m_papp->m_pmainsceneSwitcher = this;
+
+      }
+      else if (iImpactSerial == 5)
+      {
+
+         m_papp->m_pmainsceneSkybox = this;
+
+      }
 
    }
 
@@ -66,16 +86,16 @@ namespace app_graphics3d_continuum
       if (!m_pcameraDefault)
       {
 
-         //floating_sequence3 camera = floating_sequence3(0.0f, 1.0f *m_pengine->m_fYScale, 3.0f);
+         //floating_sequence3 camera = floating_sequence3(0.0f, 1.0f *m_pgraphics3dengineinstance->m_fYScale, 3.0f);
          floating_sequence3 camera = floating_sequence3(0.0f, 1.0f, 3.0f);
          floating_sequence3 target = floating_sequence3(0.0f, 0.0f, 0.0f); // Look at origin
          //floating_sequence3 direction = glm::normalize(target - cameraPos);
          //camera camera{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
          auto pcamera = create_newø<::app_graphics3d_continuum::camera>();
-         pcamera->m_pengine = m_pimmersionlayer->m_pengine;
+         pcamera->m_pgraphics3dengineinstance = m_pimmersionlayer->m_pgraphics3dengineinstance;
          pcamera->initialize_camera(target, camera);
 
-         //float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+         //float aspect = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->getAspectRatio();
 
          pcamera->m_angleFovY = 50_f_degrees;
          //pcamera->m_fAspectRatio = aspect;
@@ -90,6 +110,8 @@ namespace app_graphics3d_continuum
       return m_pcameraDefault;
 
    }
+
+
    inline const ::gpu::property *overlay1_properties()
    {
 
@@ -143,31 +165,38 @@ namespace app_graphics3d_continuum
 
       // m_Skybox = allocateø::graphics3d::sky_box();
 
-      ::string strSkybox = m_papp->m_strSkybox;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
 
-      m_strSkybox = strSkybox;
-
-      for (auto& strSkybox : m_papp->m_straSkybox)
+      if (iImpactSerial == 5)
       {
 
-         auto& pskybox = m_mapSkybox[strSkybox];
+         auto pgraphics3d = graphics3d();
 
-         defer_construct_newø(pskybox);
+         pgraphics3d->defer_load_skyboxes(pgpucontext);
 
-         pskybox->initialize_sky_box(this, strSkybox);
+         m_strSkybox = m_papp->m_strSkybox;
+
+         m_pskyboxCurrent2 = pgraphics3d->m_mapSkybox[m_strSkybox];
 
       }
 
-      m_pskyboxCurrent2 = m_mapSkybox[m_strSkybox];
 
       ///float fXScale;
 
-      ///fXScale = m_pimmersionlayer->m_pengine->m_fYScale;
+      ///fXScale = m_pimmersionlayer->m_pgraphics3dengineinstance->m_fYScale;
 
       {
 
          auto & flatVase = scene_renderable("matter://models/flat_vase.obj", true);
-         flatVase.translate({ -.5f, 0.f, 0.f });
+         if (iImpactSerial == 1)
+         {
+            flatVase.translate({ -.5f, 0.f, 0.f });
+         }
+         else
+         {
+            flatVase.translate({ -1.5f, 0.f, 0.5f });
+
+         }
          //flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
          flatVase.scale({3.f, 1.5f, 3.f}); // The vase is upside down.
          //flatVase.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
@@ -179,7 +208,7 @@ namespace app_graphics3d_continuum
       {
 
          auto &floor = scene_renderable("matter://models/quad.obj", true);
-         floor.translate({0.f, 0.f, 0.f});
+         floor.translate({ 0.f, 0.f, 0.f });
          //floor.scale({5.f, -1.f, 5.f * fXScale });
          floor.scale({5.f, 1.f, 5.f});
          ///floor.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
@@ -191,7 +220,17 @@ namespace app_graphics3d_continuum
       {
 
          auto &smoothVase = scene_renderable("matter://models/smooth_vase.obj", true);
-         smoothVase.translate({.5f, .0f, 0.f});
+         if (iImpactSerial == 1)
+         {
+
+            smoothVase.translate({ .5f, .0f, 0.f });
+         }
+
+         else
+         {
+            smoothVase.translate({ -1.0f, .0f, 0.25f });
+
+         }
          //smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
          smoothVase.scale({3.f, 1.5f, 3.f}); // The vase is upside down.
          //smoothVase.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
@@ -203,7 +242,17 @@ namespace app_graphics3d_continuum
       {
 
          auto &stoneSphere = scene_renderable("matter://models/StoneSphere.obj", false);
-         stoneSphere.translate({ .0f, 0.0f, 0.f });
+         if (iImpactSerial == 1)
+         {
+
+            stoneSphere.translate({ .0f, 0.0f, 0.f });
+         }
+         else
+         {
+
+            stoneSphere.translate({ -0.5f, 0.0f, 0.f });
+         }
+
          stoneSphere.scale({.25f, .25f, .25f });
          //stoneSphere.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          stoneSphere.m_strName = "Stone Sphere";
@@ -213,7 +262,16 @@ namespace app_graphics3d_continuum
       {
 
          auto &woodBarrel = scene_renderable("matter://models/Barrel_OBJ.obj", false);
-         woodBarrel.translate({ 1.5f, 0.f, 1.0f });
+         if (iImpactSerial == 1)
+         {
+
+            woodBarrel.translate({ 1.5f, 0.f, 1.0f });
+         }
+         else
+         {
+            woodBarrel.translate({ 1.5f, 0.f, -2.0f });
+
+         }
          woodBarrel.scale({1.f, 1.f, 1.f });
          //woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          woodBarrel.m_strName = "Wood Barrel";
@@ -299,31 +357,39 @@ namespace app_graphics3d_continuum
       }
 
 
-      constructø(m_pskyboxrendersystem);
+      if (iImpactSerial == 5)
+      {
 
-      m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+         constructø(m_pskyboxrendersystem);
 
-      m_pskyboxrendersystem->prepare(pgpucontext);
+         m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
+
+         m_pskyboxrendersystem->prepare(pgpucontext);
+
+      }
+      else
+      {
 
 
+         constructø(m_pwavefrontobjrendersystem);
 
-      constructø(m_pwavefrontobjrendersystem);
+         m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
-      m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+         m_pwavefrontobjrendersystem->prepare(pgpucontext);
+         //m_prenderer->getRenderPass(),
+         //globalSetLayout->getDescriptorSetLayout() };
 
-      m_pwavefrontobjrendersystem->prepare(pgpucontext);
-      //m_prenderer->getRenderPass(),
-      //globalSetLayout->getDescriptorSetLayout() };
+         construct_newø(m_ppointlightrendersystem);
 
-      construct_newø(m_ppointlightrendersystem);
+         m_ppointlightrendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
-      m_ppointlightrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+         m_ppointlightrendersystem->prepare(pgpucontext);
 
-      m_ppointlightrendersystem->prepare(pgpucontext);
+      }
 
       //constructø(m_ptexturerendersystem);
 
-      //m_ptexturerendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+      //m_ptexturerendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
       //m_ptexturerendersystem->prepare(pgpucontext);
 
@@ -375,7 +441,7 @@ namespace app_graphics3d_continuum
          //matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
          //                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
          //                    pcamera->m_sequence3WorldUp);
-         ////if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
+         ////if (m_pimmersionlayer->m_pgraphics3dengineinstance->m_fYScale < 0)
          ////{
          ////   matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
          ////                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
@@ -406,11 +472,11 @@ namespace app_graphics3d_continuum
 
          //::cast<camera> pcamera = pgpucamera;
 
-         auto dt = m_pimmersionlayer->m_pengine->dt();
+         auto dt = m_pimmersionlayer->m_pgraphics3dengineinstance->dt();
 
-         ::cast<input> pinput = m_pimmersionlayer->m_pengine->m_pinput;
+         ::cast<input> pinput = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pinput;
 
-         auto &transform = m_pimmersionlayer->m_pengine->m_transform;
+         auto &transform = m_pimmersionlayer->m_pgraphics3dengineinstance->m_transform;
 
          transform.m_sequence3Position = pcamera->m_sequence3Position;
 
@@ -422,7 +488,7 @@ namespace app_graphics3d_continuum
 
          pcamera->m_rotation = transform.m_rotation;
 
-         auto aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+         auto aspect = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->getAspectRatio();
 
          pcamera->m_fAspectRatio = aspect;
 
@@ -458,10 +524,18 @@ namespace app_graphics3d_continuum
       globalUbo1["cameraPosition"] = cameraPosition;
 
 
-      if (m_ppointlightrendersystem)
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+
+      if (iImpactSerial != 5)
       {
 
-         m_ppointlightrendersystem->update(pgpucontext, this);
+
+         if (m_ppointlightrendersystem)
+         {
+
+            m_ppointlightrendersystem->update(pgpucontext, this);
+
+         }
 
       }
 
@@ -682,38 +756,57 @@ namespace app_graphics3d_continuum
 
       //pgpucontext->clear(ptexture, ::argb(1.0f, 0.5f, 0.75f, 1.0f)); // Clear with a light blue color
 
-      if (m_pskyboxrendersystem)
+
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+
+      if (iImpactSerial == 5)
       {
 
-         m_pskyboxrendersystem->render(pgpucontext, this);
+         if (m_pskyboxrendersystem)
+         {
+
+            m_pskyboxrendersystem->render(pgpucontext, this);
+
+         }
 
       }
-
-      if (m_pwavefrontobjrendersystem)
+      else
       {
 
-         m_pwavefrontobjrendersystem->render(pgpucontext, this);
+         if (m_pwavefrontobjrendersystem)
+         {
+
+            m_pwavefrontobjrendersystem->render(pgpucontext, this);
+
+         }
+
+         //      if (m_ptexturerendersystem)
+         //{
+
+         //         
+
+         //   m_ptexturerendersystem->render(pgpucontext, this);
+         //}
 
       }
-
-      //      if (m_ptexturerendersystem)
-      //{
-
-      //         
-
-      //   m_ptexturerendersystem->render(pgpucontext, this);
-      //}
 
    }
 
 
    void main_scene::on_render_last(::gpu::context *pgpucontext)
    {
-      
-      if (m_ppointlightrendersystem)
+
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+
+      if (iImpactSerial != 5)
       {
 
-         m_ppointlightrendersystem->render(pgpucontext, this);
+         if (m_ppointlightrendersystem)
+         {
+
+            m_ppointlightrendersystem->render(pgpucontext, this);
+
+         }
 
       }
 

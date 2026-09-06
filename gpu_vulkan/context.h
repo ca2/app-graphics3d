@@ -69,6 +69,11 @@ namespace gpu_vulkan
       VkSampler _001VkSampler();
 
 
+
+      ::memory merge_layer_vertex_shader() override;
+      ::memory merge_layer_fragment_shader() override;
+
+
       //::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_gltf();
       //::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_scene_gltf();
 

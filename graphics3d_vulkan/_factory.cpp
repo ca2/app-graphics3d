@@ -1,7 +1,8 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "platform.h"
 //#include "camera.h"
-#include "engine.h"
+#include "engine_instance.h"
+#include "graphics3d.h"
 //#include "frame.h"
 //#include "model.h"
 //#include "shader.h"
@@ -32,7 +33,9 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    //pfactory->add_factory_item < ::graphics3d_vulkan::shader, ::graphics3d::shader >();
 
-   pfactory->add_factory_item < ::graphics3d_vulkan::engine, ::graphics3d::engine >();
+   pfactory->add_factory_item < ::graphics3d_vulkan::graphics3d, ::graphics3d::graphics3d >();
+
+   pfactory->add_factory_item < ::graphics3d_vulkan::engine_instance, ::graphics3d::engine_instance >();
 
    //pfactory->add_factory_item < ::graphics3d_vulkan::context, ::gpu::context >();
 

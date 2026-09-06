@@ -49,7 +49,7 @@ namespace gpu_directx12
       if (etype == ::gpu::memory_buffer::e_type_shared_dynamic_vertex_buffer)
       {
 
-         UINT bufSize = m_size; // number of vertexes the buffer can hold
+         UINT bufSize = (UINT) m_size; // number of vertexes the buffer can hold
 
          // Describe heap (UPLOAD so CPU can write directly)
          D3D12_HEAP_PROPERTIES heapProps = {};
@@ -256,7 +256,7 @@ namespace gpu_directx12
 
       ::cast < frame_storage > pframestorage = pgpuwindowattachment->current_frame_storage();
 
-      pframestorage->map_allocate(this, count);
+      pframestorage->map_allocate(this,(int) count);
 
       if (m_pmodelbuffer)
       {
@@ -353,8 +353,8 @@ namespace gpu_directx12
                auto& vertexbufferview = pmodelbuffer->m_vertexbufferview;
 
                vertexbufferview.BufferLocation = this->m_pd3d12resourceMemoryBuffer->gpu_address() + pgpuframestorage->m_iBufferOffset;
-               vertexbufferview.StrideInBytes = pmodelbuffer->m_pmodeldatabase2->vertex_type_size();
-               vertexbufferview.SizeInBytes = pmodelbuffer->m_pmodeldatabase2->vertex_bytes();
+               vertexbufferview.StrideInBytes = (UINT) pmodelbuffer->m_pmodeldatabase2->vertex_type_size();
+               vertexbufferview.SizeInBytes = (UINT) pmodelbuffer->m_pmodeldatabase2->vertex_bytes();
 
                //pmodelbuffer->m_bNew = false;
 

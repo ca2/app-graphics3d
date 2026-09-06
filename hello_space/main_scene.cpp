@@ -24,7 +24,7 @@
 #include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/camera.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
 #include "bred/graphics3d/render_system/wavefront_obj_render_system.h"
@@ -65,16 +65,16 @@ namespace app_graphics3d_hello_space
       if (!m_pcameraDefault)
       {
 
-         //floating_sequence3 camera = floating_sequence3(0.0f, 1.0f *m_pengine->m_fYScale, 3.0f);
+         //floating_sequence3 camera = floating_sequence3(0.0f, 1.0f *m_pgraphics3dengineinstance->m_fYScale, 3.0f);
          floating_sequence3 camera = floating_sequence3(0.0f, 1.0f, 3.0f);
          floating_sequence3 target = floating_sequence3(0.0f, 0.0f, 0.0f); // Look at origin
          //floating_sequence3 direction = glm::normalize(target - cameraPos);
          //camera camera{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
          auto pcamera = create_newø<::app_graphics3d_hello_space::camera>();
-         pcamera->m_pengine = m_pimmersionlayer->m_pengine;
+         pcamera->m_pgraphics3dengineinstance = m_pimmersionlayer->m_pgraphics3dengineinstance;
          pcamera->initialize_camera(target, camera);
 
-         //float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+         //float aspect = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->getAspectRatio();
 
          pcamera->m_angleFovY = 50_f_degrees;
          //pcamera->m_fAspectRatio = aspect;
@@ -163,7 +163,7 @@ namespace app_graphics3d_hello_space
 
       ///float fXScale;
 
-      ///fXScale = m_pimmersionlayer->m_pengine->m_fYScale;
+      ///fXScale = m_pimmersionlayer->m_pgraphics3dengineinstance->m_fYScale;
 
       //{
 
@@ -226,7 +226,7 @@ namespace app_graphics3d_hello_space
          auto &lcdMonitor = scene_renderable("matter://models/MicrosoftMonitor.obj", false);
          lcdMonitor.translate({-1.4f, 0.f, -1.0f});
          lcdMonitor.scale({0.03f, 0.03f, 0.03f});
-         lcdMonitor.m_matrixRotation.rotate({0.0f, 1.0f, 0.0f}, 25_degrees);
+         lcdMonitor.m_matrixRotation.rotate({0.0f, 1.0f, 0.0f}, 25_f_degrees);
             
          //lcdMonitor.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
          // woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
@@ -235,15 +235,15 @@ namespace app_graphics3d_hello_space
 
       {
          //f64_angle angleExtra = 80_degrees;
-         f64_angle angleExtra = 180_degrees;
+         auto angleExtra = 180_f_degrees;
          double dShift = 0.0;
          auto &screen = scene_renderable("matter://models/quad2.obj", true);
          screen.translate({-1.32,0.72, -0.84 - dShift});
          // floor.scale({5.f, -1.f, 5.f * fXScale });
          screen.scale({9.0 * 0.0418, 1.0, 16.4 * 0.0418});
-         screen.m_matrixRotation.rotate({0.0, 1.0, 0.0}, 25_degrees + angleExtra);
-         screen.m_matrixRotation.rotate({0.0, 0.0, 1.0}, 270_degrees);
-         screen.m_matrixRotation.rotate({1.0, 0.0, 0.0}, 90_degrees);
+         screen.m_matrixRotation.rotate({0.0, 1.0, 0.0}, 25_f_degrees + angleExtra);
+         screen.m_matrixRotation.rotate({0.0, 0.0, 1.0}, 270_f_degrees);
+         screen.m_matrixRotation.rotate({1.0, 0.0, 0.0}, 90_f_degrees);
          m_prenderable = &screen;
          /// floor.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
          screen.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
@@ -302,7 +302,7 @@ namespace app_graphics3d_hello_space
 
       //constructø(m_pskyboxrendersystem);
 
-      //m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+      //m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
       //m_pskyboxrendersystem->prepare(pgpucontext);
 
@@ -310,7 +310,7 @@ namespace app_graphics3d_hello_space
 
       //constructø(m_pwavefrontobjrendersystem);
 
-      //m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+      //m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
       //m_pwavefrontobjrendersystem->prepare(pgpucontext);
       ////m_prenderer->getRenderPass(),
@@ -318,13 +318,13 @@ namespace app_graphics3d_hello_space
 
       //construct_newø(m_ppointlightrendersystem);
 
-      //m_ppointlightrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+      //m_ppointlightrendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
       //m_ppointlightrendersystem->prepare(pgpucontext);
 
       constructø(m_ptexturerendersystem);
 
-      m_ptexturerendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
+      m_ptexturerendersystem->initialize_render_system(m_pimmersionlayer->m_pgraphics3dengineinstance);
 
       m_ptexturerendersystem->prepare(pgpucontext);
 
@@ -388,7 +388,7 @@ namespace app_graphics3d_hello_space
 //         //matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
 //         //                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
 //         //                    pcamera->m_sequence3WorldUp);
-//         ////if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
+//         ////if (m_pimmersionlayer->m_pgraphics3dengineinstance->m_fYScale < 0)
 //         ////{
 //         ////   matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
 //         ////                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
@@ -419,11 +419,11 @@ namespace app_graphics3d_hello_space
 //
 //         //::cast<camera> pcamera = pgpucamera;
 //
-//         auto dt = m_pimmersionlayer->m_pengine->dt();
+//         auto dt = m_pimmersionlayer->m_pgraphics3dengineinstance->dt();
 //
-//         ::cast<input> pinput = m_pimmersionlayer->m_pengine->m_pinput;
+//         ::cast<input> pinput = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pinput;
 //
-//         auto &transform = m_pimmersionlayer->m_pengine->m_transform;
+//         auto &transform = m_pimmersionlayer->m_pgraphics3dengineinstance->m_transform;
 //
 //         transform.m_sequence3Position = pcamera->m_sequence3Position;
 //
@@ -435,7 +435,7 @@ namespace app_graphics3d_hello_space
 //
 //         pcamera->m_rotation = transform.m_rotation;
 //
-//         auto aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+//         auto aspect = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->getAspectRatio();
 //
 //         pcamera->m_fAspectRatio = aspect;
 //

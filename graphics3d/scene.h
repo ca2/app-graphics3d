@@ -31,24 +31,24 @@ namespace graphics3d
 
       //virtual void generateIbl() override;
 
-      void generateIblBRDFlut() override;
-      void generateIblIrradianceMap() override;
-      void generateIblPrefilteredEnvMap() override;
+      void generateIblBRDFlut(::gpu::context * pgpucontext) override;
+      void generateIblIrradianceMap(::gpu::context * pgpucontext) override;
+      void generateIblPrefilteredEnvMap(::gpu::context * pgpucontext) override;
 
 
       //::pointer<::graphics3d::renderable> get_skybox_cube_model();
 
       //virtual ::gpu::ibl::equirectangular_cubemap *equirectangular_cubemap();
-      virtual ::gpu::ibl::specular_map *ibl_specular_map();
+      virtual ::gpu::ibl::specular_map *ibl_specular_map(::gpu::context * pgpucontext);
       virtual ::pointer<::gpu::texture_site> generate_ibl_prefiltered_env_map(
-         ::graphics3d::renderable *prenderableSkybox);
+         ::graphics3d::renderable *prenderableSkybox, ::gpu::context * pgpucontext);
 
       /// generate irradianceCube
       /// @return irradianceCube
       virtual ::pointer<::gpu::texture_site> generate_ibl_irradiance_map(
          //         ::gpu::texture * irradianceCube,
          //::gpu::texture *environmentCube, ::graphics3d::renderable *prenderableSkybox);
-          ::graphics3d::renderable *prenderableSkybox);
+          ::graphics3d::renderable *prenderableSkybox, ::gpu::context * pgpucontext);
       // ::pointer<::gpu::texture> loadCubemap(
       //    const ::scoped_string& name,
       //    const ::scoped_string& ktxFilename,
@@ -59,7 +59,7 @@ namespace graphics3d
       //     ::gpu::texture * lutBrdf);
       /// generate lutBrdf
       /// @return lutBrdf
-      virtual ::pointer<::gpu::texture> generate_ibl_brdf_lut();
+      virtual ::pointer<::gpu::texture> generate_ibl_brdf_lut(::gpu::context * pgpucontext);
 
       virtual ::gpu::binding_slot_set *ibl_binding_slot_set();
 

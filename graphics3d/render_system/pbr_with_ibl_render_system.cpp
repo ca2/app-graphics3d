@@ -8,7 +8,7 @@
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/texture.h"
 #include "bred/gpu/texture_site.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
 #include "bred/graphics3d/types.h"
@@ -87,7 +87,7 @@ namespace graphics3d
       
          //{
 
-      auto pcontext = m_pengine->gpu_context();
+      auto pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       constructø(m_pshaderOpaque);
       constructø(m_pshaderMask);
@@ -192,7 +192,7 @@ namespace graphics3d
              ::cast<::graphics3d::scene> pscene = pscenebase;
           auto &scenerenderables = pscenebase->scene_renderables();
        //   //// xxxxxxxxxxxxxxxxx
-       auto pcontext = m_pengine->gpu_context();
+       auto pcontext = m_pgraphics3dengineinstance->gpu_context();
           auto prenderer = pcontext->m_pgpurenderer;
       
        ////// xxxxxxxxxxxxxxxxx

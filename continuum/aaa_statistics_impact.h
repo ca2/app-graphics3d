@@ -1,3 +1,4 @@
+// Created by camilo on 2026-09-05 03:22 <3ThomasBorregaardSørensen!! Mummi!! bilbo!!
 #pragma once
 
 
@@ -10,8 +11,8 @@ namespace app_graphics3d_continuum
 {
 
 
-   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM impact :
-      virtual public ::app_consumer < application, ::user::show <::user::graphics3d> >
+   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM statistics_impact :
+      virtual public ::app_consumer < application, ::user::show <::user::box> >
    {
    public:
 
@@ -22,8 +23,8 @@ namespace app_graphics3d_continuum
 
 
 
-      impact();
-      ~impact() override;
+      statistics_impact();
+      ~statistics_impact() override;
 
 
 #ifdef _DEBUG
@@ -53,46 +54,13 @@ namespace app_graphics3d_continuum
 
       DECLARE_MESSAGE_HANDLER(on_message_create);
       DECLARE_MESSAGE_HANDLER(on_message_destroy);
-      //void on_load_engine() override;
-      
+
       bool on_click(::item * pitem, ::user::mouse * pmouse) override;
-      
-      //bool is_absolute_mouse_position() override;
-
-      ::pointer < ::prodevian::immersion > create_immersion() override;
-
-      //void on_load_engine() override;
-
-      ::pointer < ::graphics3d::key_map > get_default_key_map() override;
-
-
-   };
-
-   
-   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM switcher_impact :
-      virtual public impact
-   {
-   public:
-
-
-      switcher_impact();
-      ~switcher_impact() override;
 
 
    };
 
 
-   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM skybox_impact :
-      virtual public impact
-   {
-   public:
-
-
-      skybox_impact();
-      ~skybox_impact() override;
-
-
-   };
 
 
 } // namespace app_graphics3d_continuum

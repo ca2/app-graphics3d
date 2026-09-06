@@ -17,7 +17,7 @@ namespace graphics3d_opengl
 {
 
 
-   class engine;
+   class engine_instance;
 
    //class application_handler;
 

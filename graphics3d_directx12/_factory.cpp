@@ -1,9 +1,9 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "platform.h"
 #include "camera.h"
-#include "engine.h"
+#include "engine_instance.h"
 #include "frame.h"
-//#include "model.h"
+#include "graphics3d.h"
 #include "bred/graphics3d/scene_object.h"
 #include "aura/platform/application.h"
 #include "render_system/gltf_render_system.h"
@@ -20,7 +20,9 @@ IMPLEMENT_FACTORY(graphics3d_directx12)
 
    //pfactory->add_factory_item < ::graphics3d_directx12::model, ::graphics3d::model >();
 
-   pfactory->add_factory_item < ::graphics3d_directx12::engine, ::graphics3d::engine >();
+   pfactory->add_factory_item < ::graphics3d_directx12::graphics3d, ::graphics3d::graphics3d >();
+
+   pfactory->add_factory_item < ::graphics3d_directx12::engine_instance, ::graphics3d::engine_instance >();
 
    pfactory->add_factory_item < ::graphics3d::scene_object >();
 

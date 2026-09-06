@@ -25,7 +25,7 @@ namespace graphics3d_directx11
    class model;
    class input;
 
-   class engine;
+   class engine_instnace;
 
    //class descriptor_pool;
 

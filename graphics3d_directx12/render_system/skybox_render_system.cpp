@@ -8,7 +8,7 @@
 #include "bred/gpu/texture.h"
 ///#include "bred/graphics3d/model.h"
 #include "bred/graphics3d/game_object.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 //#include "bred/graphics3d/frame.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/shape_factory.h"

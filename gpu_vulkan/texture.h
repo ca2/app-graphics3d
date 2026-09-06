@@ -323,7 +323,7 @@ const ::i32_point & point) override;
       //                                                           const ::i32_rectangle &rectangleTarget, int iMipCount,
       //                                                           bool bRenderTarget, bool bShaderResourceView) override;
 
-      void _set_image_data(bool bSync, const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
+      void _set_image_data(bool bSync, const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat, bool bTopDown);
       
       void create_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size) override;
       void create_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);

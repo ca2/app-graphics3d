@@ -1,26 +1,20 @@
 // From application_object by camilo on 2025-05-17 01:10 <3ThomasBorregaardSorensen!!
 #include "platform.h"
-#include "buffer.h"
-#include "engine.h"
-#include "frame.h"
-#include "input.h"
-#include "offscreen_render_pass.h"
-#include "swap_chain_render_pass.h"
+//#include "buffer.h"
+#include "engine_instance.h"
+//#include "frame.h"
+//#include "input.h"
+//#include "offscreen_render_pass.h"
+//#include "renderer.h"
+//#include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
-#include "bred/gpu/layer.h"
-#include "bred/gpu/texture_site.h"
 #include "bred/user/user/graphics3d.h"
-#include "gpu_directx11/approach.h"
-#include "gpu_directx11/context.h"
-#include "gpu_directx11/descriptors.h"
-#include "gpu_directx11/renderer.h"
-#include "gpu_directx11/offscreen_render_target_view.h"
-#include "gpu_directx11/texture.h"
-#include "draw2d_direct2d/_.h"
-#include "draw2d_direct2d/graphics.h"
+#include "app-graphics3d/gpu_vulkan/approach.h"
+#include "app-graphics3d/gpu_vulkan/context.h"
+#include "app-graphics3d/gpu_vulkan/descriptors.h"
+#include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/graphics3d/scene_base.h"
-#include "aura/windowing/window.h"
 //#include "bred/graphics3d/system/simple_render_system.h"
 //#include "bred/graphics3d/system/point_light_system.h"
 #include "acme/platform/application.h"
@@ -30,39 +24,41 @@
 #include <chrono>
 
 
-namespace graphics3d_directx11
+namespace graphics3d_vulkan
 {
 
 
 
-   engine::engine()
+   engine_instance::engine_instance()
    {
-      m_fYScale = -1.0f;
+
+      //m_fYScale = -1.f;
+      //m_fInputPitchFlip = -1.0f;
 
    }
 
 
-   engine::~engine()
+   engine_instance::~engine_instance()
    {
 
 
    }
 
 
-   void engine::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
+   void engine_instance::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
    {
 
       auto pcontext = gpu_context();
 
-      ::cast < ::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
+      ::cast < ::gpu_vulkan::renderer> prenderer = pcontext->get_gpu_renderer();
 
       prenderer->defer_update_renderer();
 
-      ::graphics3d::engine::defer_update_engine(rectanglePlacement);
+      ::graphics3d::engine_instance::defer_update_engine(rectanglePlacement);
 
       //      construct_newø(m_prenderer);
       //
-      //      //::graphics3d::engine::m_prenderer = m_prenderer;
+      //      //::graphics3d::engine_instance::m_prenderer = m_prenderer;
       //
       //      m_prenderer->initialize_renderer(m_pgpucontextCompositor);
       //
@@ -76,7 +72,7 @@ namespace graphics3d_directx11
       //      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //      //   .build();
       //
-      //      //pgpucontext = allocateø context(m_pdirectx11device);
+      //      //pgpucontext = allocateø context(m_pvulkandevice);
       //      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
       //
       //      if (iGlobalUboSize > 0)
@@ -97,12 +93,12 @@ namespace graphics3d_directx11
    }
 
 
-   void engine::on_begin_frame()
+   void engine_instance::on_begin_frame()
    {
 
       //int frameIndex = m_prenderer->getFrameIndex();
 
-      //FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
+      //FrameInfo frameInfo{ frameIndex, dt(), pcommandbuffer->m_vkcommandbuffer,
       //   *m_pcamera, m_globalDescriptorSets[frameIndex],
       //   m_pscene->m_mapObjects };
 
@@ -120,7 +116,7 @@ namespace graphics3d_directx11
    }
 
 
-   //void engine::create_global_ubo(::gpu::context * pgpucontext)
+   //void engine_instance::create_global_ubo(::gpu::context * pgpucontext)
    //{
 
    //   int iGlobalUboSize = m_pimpact->global_ubo_block().size();
@@ -128,14 +124,14 @@ namespace graphics3d_directx11
    //   if (iGlobalUboSize > 0)
    //   {
 
-   //      m_papproach->create_global_ubo(pgpucontext,  iGlobalUboSize, ::gpu_directx11::render_pass::MAX_FRAMES_IN_FLIGHT);
+   //      m_papproach->create_global_ubo(pgpucontext,  iGlobalUboSize, ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT);
 
    //   }
 
    //}
 
 
-   //void engine::update_global_ubo(::gpu::context* pgpucontext)
+   //void engine_instance::update_global_ubo(::gpu::context* pgpucontext)
    //{
 
    //   if (m_pimpact->global_ubo_block().size() > 0)
@@ -150,151 +146,153 @@ namespace graphics3d_directx11
    //}
 
 
-   floating_matrix4 engine::perspective(const f32_angle & angleFovY, float aspect, float zNear, float zFar)
+   //void engine_instance::on_render_frame()
+   //{
+
+   //   ::graphics3d::engine_instance::on_render_frame();
+
+   //}
+
+   void engine_instance::on_render_layer()
    {
-       
-      floating_matrix4 M(0.f);
 
-      auto zn = zNear;
+      ::graphics3d::engine_instance::on_render_layer();
 
-      auto zf = zFar;
-      
-      float f = 1.0f / ::std::tan(angleFovY.radians() * 0.5f);
+   }
 
-      ////floating_matrix4 M;
+   ////   ::cast < renderer > prenderer = m_prenderer;
 
-      ////auto zn = zNear;
-      ////auto zf = zFar;
+   ////   if (prenderer->m_pvkcrenderpass->width() <= 0
+   ////      || prenderer->m_pvkcrenderpass->height() <= 0)
+   ////   {
 
-      ////M[0][0] = f / aspect;
-      ////M[0][1] = 0;
-      ////M[0][2] = 0;
-      ////M[0][3] = 0;
+   ////      return;
 
-      ////M[1][0] = 0;
-      ////M[1][1] = f;
-      ////M[1][2] = 0;
-      ////M[1][3] = 0;
+   ////   }
 
-      ////M[2][0] = 0;
-      ////M[2][1] = 0;
-      ////M[2][2] = zf / (zn - zf);
-      ////M[2][3] = (zn * zf) / (zn - zf);
 
-      ////M[3][0] = 0;
-      ////M[3][1] = 0;
-      ////M[3][2] = -1;
-      ////M[3][3] = 0;
+   ////   if (auto pcommandbuffer = m_prenderer->beginFrame())
+   ////   {
 
-      ////float f = 1.0f / std::tan(angleFovY.radians() * 0.5f);
+   ////      on_begin_frame();
+   ////      // render
+   ////      m_prenderer->beginRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
-      ////M[0][0] = f / aspect;
-      ////M[0][1] = 0;
-      ////M[0][2] = 0;
-      ////M[0][3] = 0;
+   ////      m_psimplerendersystem->renderGameObjects(m_pscene);
+   ////      m_ppointlightsystem->render(m_pscene);
 
-      ////M[1][0] = 0;
-      ////M[1][1] = f;
-      ////M[1][2] = 0;
-      ////M[1][3] = 0;
+   ////      m_prenderer->endRenderPass(pcommandbuffer->m_vkcommandbuffer);
+   ////      m_prenderer->endFrame();
 
-      ////M[2][0] = 0;
-      ////M[2][1] = 0;
-      ////M[2][2] = zf / (zn - zf);
-      ////M[2][3] = -1;
+   ////   }
 
-      ////M[3][0] = 0;
-      ////M[3][1] = 0;
-      ////M[3][2] = (zn * zf) / (zn - zf);
-      ////M[3][3] = 0;
 
-      //M[0][0] = f / aspect;
-      //M[0][1] = 0;
-      //M[0][2] = 0;
-      //M[0][3] = 0;
+   ////}
 
-      //M[1][0] = 0;
-      //M[1][1] = f;
-      //M[1][2] = 0;
-      //M[1][3] = 0;
 
-      //M[2][0] = 0;
-      //M[2][1] = 0;
-      //M[2][2] = zFar / (zNear - zFar);
-      //M[2][3] = -1;
+   //::file::path engine_instance::_translate_shader_path(const ::file::path& pathShader)
+   //{
 
-      //M[3][0] = 0;
-      //M[3][1] = 0;
-      //M[3][2] = (zNear * zFar) / (zNear - zFar);
-      //M[3][3] = 0;
+   //   auto pathFolder = pathShader.folder();
 
+   //   return pathFolder / "vulkan/SpirV" / (pathShader.name() + ".spv");
+
+   //}
+
+
+   void engine_instance::do_draw_layer()
+   {
+
+      ::graphics3d::engine_instance::do_draw_layer();
+
+      //if (m_rectanglePlacementNew.is_empty())
       //{
-         //floating_matrix4 M;
 
-         //float f = 1.0f / std::tan(fovY * 0.5f);
+      //   return;
 
-      //   M[0][0] = f / aspect;
-      //   M[0][1] = 0.0f;
-      //   M[0][2] = 0.0f;
-      //   M[0][3] = 0.0f;
+      //}
 
-      //   M[1][0] = 0.0f;
-      //   M[1][1] = f;
-      //   M[1][2] = 0.0f;
-      //   M[1][3] = 0.0f;
+      //::pointer < ::gpu_vulkan::context > pcontextUpper = pcontext;
 
-      //   M[2][0] = 0.0f;
-      //   M[2][1] = 0.0f;
-      //   M[2][2] = zf / (zn - zf);
-      //   M[2][3] = -1.0f;
+      //m_pgpucontextCompositor->set_placement(m_rectanglePlacementNew);
 
-      //   M[3][0] = 0.0f;
-      //   M[3][1] = 0.0f;
-      //   M[3][2] = (zn * zf) / (zn - zf);
-      //   M[3][3] = 0.0f;
+      //::gpu::rear_guard rear_guard(pcontextUpper);
 
-      ////   return M;
-      ////}
-      //return M;
-      //floating_matrix4 perspectiveRH_DX11(float fovY, float aspect, float zn, float zf)
+      //m_pgpucontextCompositor->send([this]()
+      //   {
+
+      //      ::gpu::context_guard guard(m_pgpucontextCompositor);
+
+      //      m_pgpucontextCompositor->make_current();
+
+      //      ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextCompositor->get_renderer(::gpu::e_scene_3d);
+
+      //      prenderer->defer_update_renderer();
+
+      //      try
+      //      {
+
+      //         m_pgpucontextCompositor->m_pgraphics3dengineinstance->_do_frame_step();
+
+      //      }
+      //      catch (...)
+      //      {
+
+      //      }
+
+      //   });
+
+      //if (1)
       //{
-         //floating_matrix4 M(0.0f);
 
-         //float f = 1.0f / std::tan(fovY * 0.5f);
+      //   if (pgpucontextUpper)
+      //   {
 
-         M[0][0] = f / aspect;
-         M[1][1] = f;
-         M[2][2] = zf / (zn - zf);
-         M[2][3] = -1.0f;
-         M[3][2] = (zn * zf) / (zn - zf);
-         M[3][3] = 0.0f;
+      //      pgpucontextUpper->make_current();
 
-         return M;
-//      }
+      //      auto prenderer = m_pgpucontextCompositor->m_pgpurenderer;
+
+      //      ::cast < ::gpu_vulkan::renderer > pgpurendererUpper = pgpucontextUpper->m_pgpurenderer;
+
+      //      pgpurendererUpper->blend(prenderer);
+
+      //      auto rectangleUpper = pgpucontextUpper->rectangle();
+
+      //      VkViewport vp = {
+      //         (float)rectangleUpper.left,
+      //         (float)rectangleUpper.top,
+      //         (float)rectangleUpper.width(),
+      //         (float)rectangleUpper.height(),
+      //         0.0f, 1.0f };
+
+      //      VkRect2D sc = {
+      //         {
+      //            rectangleUpper.left,
+      //            rectangleUpper.top,
+      //         },
+      //         {
+      //            rectangleUpper.width(),
+      //            rectangleUpper.height(),
+      //         }
+      //      };
+
+      //      auto pcommandbuffer = pgpurendererUpper->getCurrentCommandBuffer();
+
+      //      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+
+      //      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
+
+      //   }
+
+      //}
 
    }
 
 
-   void engine::on_render_layer()
+   void engine_instance::_engine_on_frame_context_initialization()
    {
 
-      graphics3d::engine::on_render_layer();
-
-   }
-
-
-   void engine::do_draw_layer()
-   {
-
-      ::graphics3d::engine::do_draw_layer();
-
-   }
-
-
-   void engine::_engine_on_frame_context_initialization()
-   {
-
-      ::cast < ::gpu_directx11::approach> papproach = m_papplication->get_gpu_approach();
+      ::cast < ::gpu_vulkan::approach> papproach = m_papplication->get_gpu_approach();
 
       auto pcontext = gpu_context();
 
@@ -309,29 +307,18 @@ namespace graphics3d_directx11
    }
 
 
-   void engine::_prepare_frame()
+   void engine_instance::_prepare_frame()
    {
 
-      ::graphics3d::engine::_prepare_frame();
+      ::graphics3d::engine_instance::_prepare_frame();
 
    }
 
 
-
-   //floating_matrix4 engine::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
-   //{
-
-   //   throw ::interface_only();
-
-   //   return {1.0f};
-   //}
-
-
-
-   void engine::run()
+   void engine_instance::run()
    {
 
-      ::graphics3d::engine::run();
+      ::graphics3d::engine_instance::run();
 
       //auto papp = get_app();
 
@@ -360,7 +347,7 @@ namespace graphics3d_directx11
       ////   .build();
       //m_pscene->on_load_scene();
 
-      ////pgpucontext = allocateø context(m_pdirectx11device);
+      ////pgpucontext = allocateø context(m_pvulkandevice);
 
       //::pointer_array<buffer> uboBuffers;
 
@@ -474,12 +461,12 @@ namespace graphics3d_directx11
 
       //      camera.setPerspectiveProjection(::radians(50.f), aspect, 0.1f, 100.f);
 
-      //      if (auto commandBuffer = m_prenderer->beginFrame())
+      //      if (auto pcommandbuffer = m_prenderer->beginFrame())
       //      {
 
       //         int frameIndex = m_prenderer->getFrameIndex();
 
-      //         FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex], m_pscene->m_mapObjects };
+      //         FrameInfo frameInfo{ frameIndex, frameTime, pcommandbuffer->m_vkcommandbuffer, camera, globalDescriptorSets[frameIndex], m_pscene->m_mapObjects };
 
       //         // update
       //         GlobalUbo ubo{};
@@ -491,12 +478,12 @@ namespace graphics3d_directx11
       //         uboBuffers[frameIndex]->flush();
 
       //         // render
-      //         m_prenderer->beginRenderPass(commandBuffer);
+      //         m_prenderer->beginRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
       //         simpleRenderSystem.renderGameObjects(frameInfo);
       //         pointLightSystem.render(frameInfo);
 
-      //         m_prenderer->endRenderPass(commandBuffer);
+      //         m_prenderer->endRenderPass(pcommandbuffer->m_vkcommandbuffer);
       //         m_prenderer->endFrame();
 
       //      }
@@ -526,122 +513,51 @@ namespace graphics3d_directx11
    }
 
 
-   void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pdraw2dgraphics)
+   void engine_instance::calculate_impact(::floating_matrix4 &matrixImpact, const ::graphics3d::camera &camera)
    {
 
-      ::graphics3d::engine::on_after_done_frame_step(pdraw2dgraphics);
+      ::graphics3d::engine_instance::calculate_impact(matrixImpact, camera);
 
-      return;
-
-      ::cast < ::draw2d_direct2d::graphics > pgraphics2d = pdraw2dgraphics;
-
-      if (pgraphics2d)
-      {
-
-         auto pcontext = gpu_context();
-
-         ::cast< ::gpu_directx11::context > pgpucontext = pcontext;
-         ::cast< ::gpu_directx11::renderer > prenderer = pcontext->m_pgpurenderer;
-         ::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->render_target();
-         ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-         ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
-         ID3D11Device* device = pgpudevice->m_pd3d11device;
-         ID3D11DeviceContext* context = pgpucontext->m_pd3d11devicecontext;
-         auto ptexturesite = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
-         ::cast < ::gpu_directx11::texture > ptexture = ptexturesite->gpu_texture();
-         ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
-         if (!device || !context || !offscreenTexture)
-         {
-            throw ::exception(error_wrong_state);
-         }
-
-
-
-         //D3D11_TEXTURE2D_DESC texDesc = {};
-         //texDesc.Width = width;
-         //texDesc.Height = height;
-         //texDesc.MipLevels = 1;
-         //texDesc.ArraySize = 1;
-         //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-         //texDesc.SampleDesc.Count = 1;
-         //texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-         //texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
-
-         // ... Create texture using device->CreateTexture2D
-
-         // 2. Wrap the texture in a DXGI surface
-         comptr<IDXGISurface> dxgiSurface;
-         offscreenTexture->QueryInterface(IID_PPV_ARGS(&dxgiSurface));
-
-         // 3. Create the Direct2D bitmap
-         D2D1_BITMAP_PROPERTIES1 bitmapProps =
-            D2D1::BitmapProperties1(
-               D2D1_BITMAP_OPTIONS_NONE,
-               D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-            );
-
-         comptr<ID2D1Bitmap1> bitmap;
-         pgraphics2d->m_pd2d1devicecontext->CreateBitmapFromDxgiSurface(
-            dxgiSurface,
-            &bitmapProps,
-            &bitmap
-         );
-
-         // 4. Draw into the D2D1RenderTarget
-         //d2dDeviceContext->BeginDraw();
-
-         auto r = pgpucontext->output_placement();
-
-         //pgraphics2d->m_pdevicecontext->DrawBitmap(
-         //   bitmap,
-         //   D2D1::RectF(r.left, r.top, r.width(), r.height()),
-         //   1.0f, // opacity
-         //   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
-         //   nullptr // source rect (optional)
-         //);
-
-         auto puserinteration = pgraphics2d->m_pacmeuserinteractionAffinity;
-
-         
-
-
-            ::i32_rectangle rHost = r;
-            if (puserinteration)
-            {
-
-               auto pwindow = puserinteration->window();
-
-               if (pwindow)
-               {
-
-                  rHost = pwindow->get_window_rectangle();
-
-               }
-
-            }
-            int iBottom= r.bottom;
-
-            int iHostBottom = rHost.height();
-
-            int iTop = r.top;
-
-            int iNewTop = iHostBottom - iBottom;
-
-         pgraphics2d->m_pd2d1devicecontext->DrawImage(
-            bitmap,
-            D2D1::Point2F(0.f, 0.f),
-            D2D1::RectF(
-               (FLOAT) r.left,
-               (FLOAT) iNewTop, 
-               (FLOAT) r.width(),
-               (FLOAT) r.height()),
-            D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
-            D2D1_COMPOSITE_MODE_SOURCE_OVER);
-
-      }
+      ///matrixImpact[2][2] *= -1.f;
 
    }
 
-} // graphics3d_directx11
+   floating_matrix4 engine_instance::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
+   {
+
+    //float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
+
+    //  floating_matrix4 M(0.0f);
+
+    //  M[0][0] = f / aspect; // X
+    //  M[1][1] = f; // Y
+
+    //  M[2][2] = zFar / (zFar - zNear);
+    //  M[2][3] = 1.0f;
+
+    //  M[3][2] = -(zFar * zNear) / (zFar - zNear);
+    //  M[3][3] = 0.0f;
+
+
+    //  M[1][1] *= -1.f; // Vulkan Y flip in the projection matrix
+
+          float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
+
+    floating_matrix4 M(0.0f);
+
+    M[0][0] = f / aspect;
+    M[1][1] = f;
+    M[2][2] = zFar / (zNear - zFar);
+    M[2][3] = -1.0f;
+    M[3][2] = (zNear * zFar) / (zNear - zFar);
+
+    // Vulkan requires Y-flip because its framebuffer space has Y down.
+     M[1][1] *= -1.0f;
+      return M;
+
+   }
+
+
+} // graphics3d_vulkan
 
 

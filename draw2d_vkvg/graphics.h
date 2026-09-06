@@ -67,6 +67,7 @@ namespace draw2d_vkvg
       VkvgContext                         m_vkvgcontext;
       ::pointer < ::gpu::texture_site >   m_ptexturesiteCurrent;
       bool                                m_bSetStateExternally;
+      bool                                m_bBeginFigure;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -84,9 +85,9 @@ namespace draw2d_vkvg
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
-      std::unique_lock<std::recursive_mutex> m_queuehostcalllock;
       ::pointer_array<direct_target>       m_directtargeta;
       ::pointer<direct_target>             m_pdirecttargetActive;
+      bool                                 m_bVkvgMemoryImage = false;
       ::u64                                m_uDirectTargetFrameSerial = 0;
       ::array<saved_vkvg_context>            m_savedvkvgcontexta;
 
@@ -111,6 +112,10 @@ namespace draw2d_vkvg
       //}
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
+      void absorb_user_interaction_affinity(
+         ::acme::user::interaction * pacmeuserinteractionAffinity);
+      ::acme::windowing::window * require_gpu_window(
+         ::acme::windowing::window * pacmewindowingwindowPreferred = nullptr);
       VkvgDevice get_vkvg_device();
 
 
@@ -118,7 +123,10 @@ namespace draw2d_vkvg
       ::gpu::texture_site * current_target_texture(::gpu::layer * pgpulayer) override;
 
       bool renders_layer_externally(::gpu::layer * pgpulayer) override;
-      void prepare_vkvg_render_target(::gpu::texture * pgputexture);
+      void prepare_vkvg_render_target(::gpu::texture * pgputexture, bool bMemoryImage = false);
+      void on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage,
+         const ::i32_size & size, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      void on_release_memory_graphics() override;
       void maintain_vkvg_direct_target_cache();
       bool is_vkvg_direct_target_saved(direct_target * pdirecttarget);
       void clear_saved_vkvg_contexts();
@@ -159,6 +167,7 @@ namespace draw2d_vkvg
       ::draw2d::bitmap *  get_current_bitmap() override;
       //::gpu::frame* end_gpu_layer(::gpu::layer * pgpulayer) override;
 
+      void _draw_raw(const ::image::image_drawing & imagedrawing) override;
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
 
       //plusplus::Pen *       vk2d_pen();

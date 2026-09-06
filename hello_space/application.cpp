@@ -19,6 +19,7 @@
 #include "berg/user/user/user.h"
 #include "berg/user/user/single_document_template.h"
 #include "bred/graphics3d/asset_manager.h"
+#include "bred/graphics3d/graphics3d.h"
 
 
 __IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_hello_space);
@@ -320,7 +321,7 @@ namespace app_graphics3d_hello_space
 
                m_pmainscene->m_strSkybox = strSkybox;
 
-               m_pmainscene->m_pskyboxCurrent2 = m_pmainscene->m_mapSkybox[strSkybox];
+               m_pmainscene->m_pskyboxCurrent2 = m_pmainscene->m_pimmersionlayer->m_pgraphics3dengineinstance->m_pgraphics3d->m_mapSkybox[strSkybox];
 
             };
 

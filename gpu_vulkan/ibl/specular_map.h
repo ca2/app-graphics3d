@@ -61,7 +61,7 @@ namespace gpu_vulkan
          ::memory brdf_convolution_frag_memory() override;
 
 
-         void initialize_specular_map(::graphics3d::scene_base *pscenebase) override;
+         void initialize_specular_map(::graphics3d::scene_base *pscenebase, ::gpu::context * pgpucontext) override;
          // virtual void initialize_specular_map(const ::string &engineRoot, const unsigned int environmentCubemapId);
 
 
@@ -69,7 +69,7 @@ namespace gpu_vulkan
           * Render the pre-filtered environment map.
           */
          void _computePrefilteredEnvMap_2025(::gpu::command_buffer *pgpucommandbuffer);
-         void computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer) override;
+         void computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer, ::graphics3d::scene_base * pscenebase) override;
 
 
          /**

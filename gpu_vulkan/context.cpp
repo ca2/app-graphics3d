@@ -29,7 +29,7 @@
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 
 //
 //   // Optional — depends on your conventions
@@ -2026,6 +2026,32 @@ namespace gpu_vulkan
 
    }
 
+
+   ::memory context::merge_layer_vertex_shader()
+   {
+
+
+      unsigned int pua_merge_layer_vertex_shader[] = {
+#include "app-graphics3d/gpu_vulkan/shader/merge_layer.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pua_merge_layer_vertex_shader);
+
+   }
+
+
+   ::memory context::merge_layer_fragment_shader()
+   {
+
+      unsigned int pua_merge_layer_fragment_shader[] = {
+#include "app-graphics3d/gpu_vulkan/shader/merge_layer.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pua_merge_layer_fragment_shader);
+
+   }
+
+
    string context::get_shader_version_text() { return "#version 330 core"; }
 
 
@@ -3168,7 +3194,7 @@ namespace gpu_vulkan
    //::gpu_vulkan::descriptor_pool *context::get_global_pool(int iFrameCount, ::gpu::command_buffer *pgpucommandbuffer)
    //{
 
-   //   auto pengine = m_pengine;
+   //   auto pengine = m_pgraphics3dengineinstance;
 
    //   ::cast<::gpu_vulkan::binding_set> pbindingset = pengine->global_ubo1_binding_set();
 
@@ -3282,7 +3308,7 @@ namespace gpu_vulkan
    // //void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
    // {
    //
-   //    //::cast<::gpu_vulkan::binding_set> pbindingset = m_pengine->global_ubo1_binding_set();
+   //    //::cast<::gpu_vulkan::binding_set> pbindingset = m_pgraphics3dengineinstance->global_ubo1_binding_set();
    //
    //    m_penginm_pblock
    //
@@ -6188,7 +6214,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_scene_gltf() 
 //{
 //
-//   auto pengine = m_pengine;
+//   auto pengine = m_pgraphics3dengineinstance;
 //
 //   ::cast < ::gpu_vulkan::binding_set > pbindingset = pengine->scene_gltf_pbr_binding_set();
 //

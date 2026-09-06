@@ -1,7 +1,7 @@
 #include "platform.h"
 #include "scene_render_system.h"
 #include "bred/gpu/render_target.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
 #include "app/gpu_opengl/command_buffer.h"
@@ -66,7 +66,7 @@ namespace graphics3d_opengl
 
       ::graphics3d::scene_render_system::on_prepare(pgpucontext);
 
-      //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_opengl::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
 
       //constructø(m_pshaderOpaque);
       //constructø(m_pshaderMask);
