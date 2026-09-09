@@ -170,16 +170,8 @@ float4 main(PSInput input) : SV_TARGET {
       m_pgpucontext = pgpucontext;
 
       ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
-      // Describe and create a constant buffer view (CBV) descriptor heap.
-// Flags indicate that this descriptor heap can be bound to the pipeline 
-// and that descriptors contained in it can be referenced by a root table.
-      D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-      cbvHeapDesc.NumDescriptors = 2;
-      cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-      cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      auto pd3d12device = pgpudevice->m_pd3d12device;
-      HRESULT hrCreateDescriptorHeapCbv = pd3d12device->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
-      pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
+      pgpudevice->_cbv_srv_uav_heap();
+      pgpudevice->_sampler_heap();
 
       if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
@@ -798,16 +790,16 @@ float4 main(PSInput input) : SV_TARGET {
 
             if (presourceTexture)
             {
-
-               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                  ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
+               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(ptextureCurrent->m_handleRenderTargetView);
                if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
                {
-                  if (!ptextureCurrent->m_pheapDepthStencilView)
+                  if (!ptextureCurrent->m_handleDepthStencilView.ptr)
                   {
                      ptextureCurrent->create_depth_resources();
                   }
-                  auto hDsv = ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+
+                  auto hDsv = ptextureCurrent->m_handleDepthStencilView;
+                  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(hDsv);
                   CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
                   pcommandlist->OMSetRenderTargets(
                      1,                    // One render target
@@ -844,11 +836,11 @@ float4 main(PSInput input) : SV_TARGET {
                scissorRect.right = m_pgpucontext->width();
                scissorRect.bottom = m_pgpucontext->height();
 
-               if (ptextureCurrent->m_pheapDepthStencilView)
+               if (ptextureCurrent->m_handleDepthStencilView.ptr)
                {
 
                   pcommandlist->ClearDepthStencilView(
-                     ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart(),
+                     ptextureCurrent->m_handleDepthStencilView,
                      D3D12_CLEAR_FLAG_DEPTH,
                      1.0f, 0,
                      0, nullptr
@@ -3797,9 +3789,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ptextureCurrent->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
-      ID3D12DescriptorHeap* ppHeaps[] = { m_pheapCbv };
-
-      pcommandlist->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+      pcommandbuffer->_defer_set_device_descriptor_heaps();
     
       ////::cast < frame > pframe = pframeParam;
 
@@ -3900,7 +3890,7 @@ float4 main(PSInput input) : SV_TARGET {
             //if (presourceTexture)
             //{
 
-            if (!ptextureCurrent->m_pheapRenderTargetView)
+            if (!ptextureCurrent->m_handleRenderTargetView.ptr)
             {
 
                ptextureCurrent->create_render_target();
@@ -3918,20 +3908,20 @@ float4 main(PSInput input) : SV_TARGET {
 
                //}
 
-               if (ptextureCurrent->m_pheapRenderTargetView)
+               if (ptextureCurrent->m_handleRenderTargetView.ptr)
                {
 
                   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
                   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                     ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
+                     ptextureCurrent->m_handleRenderTargetView);
 
                   if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
                   {
-                     if (!ptextureCurrent->m_pheapDepthStencilView)
+                     if (!ptextureCurrent->m_handleDepthStencilView.ptr)
                      {
                         ptextureCurrent->create_depth_resources();
                      }
-                     auto hDsv = ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+                     auto hDsv = ptextureCurrent->m_handleDepthStencilView;
                      CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
                      pcommandlist->OMSetRenderTargets(
                         1,                    // One render target
@@ -3941,7 +3931,7 @@ float4 main(PSInput input) : SV_TARGET {
                      );
                      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
                      pcommandlist->ClearRenderTargetView(
-   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+   ptextureCurrent->m_handleRenderTargetView,
    clearColor,
    0,
    nullptr
@@ -3961,7 +3951,7 @@ float4 main(PSInput input) : SV_TARGET {
 
                      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
                      pcommandlist->ClearRenderTargetView(
-                        ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+                        ptextureCurrent->m_handleRenderTargetView,
                         clearColor,
                         0,
                         nullptr);
@@ -4000,8 +3990,8 @@ float4 main(PSInput input) : SV_TARGET {
                scissorRect.right = m_pgpucontext->width();
                scissorRect.bottom = m_pgpucontext->height();
 
-               pcommandlist->RSSetViewports(1, &viewport);
-               pcommandlist->RSSetScissorRects(1, &scissorRect);
+               pcommandbuffer->set_viewports(1, &viewport);
+               pcommandbuffer->set_scissor_rects(1, &scissorRect);
 
                //// 2. Begin command recording
                //commandAllocator->Reset();
@@ -4032,12 +4022,12 @@ float4 main(PSInput input) : SV_TARGET {
                //   nullptr
                //);
 
-               if (ptextureCurrent->m_pheapDepthStencilView)
+               if (ptextureCurrent->m_handleDepthStencilView)
                {
 
 
                   pcommandlist->ClearDepthStencilView(
-                     ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart(),
+                     ptextureCurrent->m_handleDepthStencilView,
                      D3D12_CLEAR_FLAG_DEPTH,
                      1.0f, 0,
                      0, nullptr

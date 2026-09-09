@@ -296,7 +296,8 @@ namespace gpu_directx12
 
       //void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
 
-      void copy(::gpu::texture_site *ptexturesiteOutput, ::gpu::texture_site *ptexturesiteInput,
+      void copy(::gpu::command_buffer * pgpucommandbuffer,
+         ::gpu::texture_site *ptexturesiteOutput, ::gpu::texture_site *ptexturesiteInput,
                 ::pointer<::gpu::fence> * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
       //public:

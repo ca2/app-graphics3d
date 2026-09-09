@@ -95,7 +95,7 @@ namespace gpu_vulkan
 
       void copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * ptexturesiteOutput, ::gpu::texture_site * ptexturesiteInput, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
-      void copy(::gpu::texture_site* ptexturesiteOutput, ::gpu::texture_site* ptexturesiteInput, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
+      //void copy(::gpu::texture_site* ptexturesiteOutput, ::gpu::texture_site* ptexturesiteInput, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;

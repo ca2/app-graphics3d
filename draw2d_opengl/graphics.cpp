@@ -808,7 +808,7 @@ namespace draw2d_opengl
 
          ::gpu::context_lock contextlock(gpu_context());
 
-         gpu_context()->defer_unbind_shader();
+         gpu_context()->defer_unbind_shader(m_pgpucommandbufferGpuGraphics);
 
          if (m_pgputexturesiteTarget)
          {
@@ -2196,7 +2196,7 @@ namespace draw2d_opengl
       //
             //      pmodelbuffer->unbind(pcommandbuffer);
 
-      pcontext->defer_unbind(pshader);
+      pcontext->defer_unbind(pcommandbuffer, pshader);
 
    }
 
@@ -2388,7 +2388,7 @@ namespace draw2d_opengl
       //
             //      pmodelbuffer->unbind(pcommandbuffer);
 
-      pcontext->defer_unbind(pshader);
+      pcontext->defer_unbind(pcommandbuffer, pshader);
 
    }
 
@@ -2917,7 +2917,8 @@ namespace draw2d_opengl
 //
       //      pmodelbuffer->unbind(pcommandbuffer);
 
-      pcontext->defer_unbind(pshader);
+      pcontext->defer_unbind(pcommandbuffer, pshader);
+
    }
 
 
@@ -6759,7 +6760,8 @@ color = vec4(c.r,c.g, c.b, c.a);
       ::opengl::check_error("");
       glDisable(GL_CULL_FACE);
       ::opengl::check_error("");
-      pcontext->defer_unbind(m_pgpushaderTextOut);
+      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      pcontext->defer_unbind(pcommandbuffer, m_pgpushaderTextOut);
    }
 
    //void graphics::text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr)

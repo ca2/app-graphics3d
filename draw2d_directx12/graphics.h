@@ -188,6 +188,10 @@ namespace draw2d_directx12
 //      bool ResetDC(const DEVMODE* lpDevMode) override;
 
 
+      ::i32 image_draw_vertex_count() const override;
+      ::gpu::enum_topology image_draw_topology() const override;
+    
+
       //void gpu_layer_on_after_begin_render() override;
       //void gpu_layer_on_before_end_render() override;
 

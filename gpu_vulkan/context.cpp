@@ -4037,122 +4037,122 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_sit
 }
 
 
-void context::copy(::gpu::texture_site *ptexturesiteTarget, ::gpu::texture_site *ptexturesiteSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
-{
-
-//      throw todo;
-
-   auto pgpurendertarget = m_pgpurenderer->render_target();
-
-   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
-
-   int iFrameCount = pgpuwindowattachment->get_frame_count();
-
-   int iFrameIndex = pgpuwindowattachment->get_frame_index3();
-
-   ::pointer<command_buffer> pcommandbuffer;
-
-   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
-
-   if (bIsFrameInProgress)
-   {
-
-      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-   }
-   else
-   {
-
-      pcommandbuffer = this->_beginSingleTimeCommands(m_pgpudevice->graphics_queue());
-   }
-
-
-   copy(pcommandbuffer, ptexturesiteTarget, ptexturesiteSource, pgpufence, pgpusemaphoreReady);
-
-   //{
-
-   //   ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
-
-   //   ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
-
-   //   auto scopedstateDst =
-   //      ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
-
-   //   auto vkimageSrc = ptextureSrc->m_vkimage;
-
-   //   if ((::iptr)vkimageSrc == 0xe300000000e3)
-   //   {
-
-   //      ::information() << "image 0xe300000000e3";
-   //   }
-
-   //   auto scopedstateSrc =
-   //      ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
-
-   //   auto srcImage = ptextureSrc->m_vkimage;
-
-   //   auto dstImage = ptextureDst->m_vkimage;
-
-   //   // Copy region
-   //   VkImageCopy copyRegion = {
-   //      .srcSubresource =
-   //         {
-   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-   //            .mipLevel = 0,
-   //            .baseArrayLayer = 0,
-   //            .layerCount = 1,
-   //         },
-   //      .srcOffset = {0, 0, 0},
-   //      .dstSubresource =
-   //         {
-   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-   //            .mipLevel = 0,
-   //            .baseArrayLayer = 0,
-   //            .layerCount = 1,
-   //         },
-   //      .dstOffset = {0, 0, 0},
-   //      .extent = {(uint32_t)this->width(), (uint32_t)this->height(), 1},
-   //   };
-
-   //   vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,
-   //                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
-   //}
-
-   if (!m_pgpurenderer->isFrameInProgress())
-   {
-
-      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed);
-      }
-
-      if (::is_set(pgpufence))
-      {
-
-         *pgpufence = pcommandbuffer->insert_gpu_fence(true);
-
-      }
-
-      //VkFence fence = VK_NULL_HANDLE;
-      //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
-
-      pcommandbuffer->submit_command_buffer(nullptr);
-
-      // if (fence)
-      // {
-      //
-      //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-      // }
-
-      ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
-
-      pqueue->wait_idle();
-
-   }
-
-}
+//void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site *ptexturesiteTarget, ::gpu::texture_site *ptexturesiteSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
+//{
+//
+////      throw todo;
+//
+//   auto pgpurendertarget = m_pgpurenderer->render_target();
+//
+//   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+//
+//   int iFrameCount = pgpuwindowattachment->get_frame_count();
+//
+//   int iFrameIndex = pgpuwindowattachment->get_frame_index3();
+//
+//   ::pointer<command_buffer> pcommandbuffer;
+//
+//   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+//
+//   if (bIsFrameInProgress)
+//   {
+//
+//      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+//   }
+//   else
+//   {
+//
+//      pcommandbuffer = this->_beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+//   }
+//
+//
+//   copy(pcommandbuffer, ptexturesiteTarget, ptexturesiteSource, pgpufence, pgpusemaphoreReady);
+//
+//   //{
+//
+//   //   ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+//
+//   //   ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
+//
+//   //   auto scopedstateDst =
+//   //      ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+//   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
+//
+//   //   auto vkimageSrc = ptextureSrc->m_vkimage;
+//
+//   //   if ((::iptr)vkimageSrc == 0xe300000000e3)
+//   //   {
+//
+//   //      ::information() << "image 0xe300000000e3";
+//   //   }
+//
+//   //   auto scopedstateSrc =
+//   //      ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+//   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
+//
+//   //   auto srcImage = ptextureSrc->m_vkimage;
+//
+//   //   auto dstImage = ptextureDst->m_vkimage;
+//
+//   //   // Copy region
+//   //   VkImageCopy copyRegion = {
+//   //      .srcSubresource =
+//   //         {
+//   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//   //            .mipLevel = 0,
+//   //            .baseArrayLayer = 0,
+//   //            .layerCount = 1,
+//   //         },
+//   //      .srcOffset = {0, 0, 0},
+//   //      .dstSubresource =
+//   //         {
+//   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//   //            .mipLevel = 0,
+//   //            .baseArrayLayer = 0,
+//   //            .layerCount = 1,
+//   //         },
+//   //      .dstOffset = {0, 0, 0},
+//   //      .extent = {(uint32_t)this->width(), (uint32_t)this->height(), 1},
+//   //   };
+//
+//   //   vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,
+//   //                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+//   //}
+//
+//   if (!m_pgpurenderer->isFrameInProgress())
+//   {
+//
+//      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+//      {
+//
+//         throw ::exception(error_failed);
+//      }
+//
+//      if (::is_set(pgpufence))
+//      {
+//
+//         *pgpufence = pcommandbuffer->insert_gpu_fence(true);
+//
+//      }
+//
+//      //VkFence fence = VK_NULL_HANDLE;
+//      //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+//
+//      pcommandbuffer->submit_command_buffer(nullptr);
+//
+//      // if (fence)
+//      // {
+//      //
+//      //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+//      // }
+//
+//      ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+//
+//      pqueue->wait_idle();
+//
+//   }
+//
+//}
 
 
 VkFormat context::findDepthFormat()

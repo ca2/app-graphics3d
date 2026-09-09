@@ -3,10 +3,16 @@
 #include "command_buffer.h"
 #include "window_attachment.h"
 #include "texture.h"
+#include "direct2d/_.h"
+#include "direct2d/direct2d.h"
+#include "pixel_upload.h"
+#include "static_pixel_upload.h"
 #include "renderer.h"
 #include "acme/graphics/image/pixmap.h"
 #include "aura/graphics/image/image.h"
+#include "bred/gpu/context_lock.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 #include <stb/stb_image.h>
 
 
@@ -201,81 +207,61 @@ namespace gpu_directx12
 
       //m_state = stateInitial;
 
-      if (texturedata.is_pixmap_array())
+      if (texturedata.is_gpu_texture())
       {
 
-         //int iCount;
+         auto ptexturesiteOutput = create_newø<::gpu::texture_site>();
 
+         auto ptexturesiteInput = create_newø<::gpu::texture_site>();
 
-         if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+         ptexturesiteOutput->m_pgputextureSite = this;
+
+         ptexturesiteInput->m_pgputextureSite = texturedata.gpu_texture();
+
+         ::gpu::context_lock contextlock(pcontext);
+         auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(
+            pcontext->m_pgpudevice->graphics_queue(), ::gpu::e_command_buffer_graphics);
+
+         // Newly reserved icon slots must start transparent. The optimized
+         // clear value passed to resource creation does not clear its contents.
+         if (textureDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
          {
-           // iCount = 6;
-            if (texturedata.pixmapa().first()->size() != this->size())
+            ::cast<command_buffer> commands = pgpucommandbuffer.operator ::gpu::command_buffer *();
+            const float transparent[4]{};
+            const auto savedMip = m_iCurrentMip;
+            for (int mip = 0; mip < textureDesc.MipLevels; ++mip)
             {
-
-               throw ::exception(error_failed);
-
+               m_iCurrentMip = mip;
+               commands->m_pcommandlist->ClearRenderTargetView(
+                  current_layer().m_handleRenderTargetView, transparent, 0, nullptr);
             }
-
-         }
-         else
-         {
-            //iCount = 1;
-            if (texturedata.pixmapa().first()->size() != this->size())
-            {
-
-               throw ::exception(error_failed);
-
-            }
-
+            m_iCurrentMip = savedMip;
          }
 
-         ::cast<command_buffer> pcommandbuffer = m_pgpucontext->m_pgpurenderer->getLoadAssetsCommandBuffer();
+         pcontext->copy(pgpucommandbuffer, ptexturesiteOutput, ptexturesiteInput, nullptr, nullptr);
 
-         if (!pcommandbuffer)
-         {
-
-            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-         
-         }
-
-         auto pstaticuploadbuffer = _get_static_upload_buffer();
-
-         pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
+         pgpucommandbuffer.commit();
 
       }
-      else if (texturedata.is_raw_scoped_pixmap())
+      else if(texturedata.is_set())
       {
 
-
-         
-      ::cast<command_buffer> pcommandbuffer = m_pgpucontext->m_pgpurenderer->getLoadAssetsCommandBuffer();
-
-         if (!pcommandbuffer)
-         {
-
-            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-         }
-
-         auto pstaticuploadbuffer = _get_static_upload_buffer();
-         //::gpu::texture_data texturedata(texturedata.raw_scoped_data());
-         pcommandbuffer->m_particleaHold.add(pstaticuploadbuffer);
-
-         pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
-
+         _upload_initial_texture_data(texturedata);
 
       }
 
       new_texture.set_new_texture();
 
-      if (m_textureflags.m_bRenderTarget || m_pheapRenderTargetView)
+      //if (m_textureflags.m_bRenderTarget || m_pheapRenderTargetView)
+      if (m_textureflags.m_bRenderTarget)
       {
 
          create_render_target();
 
       }
 
-      if (m_textureflags.m_bShaderResource || m_pheapRenderTargetView)
+      //if (m_textureflags.m_bShaderResource || m_pheapRenderTargetView)
+      if (m_textureflags.m_bShaderResource)
       {
 
          create_shader_resource();
@@ -664,25 +650,15 @@ namespace gpu_directx12
 
       m_pd3d12resourceTexture->set_name(m_strTextureName);
 
-      ::cast<command_buffer> pcommandbuffer = m_pgpucontext->m_pgpurenderer->getLoadAssetsCommandBuffer();
-
-      if (!pcommandbuffer)
-      {
-
-         pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-
-      }
-
-      auto pstaticuploadbuffer = _get_static_upload_buffer();
-
       pixmap_t pixmap;
-      pixmap.m_pimage32 = (image32_t *) src;
+      pixmap.m_size = {width, height};
+      pixmap.m_sizeRaw = pixmap.m_size;
+      pixmap.m_iScan = width * 4 * (int)sizeof(float);
+      pixmap.m_pimage32 = (image32_t *)src;
       pixmap.m_pimage32Raw = (image32_t *)src;
 
       ::gpu::texture_data texturedata(pixmap);
-      pcommandbuffer->m_particleaHold.add(pstaticuploadbuffer);
-
-      pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
+      _upload_initial_texture_data(texturedata);
 
       set_ok_flag();
       // ------------------------------------------------------------
@@ -792,69 +768,7 @@ namespace gpu_directx12
    }
 
 
-   D3D12_CPU_DESCRIPTOR_HANDLE texture::_allocate_render_target_view_handle()
-   {
 
-      if (!m_pheapRenderTargetView)
-      {
-
-         if (m_iRenderTargetViewHandleCount < 0)
-         {
-
-            int iMipCount = m_textureattributes.m_iMipCount;
-
-            if (iMipCount <= 0)
-            {
-
-               iMipCount = m_textureattributes.maximum_mip_count();
-            }
-
-            m_iRenderTargetViewHandleCount = m_textureattributes.m_iLayerCount * iMipCount + 2;
-         }
-
-         if (m_iRenderTargetViewHandleCount <= 0)
-         {
-
-            return {};
-
-         }
-               ::cast<device> pdevice = m_pgpucontext->m_pgpudevice;
-         m_uRenderTargetViewIncrement = pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-         // 2. Create RTV descriptor heap
-         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-               rtvHeapDesc.NumDescriptors = m_iRenderTargetViewHandleCount;
-         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-         HRESULT hrCreateDescriptorHeap =
-            pdevice->m_pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
-
-         pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
-         m_iRenderTargetViewHandle = 0;
-      }
-      if (m_iRenderTargetViewHandle < 0)
-      {
-
-         return {};
-
-      }
-      if (m_iRenderTargetViewHandle > m_iRenderTargetViewHandleCount)
-      {
-
-         throw ::exception(error_failed);
-
-      }
-      
-      //// 3. Create RTV
-//      m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-      CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
-                                              m_iRenderTargetViewHandle * 
-         m_uRenderTargetViewIncrement);
-
-      m_iRenderTargetViewHandle++;
-
-      return rtvHandle;
-
-   }
 
 
    IDXGISurface * texture::_dxgi_surface()
@@ -926,82 +840,79 @@ namespace gpu_directx12
    }
 
 
+   D3D12_SHADER_RESOURCE_VIEW_DESC texture::shader_resource_view_description() const
+   {
+      if (!m_pd3d12resourceTexture || !m_pd3d12resourceTexture->m_presource)
+         throw ::exception(error_wrong_state, "Cannot create an SRV for a missing DirectX 12 resource");
+      const auto resource = m_pd3d12resourceTexture->m_presource->GetDesc();
+      if (resource.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D ||
+          resource.SampleDesc.Count != 1 || (resource.Flags & D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE))
+         throw ::exception(error_bad_argument, "Unsupported DirectX 12 texture SRV");
+      D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+      desc.Format = resource.Format;
+      desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+      if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      {
+         desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+         desc.TextureCube.MipLevels = resource.MipLevels;
+      }
+      else if (resource.DepthOrArraySize > 1)
+      {
+         desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+         desc.Texture2DArray.MipLevels = resource.MipLevels;
+         desc.Texture2DArray.ArraySize = resource.DepthOrArraySize;
+      }
+      else
+      {
+         desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+         desc.Texture2D.MipLevels = resource.MipLevels;
+      }
+      return desc;
+   }
+
    void texture::create_shader_resource()
    {
-
-      //if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
-      //{
-
-      //   return;
-
-      //}
-
-      ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
-
-      // 4. Create SRV descriptor heap
-      D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-      srvHeapDesc.NumDescriptors = 1;
-      srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-
-      HRESULT hrCreateDescriptorHeap = pdevice->m_pd3d12device->CreateDescriptorHeap(
-         &srvHeapDesc, __interface_of(m_pheapShaderResourceView));
-
-      pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
-
-      // 5. Create SRV
-      DXGI_FORMAT format = m_resourcedesc.Format;
-      D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-      srvDesc.Format = format;
-      if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      if (!m_pgpucontext)
+         throw ::exception(error_wrong_state, "Texture SRV requires a DirectX 12 context");
+      ::cast<device> pdevice = m_pgpucontext->m_pgpudevice;
+      if (!pdevice)
+         throw ::exception(error_wrong_state, "Texture SRV requires a DirectX 12 device");
+      _synchronous_lock lock(pdevice->m_pparticleMutexDescriptors);
+      auto desc = shader_resource_view_description();
+      // Never rewrite a descriptor that an earlier command list can reference.
+      if (!m_handleShaderResourceView ||
+          m_presourceShaderResourceView.m_p != m_pd3d12resourceTexture->m_presource.m_p)
       {
-
-         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+         auto handle = pdevice->_allocate_cbv_srv_uav_handle(1);
+         pdevice->m_pd3d12device->CreateShaderResourceView(
+            m_pd3d12resourceTexture->m_presource, &desc, handle.m_cpuhandle);
+         m_handleShaderResourceView = handle;
+         m_presourceShaderResourceView = m_pd3d12resourceTexture->m_presource;
       }
-      else
+      // Share identical samplers; allocating one for every icon/font texture
+      // would rapidly exhaust the fixed-size shader-visible sampler heap.
+      m_handleSampler = pdevice->_linear_clamp_sampler();
+   }
+
+   D3D12_CPU_DESCRIPTOR_HANDLE texture::_allocate_render_target_view_handle()
+   {
+      ::cast<device> pdevice = m_pgpucontext->m_pgpudevice;
+      _synchronous_lock lock(pdevice->m_pparticleMutexDescriptors);
+      const auto desc = m_pd3d12resourceTexture->m_presource->GetDesc();
+      if (!m_handleRenderTargetView)
       {
-         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+         m_handleRenderTargetView = pdevice->_allocate_render_target_view_handle(
+            desc.DepthOrArraySize, desc.MipLevels);
+         m_iRenderTargetViewHandleCount = (desc.DepthOrArraySize + 1) * desc.MipLevels;
+         m_iRenderTargetViewHandle = 0;
+         m_uRenderTargetViewIncrement =
+            pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
       }
-      srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-      srvDesc.Texture2D.MostDetailedMip = 0;
-      srvDesc.Texture2D.MipLevels = 1;
-      srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-
-      m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
-
-      pdevice->m_pd3d12device->CreateShaderResourceView(m_pd3d12resourceTexture->m_presource, &srvDesc, m_handleShaderResourceView);
-
-      // Descriptor heap for Sampler
-      D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
-      samplerHeapDesc.NumDescriptors = 1;
-      samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-      samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      pdevice->m_pd3d12device->CreateDescriptorHeap(&samplerHeapDesc, __interface_of(m_pheapSampler));
-
-      D3D12_SAMPLER_DESC samplerDesc = {};
-      samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-      samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-      samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-      samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-      if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
-      {
-
-         samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-
-      }
-      else
-      {
-
-         samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-
-      }
-      samplerDesc.MinLOD = 0;
-      samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-
-      m_handleSampler = m_pheapSampler->GetCPUDescriptorHandleForHeapStart();
-
-      pdevice->m_pd3d12device->CreateSampler(&samplerDesc, m_handleSampler);
-
+      if (m_iRenderTargetViewHandle >= m_iRenderTargetViewHandleCount)
+         throw ::exception(error_wrong_state, "DirectX 12 texture RTV block exhausted");
+      auto handle = m_handleRenderTargetView;
+      handle.ptr += (SIZE_T)m_iRenderTargetViewHandle++ * m_uRenderTargetViewIncrement;
+      return handle;
    }
 
 
@@ -1049,14 +960,14 @@ namespace gpu_directx12
             &depthClearValue,
             __interface_of(m_presourceDepthStencilView));
 
-         // Describe and create a depth stencil view (DSV) descriptor heap.
-         D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-         dsvHeapDesc.NumDescriptors = 1;
-         dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-         dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-         HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pd3d12device->CreateDescriptorHeap(
-            &dsvHeapDesc, __interface_of(m_pheapDepthStencilView));
-         pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
+         //// Describe and create a depth stencil view (DSV) descriptor heap.
+         //D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+         //dsvHeapDesc.NumDescriptors = 1;
+         //dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+         //dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+         //HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pd3d12device->CreateDescriptorHeap(
+         //   &dsvHeapDesc, __interface_of(m_pheapDepthStencilView));
+         //pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
 
          // 4. Create DSV
          D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -1064,11 +975,13 @@ namespace gpu_directx12
          dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
          dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-         m_handleDepthStencilView = m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+         //m_handleDepthStencilView = m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+         m_handleDepthStencilView = pdevice->_allocate_depth_stencil_view_handle();
          //::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
          pdevice->m_pd3d12device->CreateDepthStencilView(
-            m_presourceDepthStencilView, &dsvDesc,
+            m_presourceDepthStencilView, 
+            &dsvDesc,
             m_handleDepthStencilView);
 
       }
@@ -1079,6 +992,10 @@ namespace gpu_directx12
 
    class texture::d3d11* texture::d3d11()
    {
+
+      // Protect lazy wrapper publication and D3D11-on-12 interop using the
+      // same lock as Direct2D. This scope contains no worker dispatch or GPU wait.
+      ::direct2d_lock interoplock(::direct2d::get());
 
       informationf("DX12 D2D_WRAP_STAGE enter helper=%p", m_pd3d11.m_p);
 
@@ -1092,7 +1009,7 @@ namespace gpu_directx12
          if (!m_pd3d11->m_pd3d11resourceWrapped)
          {
 
-            assert(!m_pheapDepthStencilView);
+            assert(!m_handleDepthStencilView.ptr);
             //assert(!ptexture->m_pheapRenderTargetView);
             //assert(!ptexture->m_pheapShaderResourceView);
             //assert(!ptexture->m_pheapSampler);
@@ -1539,49 +1456,117 @@ namespace gpu_directx12
 
 
    texture::static_upload_buffer::~static_upload_buffer()
-         {
+   {
             
-            
-            //unmap();
-         }
+      //unmap();
+
+   }
+
+
+   void texture::_upload_initial_texture_data(const ::gpu::texture_data & data)
+   {
+
+      ::cast<::gpu_directx12::context> pcontext = m_pgpucontext;
+
+      if (!pcontext || !pcontext->m_pgpudevice)
+      {
+       
+         throw ::exception(error_wrong_state, "Initial texture upload requires a DirectX 12 context/device");
+
+      }
+
+      ::gpu::context_lock contextlock(pcontext);
+
+      // The shared asset loader may return a COPY list, which cannot transition
+      // render-target/shader-resource states. Keep this upload and both barriers
+      // on a dedicated DIRECT list, completed before a layout draw samples it.
+      auto pcommandbuffer = pcontext->beginSingleTimeCommands(
+         pcontext->m_pgpudevice->graphics_queue(), ::gpu::e_command_buffer_graphics);
+
+      auto pstaticuploadbuffer = _get_static_upload_buffer();
+
+      pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, data);
+
+      pcommandbuffer.commit();
+
+   }
 
 
    void texture::static_upload_buffer::initialize_static_upload_buffer(texture *ptexture)
    {
-
-      ::cast<renderer> prenderer = ptexture->m_pgpucontext->m_pgpurenderer;
-
-      ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
-
-      ::cast<::gpu_directx12::device> pdevice = pcontext->m_pgpudevice;
-
-      m_ptexture = ptexture;
-
-      auto & presource = ptexture->m_pd3d12resourceTexture->m_presource;
-
-      //::comptr<ID3D12Resource> presourceUpload;
-
-      auto iCount = ptexture->m_textureattributes.m_iLayerCount;
-
-      if (m_iResourceCount < 0)
+      
+      if (!ptexture || !ptexture->m_pgpucontext || !ptexture->m_pd3d12resourceTexture ||
+          !ptexture->m_pd3d12resourceTexture->m_presource)
       {
-         m_iResourceCount = iCount;
+      
+         throw ::exception(error_wrong_state, "Static texture upload requires an existing DirectX 12 texture");
 
       }
 
-      const UINT64 uUploadBufferSize = GetRequiredIntermediateSize(presource, 0, m_iResourceCount);
+      ::cast<::gpu_directx12::context> pcontext = ptexture->m_pgpucontext;
+
+      if (!pcontext)
+      {
+
+         throw ::exception(error_wrong_state, "Static texture upload requires a DirectX 12 context");
+
+      }
+
+      ::cast<::gpu_directx12::device> pdevice = pcontext->m_pgpudevice;
+
+      if (!pdevice || !pdevice->m_pd3d12device)
+      {
+
+         throw ::exception(error_wrong_state, "Static texture upload has no DirectX 12 device");
+
+      }
+
+      auto presource = ptexture->m_pd3d12resourceTexture->m_presource;
+
+      const auto desc = presource->GetDesc();
+
+      const UINT subresourceCount = (UINT)desc.MipLevels * desc.DepthOrArraySize;
+
+      if (desc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D || desc.SampleDesc.Count != 1 ||
+          !subresourceCount || m_iResourceCount == 0 ||
+          (m_iResourceCount > 0 && (UINT)m_iResourceCount > subresourceCount))
+      {
+
+         throw ::exception(error_bad_argument, "Invalid static texture upload subresource count or dimensions");
+
+      }
+
+      if (m_iResourceCount < 0)
+      {
+
+         m_iResourceCount = (int)subresourceCount;
+
+      }
+
+      m_uUploadBufferSize = GetRequiredIntermediateSize(presource, 0, m_iResourceCount);
+
+      if (!m_uUploadBufferSize || m_uUploadBufferSize == (UINT64)-1 || m_uUploadBufferSize > (SIZE_T)-1)
+      {
+       
+         throw ::exception(error_bad_argument, "Invalid static texture upload footprint");
+
+      }
 
       CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
 
-      auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(uUploadBufferSize);
+      auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(m_uUploadBufferSize);
 
       pcontext->_construct_new(m_pd3d12resourceUpload);
 
-      pdevice->m_pd3d12device->CreateCommittedResource(&propertiesUpload, D3D12_HEAP_FLAG_NONE, &descUpload,
-                                                  D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-                                                  __interface_of(m_pd3d12resourceUpload->m_presource));
+      auto hr = pdevice->m_pd3d12device->CreateCommittedResource(&propertiesUpload, D3D12_HEAP_FLAG_NONE,
+         &descUpload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+         __interface_of(m_pd3d12resourceUpload->m_presource));
 
+      pdevice->defer_throw_hresult(hr);
 
+      m_pd3d12resourceUpload->m_state.m_resourcestates = D3D12_RESOURCE_STATE_GENERIC_READ;
+
+      m_ptexture = ptexture;
 
    }
 
@@ -1589,119 +1574,74 @@ namespace gpu_directx12
    void texture::static_upload_buffer::update_with_texture_data(::gpu::command_buffer *pgpucommandbuffer,
                                                                 const ::gpu::texture_data &texturedata)
    {
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+      if (!pcommandbuffer || !pcommandbuffer->m_pcommandlist ||
+          pcommandbuffer->m_estate != ::gpu::command_buffer::e_state_recording ||
+          !m_ptexture || !m_ptexture->m_pd3d12resourceTexture ||
+          !m_ptexture->m_pd3d12resourceTexture->m_presource ||
+          !m_pd3d12resourceUpload || !m_pd3d12resourceUpload->m_presource)
+         throw ::exception(error_wrong_state, "Static texture upload requires initialized resources and a recording command buffer");
 
+      if (pcommandbuffer->m_pcommandlist->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
+         throw ::exception(error_wrong_state, "Static texture upload requires a DIRECT command list for resource-state transitions");
 
-            // 3. Prepare subresources
-      D3D12_SUBRESOURCE_DATA subresources[6];
-
+      auto target = m_ptexture->m_pd3d12resourceTexture->m_presource;
+      const auto desc = target->GetDesc();
+      const UINT count = desc.DepthOrArraySize;
+      const auto bytesPerPixel = detail::pixel_upload_bytes(desc.Format);
+      if (!count || count > 6 || !bytesPerPixel)
+         throw ::exception(error_bad_argument, "Unsupported static pixel upload format or layer count");
       if (texturedata.is_pixmap_array())
       {
-         if (m_ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
-         {
-            for (int i = 0; i < 6; ++i)
-            {
-               auto ppixmap = texturedata.pixmapa()[i];
-               subresources[i].pData = ppixmap->data(); // Your CPU data pointer
-               subresources[i].RowPitch = ppixmap->m_iScan; // 512 * 4
-               subresources[i].SlicePitch = m_ptexture->m_resourcedesc.Width * m_ptexture->m_resourcedesc.Height * 4;
-               // subresources[i].SlicePitch = 0;
-            }
-         }
-         else if (texturedata.pixmapa().size() == 1)
-         {
-            auto ppixmap = texturedata.pixmapa().first();
-            subresources[0].pData = ppixmap->data(); // pointer to your bitmap data (RGBA8, etc.)
-            subresources[0].RowPitch = ppixmap->m_iScan;
-            subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
-         }
+         if (texturedata.pixmapa().size() != count)
+            throw ::exception(error_bad_argument, "Static texture upload requires one pixmap per array layer");
       }
-      else
+      else if (!texturedata.is_raw_scoped_pixmap() || count != 1)
+         throw ::exception(error_bad_argument, "Static texture upload requires valid pixmap data");
+      memory memorya[6];
+      D3D12_SUBRESOURCE_DATA subresources[6]{};
+      for (UINT face = 0; face < count; ++face)
       {
+         const ::pixmap_t * ppixmap;
+         if (texturedata.is_pixmap_array())
+            ppixmap = texturedata.pixmapa()[face];
+         else
+            ppixmap = &texturedata.raw_scoped_pixmap();
 
-         subresources[0].pData = texturedata.raw_scoped_pixmap().m_pimage32Raw;
-         subresources[0].RowPitch = m_ptexture->m_resourcedesc.Width * m_ptexture->m_textureattributes.m_iBitsPerChannel
-            * m_ptexture->m_textureattributes.m_iChannelCount/8;
-         subresources[0].SlicePitch = subresources[0].RowPitch * m_ptexture->m_resourcedesc.Height;
-
+         if (!ppixmap || !ppixmap->data() || ppixmap->width() <= 0 || ppixmap->height() <= 0 ||
+             (UINT64)ppixmap->width() != desc.Width || (UINT)ppixmap->height() != desc.Height ||
+             ppixmap->m_iScan <= 0 || (UINT64)ppixmap->m_iScan < desc.Width * bytesPerPixel ||
+             (UINT64)ppixmap->m_iScan * desc.Height > (UINT64)(((SIZE_T)-1) >> 1))
+            throw ::exception(error_bad_argument, "Static texture upload has missing pixels, mismatched dimensions or invalid row stride");
+         if (ppixmap->m_bTopLeft)
+         {
+            subresources[face].pData = ppixmap->data();
+         }
+         else
+         {
+            memorya[face].set_size(ppixmap->scan_area_in_bytes());
+            auto pimage32 = (image32_t *)memorya[face].data();
+            subresources[face].pData = pimage32;
+            pimage32->y_swap_copy(ppixmap);
+         }
+         subresources[face].RowPitch = ppixmap->m_iScan;
+         subresources[face].SlicePitch = (LONG_PTR)ppixmap->m_iScan * desc.Height;
       }
 
-      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-      //::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
-
-      //if (!pcommandbuffer)
-      //{
-
-      //   pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-      //}
-
-      auto iCount = m_ptexture->m_textureattributes.m_iLayerCount;
-
-      UpdateSubresources(pcommandbuffer->m_pcommandlist, m_ptexture->m_pd3d12resourceTexture->m_presource, m_pd3d12resourceUpload->m_presource, 0, 0, iCount, subresources);
-
-      comptr<IUnknown> punknownResourceUpdate(m_pd3d12resourceUpload->m_presource);
-
-      pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
-
-
-      //// 2. Create an intermediate UPLOAD buffer big enough for this region
-      // const UINT64 uploadBufferSize = GetRequiredIntermediateSize(presource, 0, 1);
-
-      // CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
-      // CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-
-      // HRESULT hrCreateCommittedResource = pdevice->m_pd3d12device->CreateCommittedResource(
-      //    &heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-      //    IID_PPV_ARGS(&m_presourceUpload));
-
-      //::defer_throw_hresult(hrCreateCommittedResource);
-
-      // m_descTexture = presource->GetDesc();
-
-      // pdevice->m_pd3d12device->GetCopyableFootprints(&m_descTexture, // texture description
-      //                                           0, // first subresource
-      //                                           1, // num subresources
-      //                                           0, // base offset
-      //                                           &m_footprint, // out: layout for subresource
-      //                                           &m_uNumRows, // out: number of rows
-      //                                           &m_uRowSizeInBytes, // out: bytes per row (unpadded)
-      //                                           &m_uUploadBufferSize); // out: required buffer size
-
-      //::cast<::gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
-
-      //// ------------------------------------------------------------
-      //// Create upload buffer
-      //// ------------------------------------------------------------
-      //UINT64 uploadSize = 0;
-      //device->GetCopyableFootprints(&texDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadSize);
-
-      //device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
-      //                                &CD3DX12_RESOURCE_DESC::Buffer(uploadSize), D3D12_RESOURCE_STATE_GENERIC_READ,
-      //                                nullptr, IID_PPV_ARGS(&out.upload));
-
-      //// ------------------------------------------------------------
-      //// Upload texture data
-      //// ------------------------------------------------------------
-      //D3D12_SUBRESOURCE_DATA sub = {};
-      //sub.pData = src;
-      //sub.RowPitch = width * 4 * sizeof(float);
-      //sub.SlicePitch = sub.RowPitch * height;
-
-      //UpdateSubresources(cmd, out.resource.Get(), out.upload.Get(), 0, 0, 1, &sub);
-
-      //// ------------------------------------------------------------
-      //// Transition to SRV
-      //// ------------------------------------------------------------
-
-  //     auto resourcebarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-    //     m_ptexture->m_presourceTexture, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-
-      //m_ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
-
-//      pcommandbuffer->m_pcommandlist->ResourceBarrier(1, &resourcebarrier);
-
-
+      ::cast<::gpu_directx12::device> pdevice = m_ptexture->m_pgpucontext->m_pgpudevice;
+      if (!pdevice || !pdevice->m_pd3d12device)
+         throw ::exception(error_wrong_state, "Static texture upload has no DirectX 12 device");
+      // Retain both native resources before recording, also for the pixmap-array
+      // path and if allocation of a hold entry throws.
+      pcommandbuffer->m_comptraHold.add(comptr<IUnknown>(m_pd3d12resourceUpload->m_presource));
+      pcommandbuffer->m_comptraHold.add(comptr<IUnknown>(target));
+      auto hr = detail::update_static_pixels(pdevice->m_pd3d12device, pcommandbuffer->m_pcommandlist,
+         target, m_pd3d12resourceUpload->m_presource, count, subresources,
+         m_ptexture->m_pd3d12resourceTexture->m_state.m_resourcestates);
+      if (hr == E_INVALIDARG)
+         throw ::exception(error_bad_argument, "Static texture upload has invalid subresources, strides or insufficient staging capacity");
+      if (FAILED(hr))
+         throw ::exception(error_failed, "Static texture upload failed while copying CPU data into the staging buffer");
    }
 
 
@@ -2024,58 +1964,72 @@ namespace gpu_directx12
    }
 
 
-   void texture::set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data)
+   void texture::write_pixels(bool bSync, const void * pData, const ::i32_size & size,
+      ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point)
    {
-
-      //::cast < renderer > prenderer = m_pgpurenderer;
-
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-
-      //::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
-
-      auto puploadbuffer = _get_upload_buffer();
-
-      //D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
-
-      puploadbuffer->update_pixels(rectangle, data);
+      _write_pixels(bSync, pData, size, iScan, iBytesPerPixel, point, false);
+   }
 
 
-      //::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
+   void texture::_write_pixels(bool bSync, const void * pData, const ::i32_size & size,
+      ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bShaderRead)
+   {
+      if (!pData)
+         throw ::exception(error_null_pointer, "DirectX 12 pixel upload requires source data");
+      if (size.cx <= 0 || size.cy <= 0)
+         return;
 
-      //{
+      ::cast<::gpu_directx12::context> pcontext = m_pgpucontext;
+      if (!pcontext || !pcontext->m_pgpudevice)
+         throw ::exception(error_wrong_state, "DirectX 12 pixel upload has no GPU context/device");
 
-      //   resource_state_guard guard(
-      //      pcommandbuffer->m_pcommandlist,
-      //      m_ptexture->m_pd3d12resourceTexture,
-      //      D3D12_RESOURCE_STATE_COPY_DEST);
+      ::gpu::context_lock contextlock(pcontext);
+      ::cast<::gpu_directx12::device> pdevice = pcontext->m_pgpudevice;
+      if (!pdevice || !pdevice->m_pd3d12device || !m_pd3d12resourceTexture ||
+          !m_pd3d12resourceTexture->m_presource)
+         throw ::exception(error_wrong_state, "DirectX 12 pixel upload requires an existing texture");
 
-      //   for (auto & damage : m_damagea)
-      //   {
+      auto target = m_pd3d12resourceTexture->m_presource;
+      ::comptr<ID3D12Resource> upload;
+      D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
+      UINT subresource = 0;
+      auto hr = detail::create_pixel_upload(pdevice->m_pd3d12device, target->GetDesc(),
+         pData, size.cx, size.cy, iScan, iBytesPerPixel, point.x, point.y,
+         maximum(0, m_iCurrentMip), maximum(0, m_iCurrentLayer),
+         &upload.m_p, footprint, subresource);
+      if (hr == E_INVALIDARG)
+         throw ::exception(error_bad_argument,
+            "Invalid DirectX 12 pixel upload region, stride, subresource or pixel format");
+      pdevice->defer_throw_hresult(hr);
 
-      //      try
-      //      {
+      auto commands = pcontext->beginSingleTimeCommands(pdevice->graphics_queue());
+      ::cast<::gpu_directx12::command_buffer> pcommandbuffer = commands.operator ::gpu::command_buffer *();
+      detail::record_pixel_upload(pcommandbuffer->m_pcommandlist, target, upload, footprint,
+         subresource, (UINT)point.x, (UINT)point.y, m_pd3d12resourceTexture->m_state.m_resourcestates);
 
-      //         damage.update_copyable_region(pcommandbuffer->m_pcommandlist);
+      if (bShaderRead)
+         set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
-      //      }
-      //      catch (...)
-      //      {
-
-      //      }
-
-      //   }
-
-      //   m_damagea.clear();
-
-      //}
-
-      //pcontext->endSingleTimeCommands(pcommandbuffer);
-
-   //}
-
-      //puploadbuffer->map();
+      // Standalone uploads currently complete synchronously even when bSync is
+      // false (as in Vulkan). Keep both resources alive through commit's GPU wait.
+      (void)bSync;
+      commands.commit();
+   }
 
 
+   void texture::set_pixels(bool bSync, const ::i32_rectangle & rectangle, const void * data)
+   {
+      const auto size = rectangle.size();
+      if (size.cx <= 0 || size.cy <= 0)
+         return;
+      if ((UINT64)size.cx * sizeof(::image32_t) > 0x7fffffffULL)
+         throw ::exception(error_bad_argument, "DirectX 12 pixel row is too large");
+
+      // gpu::pixmap marks the glyph ready as soon as this returns. Do not defer
+      // its copy until frame end: a cached font preview would capture an empty
+      // atlas and never request a retry.
+      _write_pixels(bSync, data, size, size.cx * (int)sizeof(::image32_t),
+         sizeof(::image32_t), rectangle.top_left(), true);
    }
 
 
@@ -2404,21 +2358,21 @@ namespace gpu_directx12
       UINT uavCount = m_iMipCount * m_iLayerCount;
 
       UINT totalDescriptors = srvCount + uavCount;
-      D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
-      heapDesc.NumDescriptors = totalDescriptors;
-      heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+      //D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
+      //heapDesc.NumDescriptors = totalDescriptors;
+      //heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+      //heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-      
-      auto hrCreateDescriptorHeap =
-         pdevice->m_pd3d12device->CreateDescriptorHeap(&heapDesc, __interface_of(m_pheapMipMap));
-      pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+      //
+      //auto hrCreateDescriptorHeap =
+      //   pdevice->m_pd3d12device->CreateDescriptorHeap(&heapDesc, __interface_of(m_pheapMipMap));
+      //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
       UINT descriptorSize =
          pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-      m_cpuBase = m_pheapMipMap->GetCPUDescriptorHandleForHeapStart();
-      m_gpuBase = m_pheapMipMap->GetGPUDescriptorHandleForHeapStart();
+      m_handleBase = pdevice->_allocate_cbv_srv_uav_handle(totalDescriptors);
+      //m_gpuBase = m_pheapMipMap->GetGPUDescriptorHandleForHeapStart();
 
       for (UINT mip = 0; mip < m_iMipCount; mip++)
       {
@@ -2437,14 +2391,15 @@ namespace gpu_directx12
             srv.Texture2DArray.ArraySize = 1;
             srv.Texture2DArray.PlaneSlice = 0;
 
-            auto cpu = m_cpuBase;
+            auto cpu = m_handleBase.m_cpuhandle;
             cpu.ptr += i * descriptorSize;
 
             pdevice->m_pd3d12device->CreateShaderResourceView(m_ptexture->m_pd3d12resourceTexture->m_presource, &srv, cpu);
 
-            m_handleaShaderResourceView.atø(i) = m_gpuBase;
-            m_handleaShaderResourceView.atø(i).ptr += i * descriptorSize;
+            m_handleaShaderResourceView.atø(i).ptr = m_handleBase.m_gpuhandle.ptr + i * descriptorSize;
+
          }
+
       }
 
       UINT uavBase = srvCount;
@@ -2463,14 +2418,15 @@ namespace gpu_directx12
             uav.Texture2DArray.ArraySize = 1;
             uav.Texture2DArray.PlaneSlice = 0;
 
-            auto cpu = m_cpuBase;
+            auto cpu = m_handleBase.m_cpuhandle;
             cpu.ptr += (uavBase + i) * descriptorSize;
 
             pdevice->m_pd3d12device->CreateUnorderedAccessView(m_ptexture->m_pd3d12resourceTexture->m_presource, nullptr, &uav, cpu);
 
-            m_handleaUnorderedAccessView.atø(i) = m_gpuBase;
-            m_handleaUnorderedAccessView.atø(i).ptr += (uavBase + i) * descriptorSize;
+            m_handleaUnorderedAccessView.atø(i).ptr = m_handleBase.m_gpuhandle.ptr + (uavBase + i) * descriptorSize;
+
          }
+
       }
 
    }
@@ -2481,8 +2437,9 @@ namespace gpu_directx12
       ::cast<::gpu_directx12::command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       auto cmd = pcommandbuffer->m_pcommandlist.m_p;
-      ID3D12DescriptorHeap *heaps[] = {m_pheapMipMap};
-      cmd->SetDescriptorHeaps(1, heaps);
+      pcommandbuffer->_defer_set_device_descriptor_heaps();
+      //ID3D12DescriptorHeap *heaps[] = {m_pheapMipMap};
+      //cmd->SetDescriptorHeaps(1, heaps);
       m_ptexture->m_pd3d12resourceTexture->_set_state(pcommandbuffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
       int w = m_ptexture->m_textureattributes.m_size.width();

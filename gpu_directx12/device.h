@@ -6,7 +6,7 @@
 #include "bred/gpu/device.h"
 #include "acme/prototype/prototype/memory.h"
 #include "acme_windows_common/dxgi_device_source.h"
-//#include "directx12/directx12.h"
+#include "gpu_directx12/_gpu_directx12.h"
 #include <dcomp.h>
 #include <d3d11.h>
 #include <d3d11on12.h>
@@ -14,8 +14,11 @@
 #include <d3d11_4.h>
 #include <d3d12compatibility.h>
 
+
 namespace gpu_directx12
 {
+
+
 
 
    class CLASS_DECL_GPU_DIRECTX12 device :
@@ -110,7 +113,21 @@ namespace gpu_directx12
       //} m_queuefamilyindexes;
 
 
+      ::comptr<ID3D12DescriptorHeap> m_pheapCbvSrvUav;
+      ::array<::comptr<ID3D12DescriptorHeap>> m_heapaRtv;
+      ::array<::comptr<ID3D12DescriptorHeap>> m_heapaDsv;
+      ::comptr<ID3D12DescriptorHeap> m_pheapSampler;
 
+      ::interlocked_count m_iCbvSrvUavHeapDescriptorCount;
+      ::array<::interlocked_count> m_iaRtvHeapDescriptorCount;
+      ::array<::interlocked_count> m_iaDsvHeapDescriptorCount;
+      ::interlocked_count m_iSamplerHeapDescriptorCount;
+
+      // Descriptor allocation never waits for GPU/context work. Entries are
+      // immutable and device-owned, so in-flight command lists remain valid.
+      ::particle_pointer                        m_pparticleMutexDescriptors;
+      ::map<::comparable_eq_array<UINT64>, cpu_gpu_handle>    m_textureTables;
+      cpu_gpu_handle                            m_handleLinearClampSampler;
 
 
       //graphics3d_directx12::context
@@ -256,6 +273,14 @@ namespace gpu_directx12
       virtual void defer_shader_memory(::memory& memory, const ::file::path& pathShader);
 
 
+      virtual ID3D12DescriptorHeap * _cbv_srv_uav_heap();
+      virtual ID3D12DescriptorHeap * _sampler_heap();
+      virtual cpu_gpu_handle _allocate_cbv_srv_uav_handle(int iDescriptorCount);
+      virtual cpu_handle _allocate_render_target_view_handle(int iLayerCount, int iMipCount);
+      virtual cpu_handle _allocate_depth_stencil_view_handle();
+      virtual cpu_gpu_handle _allocate_sampler_handle();
+      cpu_gpu_handle _linear_clamp_sampler();
+      cpu_gpu_handle _texture_table(const ::array<texture *> & textures);
 
       //virtual void create_device();
 

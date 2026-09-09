@@ -5962,9 +5962,32 @@ void texture::create_sampler()
 
    void texture::read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer, const ::i32_point & pointOutput)
    {
+      _record_readback(pgpucommandbuffer, pgpubuffer, pointOutput, size());
+   }
+
+
+   void texture::_record_readback(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer,
+                                  const ::i32_point & pointOutput, const ::i32_size & sizeRead)
+   {
 
       ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
       ::cast < ::gpu_vulkan::buffer > pbuffer = pgpubuffer;
+
+      const auto mip = maximum(0, m_iCurrentMip);
+      const auto layer = maximum(0, m_iCurrentLayer);
+      if (mip >= mip_count() || mip >= 31 || layer >= layer_count())
+         throw ::exception(error_bad_argument, "Vulkan readback subresource is invalid.");
+      const auto mipWidth = maximum(1, raw_width() >> mip);
+      const auto mipHeight = maximum(1, raw_height() >> mip);
+      const VkDeviceSize bytes = VkDeviceSize(sizeRead.cx) * VkDeviceSize(sizeRead.cy) * 4;
+      if (!pcommandbuffer || !pbuffer || sizeRead.is_empty() || pointOutput.x < 0 || pointOutput.y < 0 ||
+          pointOutput.x > mipWidth || sizeRead.cx > mipWidth - pointOutput.x ||
+          pointOutput.y > mipHeight || sizeRead.cy > mipHeight - pointOutput.y || bytes > pbuffer->m_size)
+         throw ::exception(error_bad_argument, "Vulkan readback region exceeds the image or staging buffer.");
+
+      if (m_vkformat != VK_FORMAT_B8G8R8A8_UNORM && m_vkformat != VK_FORMAT_B8G8R8A8_SRGB &&
+          m_vkformat != VK_FORMAT_R8G8B8A8_UNORM && m_vkformat != VK_FORMAT_R8G8B8A8_SRGB)
+         throw ::exception(error_not_supported, "Vulkan pixmap readback requires a four-channel 8-bit texture.");
 
       auto scopedstate = 
          _scoped_state(
@@ -6029,8 +6052,8 @@ void texture::create_sampler()
          },
 
          .imageExtent = {
-            .width = (uint32_t)m_textureattributes.m_size.width(),
-            .height = (uint32_t)m_textureattributes.m_size.height(),
+            .width = (uint32_t)sizeRead.cx,
+            .height = (uint32_t)sizeRead.cy,
             .depth = 1,
          },
       };
@@ -6052,6 +6075,18 @@ void texture::create_sampler()
          pbuffer->m_vkbuffer,
          1,
          &copyRegion);
+
+      VkBufferMemoryBarrier hostRead{VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER};
+      hostRead.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      hostRead.dstAccessMask = VK_ACCESS_HOST_READ_BIT;
+      hostRead.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      hostRead.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      hostRead.buffer = pbuffer->m_vkbuffer;
+      hostRead.offset = 0;
+      hostRead.size = bytes;
+      vkCmdPipelineBarrier(pcommandbuffer->m_vkcommandbuffer,
+         VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0,
+         0, nullptr, 1, &hostRead, 0, nullptr);
 
       //// Restore the texture layout.
       //VkImageMemoryBarrier2 restoreImage{
@@ -6098,10 +6133,15 @@ void texture::create_sampler()
 
    ::gpu::buffer * texture::get_read_back_buffer()
    {
-
-      if (!m_pgpubufferReadBack)
+      const auto sizeRead = size();
+      if (sizeRead.is_empty())
+         throw ::exception(error_wrong_state, "Cannot read back an empty Vulkan texture.");
+      const VkDeviceSize requiredBytes = VkDeviceSize(sizeRead.cx) * VkDeviceSize(sizeRead.cy) * 4;
+      ::cast<::gpu_vulkan::buffer> pbufferExisting = m_pgpubufferReadBack;
+      if (!pbufferExisting || pbufferExisting->m_size < requiredBytes)
       {
-
+         // Previous synchronous readback has completed before a buffer is reused.
+         m_pgpubufferReadBack.release();
          constructø(m_pgpubufferReadBack);
 
          m_pgpubufferReadBack->initialize_buffer(m_pgpucontext);
@@ -6131,16 +6171,23 @@ void texture::create_sampler()
    }
 
    
-   void texture::read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput)
+   void texture::read_pixels(::gpu::command_buffer * commands, ::pixmap_t * ppixmap, const ::i32_point & pointOutput)
    {
+      if (!commands || !commands->m_pgpucommandbufferlease || !ppixmap || ppixmap->size().is_empty() || !ppixmap->m_pimage32 ||
+          (::i64)ppixmap->m_iScan < (::i64)ppixmap->width() * 4)
+         throw ::exception(error_bad_argument, "Vulkan readback requires a writable pixmap and pending command lease.");
 
-      ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
+      ::gpu::context_lock contextlock(m_pgpucontext);
 
       ::cast < ::gpu_vulkan::buffer > pbuffer = get_read_back_buffer();
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
-      read_to_buffer(pgpucommandbuffer, pbuffer, pointOutput);
+      _record_readback(commands, pbuffer, pointOutput, ppixmap->size());
+
+      // commit submits and waits for completion in _endSingleTimeCommands.
+      // Neither mapping nor invalidating memory waits for this GPU copy.
+      commands->m_pgpucommandbufferlease->commit();
 
       void * mapped = nullptr;
 
@@ -6157,6 +6204,13 @@ void texture::create_sampler()
          throw std::runtime_error("vkMapMemory failed");
       }
 
+      struct unmap_guard
+      {
+         VkDevice device;
+         VkDeviceMemory memory;
+         ~unmap_guard() { vkUnmapMemory(device, memory); }
+      } unmap{pcontext->logicalDevice(), pbuffer->m_vkdevicememory};
+
       VkMappedMemoryRange mappedRange{
    .sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
    .memory = pbuffer->m_vkdevicememory,
@@ -6164,10 +6218,12 @@ void texture::create_sampler()
    .size = VK_WHOLE_SIZE,
       };
 
-      vkInvalidateMappedMemoryRanges(
+      const auto invalidateResult = vkInvalidateMappedMemoryRanges(
          pcontext->logicalDevice(),
          1,
          &mappedRange);
+      if (invalidateResult != VK_SUCCESS)
+         throw std::runtime_error("vkInvalidateMappedMemoryRanges failed during readback");
 
       ///std::vector<uint8_t> pixels(
    //static_cast<size_t>(pbuffer->m_size));
@@ -6184,7 +6240,7 @@ void texture::create_sampler()
          //mapped,
         // static_cast<size_t>(pbuffer->m_size));
 
-      vkUnmapMemory(pcontext->logicalDevice(), pbuffer->m_vkdevicememory);
+      // unmap_guard also releases the mapping if copying pixels throws.
 
          //VkImageSubresourceRange subresourceRange{
          //   .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,

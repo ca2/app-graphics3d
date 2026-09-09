@@ -55,11 +55,26 @@ namespace draw2d_directx12
    }
 
 
+   bool draw2d::write_text_supports_raster_fonts()
+   {
+
+      return false;
+
+   }
+
+
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      return false;
+
+   }
+
 
    string draw2d::write_text_get_default_implementation_name()
    {
 
-      return system()->implementation_name("write_text", "directx12");
+      return system()->implementation_name("write_text", "win32");
 
    }
 

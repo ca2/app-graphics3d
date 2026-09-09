@@ -4,15 +4,19 @@
 #include "approach.h"
 //#include "buffer.h"
 #include "device.h"
+#include "direct2d/_.h"
+#include "direct2d/direct2d.h"
 #include "fence.h"
 #include "physical_device.h"
 #include "program.h"
 #include "queue.h"
 #include "renderer.h"
 #include "shader.h"
+#include "texture.h"
 #include "swap_chain.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
+#include "acme/platform/node.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/types.h"
 #include "gpu_directx12/descriptors.h"
@@ -51,6 +55,8 @@ namespace gpu_directx12
       m_estatus = error_not_initialized;
 
       //m_iCurrentImage = 0;
+
+      m_pparticleMutexDescriptors = ::system()->m_papplication->node()->create_mutex();
 
    }
 
@@ -207,6 +213,175 @@ namespace gpu_directx12
 
    //}
 
+   
+   ID3D12DescriptorHeap * device::_cbv_srv_uav_heap()
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      if (!m_pd3d12device)
+         throw ::exception(error_wrong_state, "Descriptor allocation requires a DirectX 12 device");
+      if (!m_pheapCbvSrvUav)
+      {
+         D3D12_DESCRIPTOR_HEAP_DESC desc{};
+         desc.NumDescriptors = 163840;
+         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+         defer_throw_hresult(m_pd3d12device->CreateDescriptorHeap(&desc, __interface_of(m_pheapCbvSrvUav)));
+      }
+      return m_pheapCbvSrvUav;
+   }
+
+   ID3D12DescriptorHeap * device::_sampler_heap()
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      if (!m_pd3d12device)
+         throw ::exception(error_wrong_state, "Descriptor allocation requires a DirectX 12 device");
+      if (!m_pheapSampler)
+      {
+         D3D12_DESCRIPTOR_HEAP_DESC desc{};
+         desc.NumDescriptors = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE;
+         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+         defer_throw_hresult(m_pd3d12device->CreateDescriptorHeap(&desc, __interface_of(m_pheapSampler)));
+      }
+      return m_pheapSampler;
+   }
+
+   cpu_gpu_handle device::_allocate_cbv_srv_uav_handle(int count)
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      auto heap = _cbv_srv_uav_heap();
+      const auto used = (UINT)m_iCbvSrvUavHeapDescriptorCount;
+      const auto capacity = heap->GetDesc().NumDescriptors;
+      if (count <= 0 || used > capacity || (UINT)count > capacity - used)
+         throw ::exception(error_bad_argument, "DirectX 12 CBV/SRV/UAV descriptor heap exhausted or invalid allocation count");
+      const auto increment = m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      auto cpu = heap->GetCPUDescriptorHandleForHeapStart();
+      auto gpu = heap->GetGPUDescriptorHandleForHeapStart();
+      cpu.ptr += (SIZE_T)used * increment;
+      gpu.ptr += (UINT64)used * increment;
+      m_iCbvSrvUavHeapDescriptorCount += count;
+      return {cpu, gpu};
+   }
+
+   cpu_handle device::_allocate_render_target_view_handle(int layers, int mips)
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      // One view for all layers and one for each individual layer, per mip.
+      if (!m_pd3d12device || layers <= 0 || mips <= 0 ||
+          ((UINT64)layers + 1) * mips > INT_MAX)
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 RTV block dimensions");
+      const UINT count = (UINT)(((UINT64)layers + 1) * mips);
+      auto index = m_heapaRtv.get_upper_bound();
+      if (index < 0 || (UINT)m_iaRtvHeapDescriptorCount[index] > m_heapaRtv[index]->GetDesc().NumDescriptors ||
+          count > m_heapaRtv[index]->GetDesc().NumDescriptors - (UINT)m_iaRtvHeapDescriptorCount[index])
+      {
+         D3D12_DESCRIPTOR_HEAP_DESC desc{};
+         desc.NumDescriptors = maximum(1024u, count);
+         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+         ::comptr<ID3D12DescriptorHeap> heap;
+         defer_throw_hresult(m_pd3d12device->CreateDescriptorHeap(&desc, __interface_of(heap)));
+         index = m_heapaRtv.get_count();
+         m_iaRtvHeapDescriptorCount.atø(index) = 0;
+         m_heapaRtv.add(heap);
+      }
+      auto handle = m_heapaRtv[index]->GetCPUDescriptorHandleForHeapStart();
+      handle.ptr += (SIZE_T)(UINT)m_iaRtvHeapDescriptorCount[index] *
+         m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      m_iaRtvHeapDescriptorCount[index] += count;
+      return handle;
+   }
+
+   cpu_handle device::_allocate_depth_stencil_view_handle()
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      if (!m_pd3d12device)
+         throw ::exception(error_wrong_state, "DSV allocation requires a DirectX 12 device");
+      auto index = m_heapaDsv.get_upper_bound();
+      if (index < 0 || (UINT)m_iaDsvHeapDescriptorCount[index] >= m_heapaDsv[index]->GetDesc().NumDescriptors)
+      {
+         D3D12_DESCRIPTOR_HEAP_DESC desc{};
+         desc.NumDescriptors = 256;
+         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+         ::comptr<ID3D12DescriptorHeap> heap;
+         defer_throw_hresult(m_pd3d12device->CreateDescriptorHeap(&desc, __interface_of(heap)));
+         index = m_heapaDsv.get_count();
+         m_iaDsvHeapDescriptorCount.atø(index) = 0;
+         m_heapaDsv.add(heap);
+      }
+      auto handle = m_heapaDsv[index]->GetCPUDescriptorHandleForHeapStart();
+      handle.ptr += (SIZE_T)(UINT)m_iaDsvHeapDescriptorCount[index] *
+         m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+      m_iaDsvHeapDescriptorCount[index]++;
+      return handle;
+   }
+
+   cpu_gpu_handle device::_allocate_sampler_handle()
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      auto heap = _sampler_heap();
+      const auto used = (UINT)m_iSamplerHeapDescriptorCount;
+      if (used >= heap->GetDesc().NumDescriptors)
+         throw ::exception(error_wrong_state, "DirectX 12 shader-visible sampler heap exhausted");
+      const auto increment = m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+      auto cpu = heap->GetCPUDescriptorHandleForHeapStart();
+      auto gpu = heap->GetGPUDescriptorHandleForHeapStart();
+      cpu.ptr += (SIZE_T)used * increment;
+      gpu.ptr += (UINT64)used * increment;
+      m_iSamplerHeapDescriptorCount++;
+      return {cpu, gpu};
+   }
+
+   cpu_gpu_handle device::_linear_clamp_sampler()
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      if (!m_handleLinearClampSampler)
+      {
+         auto handle = _allocate_sampler_handle();
+         D3D12_SAMPLER_DESC desc{};
+         desc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+         desc.AddressU = desc.AddressV = desc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+         desc.MaxAnisotropy = 1;
+         desc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+         desc.MaxLOD = D3D12_FLOAT32_MAX;
+         m_pd3d12device->CreateSampler(&desc, handle.m_cpuhandle);
+         m_handleLinearClampSampler = handle;
+      }
+      return m_handleLinearClampSampler;
+   }
+
+   cpu_gpu_handle device::_texture_table(const ::array<texture *> & textures)
+   {
+      _synchronous_lock lock(m_pparticleMutexDescriptors);
+      if (textures.empty() || textures.size() > INT_MAX)
+         throw ::exception(error_bad_argument, "Empty or oversized DirectX 12 texture table");
+      ::array<UINT64> key;
+      for (auto texture : textures)
+      {
+         if (!texture || !texture->m_pgpucontext || texture->m_pgpucontext->m_pgpudevice != this)
+            throw ::exception(error_bad_argument, "Texture table contains a null texture or a different device");
+         texture->create_shader_resource();
+         key.add(texture->m_handleShaderResourceView.m_gpuhandle.ptr);
+      }
+      if (textures.size() == 1)
+         return textures[0]->m_handleShaderResourceView;
+      auto found = m_textureTables.find(key);
+      if (found != m_textureTables.end())
+         return found->element2();
+      auto table = _allocate_cbv_srv_uav_handle((int)textures.size());
+      auto cpu = table.m_cpuhandle;
+      const auto increment = m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      // CPU descriptor-copy APIs cannot read shader-visible heaps. Create the
+      // contiguous table from the saved view descriptions instead. Cache each
+      // immutable combination; do not allocate/overwrite a table every draw.
+      for (auto texture : textures)
+      {
+         auto desc = texture->shader_resource_view_description();
+         m_pd3d12device->CreateShaderResourceView(texture->m_pd3d12resourceTexture->m_presource, &desc, cpu);
+         cpu.ptr += increment;
+      }
+      m_textureTables[key] = table;
+      return table;
+   }
 
    void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
    {
@@ -1439,6 +1614,11 @@ namespace gpu_directx12
 
    class device::d3d11on12 * device::d3d11on12()
    {
+
+      // Publish the shared interop device atomically to layer and shell threads.
+      // Use the D2D factory's recursive lock (also held during D2D device creation),
+      // not a second mutex with the opposite lock order.
+      ::direct2d_lock interoplock(::direct2d::get());
 
       //auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 

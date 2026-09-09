@@ -590,6 +590,24 @@ namespace draw2d_directx12
    }
 
 
+
+   ::i32 graphics::image_draw_vertex_count() const
+   {
+
+      return 4;
+
+   }
+
+
+   ::gpu::enum_topology graphics::image_draw_topology() const
+   {
+
+      return ::gpu::e_topology_triangle_strip;
+
+   }
+
+
+
    //int graphics::GetDeviceCaps(double dIndex)
    //{
 

@@ -254,13 +254,27 @@ namespace app_graphics3d_continuum
 
          // auto origin = pdraw2dgraphics->origin();
 
-         if (m_iImpactSerial == 5)
+         if (m_iImpactSerial == 1)
+         {
+
+            informationf("graphics3d::_001OnDraw continuum");
+
+         }
+         else if (m_iImpactSerial == 2)
+         {
+
+            informationf("graphics3d::_001OnDraw switcher");
+
+         }
+         else if (m_iImpactSerial == 5)
          {
 
             pdraw2dgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
             ::get_task()->payload("debug") = 123;
             pdraw2dgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
             ::get_task()->payload("debug") = 0;
+
+            informationf("graphics3d::_001OnDraw skybox");
 
          }
 

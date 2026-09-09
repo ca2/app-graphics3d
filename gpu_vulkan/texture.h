@@ -460,7 +460,9 @@ const ::i32_point & point) override;
 
       void read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer, const ::i32_point & pointOutput) override;
 
-      void read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput) override;
+      void read_pixels(::gpu::command_buffer * commands, ::pixmap_t * ppixmap, const ::i32_point & pointOutput) override;
+      void _record_readback(::gpu::command_buffer * commands, ::gpu::buffer * buffer,
+                            const ::i32_point & point, const ::i32_size & size);
 
       static state_t _s_state_from_texture_state(::gpu::enum_texture_state etexturestate);
 

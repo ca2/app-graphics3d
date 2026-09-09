@@ -826,7 +826,7 @@ namespace draw2d_direct2d_for_directx12
 
             auto pdirect2d = direct2d();
 
-            ::direct2d_lock lock(pdirect2d);
+            //::direct2d_lock lock(pdirect2d);
 
             //auto pcontext = gpu_context();
 

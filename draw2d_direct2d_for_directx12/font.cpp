@@ -177,201 +177,203 @@ namespace draw2d_direct2d_for_directx12
    void font::create_text_metrics(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      WCHAR name[256];
-      ::u32 findex;
-      BOOL exists;
+      ::draw2d_direct2d_for_directx11::font::create_text_metrics(pdraw2dgraphics);
 
-      if (::is_null(m_pformat))
-      {
+      //WCHAR name[256];
+      //::u32 findex;
+      //BOOL exists;
 
-         m_textmetric2.m_dAscent = 0;
-         m_textmetric2.m_dDescent = 0;
-         m_textmetric2.m_dHeight = m_fontsize.as_f64();
-         m_textmetric2.m_dInternalLeading = 0;
-         m_textmetric2.m_dExternalLeading = 0;
+      //if (::is_null(m_pformat))
+      //{
 
-         //return true;
+      //   m_textmetric2.m_dAscent = 0;
+      //   m_textmetric2.m_dDescent = 0;
+      //   m_textmetric2.m_dHeight = m_fontsize.as_f64();
+      //   m_textmetric2.m_dInternalLeading = 0;
+      //   m_textmetric2.m_dExternalLeading = 0;
 
-         return;
+      //   //return true;
 
-      }
+      //   return;
 
-      if (!m_pcollection)
-      {
+      //}
 
-         m_pformat->GetFontFamilyName(name, 256);
+      //if (!m_pcollection)
+      //{
 
-         m_pformat->GetFontCollection(&m_pcollection);
+      //   m_pformat->GetFontFamilyName(name, 256);
 
-         if (!m_pcollection)
-         {
+      //   m_pformat->GetFontCollection(&m_pcollection);
 
-            m_textmetric2.m_dAscent = 0;
-            m_textmetric2.m_dDescent = 0;
-            m_textmetric2.m_dHeight = m_fontsize.as_f64();
-            m_textmetric2.m_dInternalLeading = 0;
-            m_textmetric2.m_dExternalLeading = 0;
+      //   if (!m_pcollection)
+      //   {
 
-            return;
+      //      m_textmetric2.m_dAscent = 0;
+      //      m_textmetric2.m_dDescent = 0;
+      //      m_textmetric2.m_dHeight = m_fontsize.as_f64();
+      //      m_textmetric2.m_dInternalLeading = 0;
+      //      m_textmetric2.m_dExternalLeading = 0;
 
-            //return true;
+      //      return;
 
-         }
+      //      //return true;
 
-      }
+      //   }
 
-      if (!m_pfamily)
-      {
+      //}
 
-         auto iFontFamilyCount = m_pcollection->GetFontFamilyCount();
+      //if (!m_pfamily)
+      //{
 
-         m_pcollection->FindFamilyName(name, &findex, &exists);
+      //   auto iFontFamilyCount = m_pcollection->GetFontFamilyCount();
 
-         if (!exists)
-         {
+      //   m_pcollection->FindFamilyName(name, &findex, &exists);
 
-            m_pcollection->FindFamilyName(L"Arial", &findex, &exists);
+      //   if (!exists)
+      //   {
 
-            if (!exists)
-            {
+      //      m_pcollection->FindFamilyName(L"Arial", &findex, &exists);
 
-               m_textmetric2.m_dAscent = 0;
-               m_textmetric2.m_dDescent = 0;
-               m_textmetric2.m_dHeight = m_fontsize.as_f64();
-               m_textmetric2.m_dInternalLeading = 0;
-               m_textmetric2.m_dExternalLeading = 0;
+      //      if (!exists)
+      //      {
 
-               //return true;
+      //         m_textmetric2.m_dAscent = 0;
+      //         m_textmetric2.m_dDescent = 0;
+      //         m_textmetric2.m_dHeight = m_fontsize.as_f64();
+      //         m_textmetric2.m_dInternalLeading = 0;
+      //         m_textmetric2.m_dExternalLeading = 0;
 
-               return;
+      //         //return true;
 
-            }
+      //         return;
 
-         }
+      //      }
 
-         m_pcollection->GetFontFamily(findex, &m_pfamily);
+      //   }
 
-         if (!m_pfamily)
-         {
+      //   m_pcollection->GetFontFamily(findex, &m_pfamily);
 
-            m_textmetric2.m_dAscent = 0;
-            m_textmetric2.m_dDescent = 0;
-            m_textmetric2.m_dHeight = m_fontsize.as_f64();
-            m_textmetric2.m_dInternalLeading = 0;
-            m_textmetric2.m_dExternalLeading = 0;
+      //   if (!m_pfamily)
+      //   {
 
-            //return true;
+      //      m_textmetric2.m_dAscent = 0;
+      //      m_textmetric2.m_dDescent = 0;
+      //      m_textmetric2.m_dHeight = m_fontsize.as_f64();
+      //      m_textmetric2.m_dInternalLeading = 0;
+      //      m_textmetric2.m_dExternalLeading = 0;
 
-            return;
+      //      //return true;
 
-         }
+      //      return;
 
-      }
+      //   }
 
-      HRESULT hrFindFont = E_FAIL;
+      //}
 
-      if (!m_pwritetextfont)
-      {
+      //HRESULT hrFindFont = E_FAIL;
 
-         auto weight = m_pformat->GetFontWeight();
+      //if (!m_pwritetextfont)
+      //{
 
-         auto stretch = m_pformat->GetFontStretch();
+      //   auto weight = m_pformat->GetFontWeight();
 
-         auto style = m_pformat->GetFontStyle();
+      //   auto stretch = m_pformat->GetFontStretch();
 
-         while (true)
-         {
+      //   auto style = m_pformat->GetFontStyle();
 
-            hrFindFont = m_pfamily->GetFirstMatchingFont(
-              weight,
-              stretch,
-              style, &m_pwritetextfont);
+      //   while (true)
+      //   {
 
-            if (SUCCEEDED(hrFindFont) && m_pwritetextfont)
-            {
+      //      hrFindFont = m_pfamily->GetFirstMatchingFont(
+      //        weight,
+      //        stretch,
+      //        style, &m_pwritetextfont);
 
-               break;
+      //      if (SUCCEEDED(hrFindFont) && m_pwritetextfont)
+      //      {
 
-            }
+      //         break;
 
-            if (stretch != DWRITE_FONT_STRETCH_NORMAL
-               && stretch != DWRITE_FONT_STRETCH_UNDEFINED)
-            {
+      //      }
 
-               stretch = DWRITE_FONT_STRETCH_NORMAL;
+      //      if (stretch != DWRITE_FONT_STRETCH_NORMAL
+      //         && stretch != DWRITE_FONT_STRETCH_UNDEFINED)
+      //      {
 
-               continue;
+      //         stretch = DWRITE_FONT_STRETCH_NORMAL;
 
-            }
+      //         continue;
 
-            if (stretch != DWRITE_FONT_STRETCH_UNDEFINED)
-            {
+      //      }
 
-               stretch = DWRITE_FONT_STRETCH_UNDEFINED;
+      //      if (stretch != DWRITE_FONT_STRETCH_UNDEFINED)
+      //      {
 
-               continue;
+      //         stretch = DWRITE_FONT_STRETCH_UNDEFINED;
 
-            }
+      //         continue;
 
-            if (style != DWRITE_FONT_STYLE_NORMAL)
-            {
+      //      }
 
-               style = DWRITE_FONT_STYLE_NORMAL;
+      //      if (style != DWRITE_FONT_STYLE_NORMAL)
+      //      {
 
-               continue;
+      //         style = DWRITE_FONT_STYLE_NORMAL;
 
-            }
+      //         continue;
 
-            if (weight >= DWRITE_FONT_WEIGHT_BOLD)
-            {
+      //      }
 
-               weight = DWRITE_FONT_WEIGHT_NORMAL;
+      //      if (weight >= DWRITE_FONT_WEIGHT_BOLD)
+      //      {
 
-               continue;
+      //         weight = DWRITE_FONT_WEIGHT_NORMAL;
 
-            }
+      //         continue;
 
-            if (weight >= DWRITE_FONT_WEIGHT_NORMAL)
-            {
+      //      }
 
-               weight = DWRITE_FONT_WEIGHT_LIGHT;
+      //      if (weight >= DWRITE_FONT_WEIGHT_NORMAL)
+      //      {
 
-               continue;
+      //         weight = DWRITE_FONT_WEIGHT_LIGHT;
 
-            }
+      //         continue;
 
-            break;
+      //      }
 
-         }
+      //      break;
 
-      }
+      //   }
 
-      if (FAILED(hrFindFont) || !m_pwritetextfont)
-      {
+      //}
 
-         m_textmetric2.m_dAscent = 0;
-         m_textmetric2.m_dDescent = 0;
-         m_textmetric2.m_dHeight = m_fontsize.as_f64();
-         m_textmetric2.m_dInternalLeading = 0;
-         m_textmetric2.m_dExternalLeading = 0;
+      //if (FAILED(hrFindFont) || !m_pwritetextfont)
+      //{
 
-         //return true;
+      //   m_textmetric2.m_dAscent = 0;
+      //   m_textmetric2.m_dDescent = 0;
+      //   m_textmetric2.m_dHeight = m_fontsize.as_f64();
+      //   m_textmetric2.m_dInternalLeading = 0;
+      //   m_textmetric2.m_dExternalLeading = 0;
 
-         return;
+      //   //return true;
 
-      }
+      //   return;
 
-      DWRITE_FONT_METRICS metrics;
+      //}
 
-      m_pwritetextfont->GetMetrics(&metrics);
+      //DWRITE_FONT_METRICS metrics;
 
-      ::f64 ratio = m_pformat->GetFontSize() / (::f32)metrics.designUnitsPerEm;
+      //m_pwritetextfont->GetMetrics(&metrics);
 
-      m_textmetric2.m_dAscent = (::f64) (metrics.ascent * ratio);
-      m_textmetric2.m_dDescent = (::f64)(metrics.descent * ratio);
-      m_textmetric2.m_dInternalLeading = (::f64)0;
-      m_textmetric2.m_dExternalLeading = (::f64)(metrics.lineGap * ratio);
-      m_textmetric2.m_dHeight = (::f64)((metrics.ascent + metrics.descent + metrics.lineGap) * ratio);
+      //::f64 ratio = m_pformat->GetFontSize() / (::f32)metrics.designUnitsPerEm;
+
+      //m_textmetric2.m_dAscent = (::f64) (metrics.ascent * ratio);
+      //m_textmetric2.m_dDescent = (::f64)(metrics.descent * ratio);
+      //m_textmetric2.m_dInternalLeading = (::f64)0;
+      //m_textmetric2.m_dExternalLeading = (::f64)(metrics.lineGap * ratio);
+      //m_textmetric2.m_dHeight = (::f64)((metrics.ascent + metrics.descent + metrics.lineGap) * ratio);
 
    }
 

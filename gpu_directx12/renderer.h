@@ -135,7 +135,6 @@ namespace gpu_directx12
 
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
 
-      ::comptr<ID3D12DescriptorHeap> m_pheapCbv;
       // ::comptr<ID3D12Resource> m_presourceGlobalUBO;
       // void* m_pGlobalUBO;
       //int m_iPushPropertiesAddress = 0;

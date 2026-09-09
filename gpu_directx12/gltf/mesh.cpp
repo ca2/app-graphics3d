@@ -444,8 +444,8 @@ namespace gpu_directx12
          // Assume:
          // ID3D11Device*           m_pd3dDevice;
          // ID3D11DeviceContext*    m_pImmediateContext;
-         // std::vector<::gpu::gltf::vertex> m_vertexa;
-         // std::vector<unsigned int> m_indexa;
+         // ::array<::gpu::gltf::vertex> m_vertexa;
+         // ::array<unsigned int> m_indexa;
 
          //      ::cast<::gpu_directx11::context> pgpucontext = m_pgpucontext;
 

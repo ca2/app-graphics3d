@@ -135,16 +135,18 @@ namespace draw2d_direct2d_for_directx12
                                                                 const ::i32_size & size)
    {
 
-      auto pdraw2dgraphics = create_memory_graphics(size, pacmeuserinteractionAffinity);
+      return ::draw2d_direct2d_for_directx11::draw2d::do_allocation_strategy(pacmeuserinteractionAffinity, pimage, size);
 
-      if (::is_set(pimage))
-      {
+      //auto pdraw2dgraphics = create_memory_graphics(size, pacmeuserinteractionAffinity);
 
-         pimage->create_from_graphics(pdraw2dgraphics);
+      //if (::is_set(pimage))
+      //{
 
-      }
+      //   pimage->create_from_graphics(pdraw2dgraphics);
 
-      return pdraw2dgraphics;
+      //}
+
+      //return pdraw2dgraphics;
 
    }
 

@@ -549,7 +549,7 @@ namespace graphics3d_directx11
          ID3D11DeviceContext* context = pgpucontext->m_pd3d11devicecontext;
          auto ptexturesite = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
          ::cast < ::gpu_directx11::texture > ptexture = ptexturesite->gpu_texture();
-         ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
+         ID3D11Texture2D* offscreenTexture = ptexture->m_pd3d11texture2d;
          if (!device || !context || !offscreenTexture)
          {
             throw ::exception(error_wrong_state);

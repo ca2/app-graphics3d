@@ -22,8 +22,8 @@ namespace gpu_directx12
       ::comptr <ID3D12PipelineState> m_ppipelinestate ;
 
 
-      ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapa1;
-      ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapaSampler1;
+      //::array_base<::comptr<ID3D12DescriptorHeap>> m_heapa1;
+      //::array_base<::comptr<ID3D12DescriptorHeap>> m_heapaSampler1;
       int m_iHeapIndex = 0;
       int m_iHeapCount = 8192;
       int m_iHeapSamplerIndex = 0;

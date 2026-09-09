@@ -1,5 +1,6 @@
 // Created by camilo on 2025-06-23 00:16 <3ThomasBorregaardSørensen!!
 #include "platform.h"
+#include "texture_copy.h"
 #include "approach.h"
 #include "command_buffer.h"
 #include "depth_stencil.h"
@@ -136,6 +137,7 @@ namespace gpu_directx12
 
       }*/
 
+
    }
 
 
@@ -191,7 +193,32 @@ namespace gpu_directx12
    //   ///m_uFence = 1;
 
    //}
+   void command_buffer::_defer_set_device_descriptor_heaps()
+   {
 
+      if (!m_pcommandlist || m_estate != ::gpu::command_buffer::e_state_recording ||
+          (m_pcommandlist->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT &&
+           m_pcommandlist->GetType() != D3D12_COMMAND_LIST_TYPE_COMPUTE))
+         throw ::exception(error_wrong_state, "Descriptor heaps require a recording DIRECT or COMPUTE command list");
+      if (m_bDeviceDescriptorHeapSet)
+         return;
+
+      ::cast < renderer > prenderer = m_pgpurendertarget->m_pgpurenderer;
+
+      ::cast < context > pcontext = prenderer->m_pgpucontext;
+
+      ::cast < device > pdevice = pcontext->m_pgpudevice;
+
+      ID3D12DescriptorHeap * heaps[] =
+      {
+         pdevice->_cbv_srv_uav_heap(),
+         pdevice->_sampler_heap()
+      };
+      m_pcommandlist->SetDescriptorHeaps(2, heaps);
+      m_bDeviceDescriptorHeapSet = true;
+
+
+   }
 
    void command_buffer::begin_command_buffer(bool bOneTime)
    {
@@ -199,6 +226,8 @@ namespace gpu_directx12
       reset();
 
       m_estate = ::gpu::command_buffer::e_state_recording;
+
+  
 
    }
 
@@ -221,14 +250,27 @@ namespace gpu_directx12
    }
 
 
-   void command_buffer::_copy_resource(texture * ptextureTarget, texture * ptextureSource)
+   void command_buffer::_copy_resource(texture * target, texture * source)
    {
+      _copy_texture_region(target, source);
+   }
 
-
-
-            m_pcommandlist->CopyResource(ptextureTarget->m_pd3d12resourceTexture->m_presource, ptextureSource->m_pd3d12resourceTexture->m_presource);
-
-
+   void command_buffer::_copy_texture_region(texture * target, texture * source)
+   {
+      if (m_estate != ::gpu::command_buffer::e_state_recording || !target || !source ||
+          !target->m_pgpucontext || !source->m_pgpucontext ||
+          target->m_pgpucontext->m_pgpudevice != source->m_pgpucontext->m_pgpudevice ||
+          target->m_pgpucontext->m_pgpudevice != m_prenderer->m_pgpucontext->m_pgpudevice ||
+          !target->m_pd3d12resourceTexture || !source->m_pd3d12resourceTexture)
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 texture preservation copy");
+      auto dst = target->m_pd3d12resourceTexture;
+      auto src = source->m_pd3d12resourceTexture;
+      m_comptraHold.add(comptr<IUnknown>(dst->m_presource));
+      m_comptraHold.add(comptr<IUnknown>(src->m_presource));
+      auto hr = detail::copy_texture_region(m_pcommandlist, dst->m_presource, src->m_presource,
+         dst->m_state.m_resourcestates, src->m_state.m_resourcestates);
+      if (FAILED(hr))
+         throw ::exception(error_bad_argument, "Texture preservation requires compatible non-MSAA color textures on a DIRECT list");
    }
 
 
@@ -268,6 +310,8 @@ namespace gpu_directx12
 
       ::cast < texture > ptexture = pgputexture;
 
+      ptexture->set_state(this, ::gpu::e_texture_state_color_attachment);
+
       //pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, r2);
 
       auto handleRenderTargetView = ptexture->current_layer().m_handleRenderTargetView;
@@ -285,6 +329,9 @@ namespace gpu_directx12
       //informationf("Going to close Command List : 0x%016llx", m_pcommandlist.m_p);
 
       HRESULT hrCloseCommandList = m_pcommandlist->Close();
+
+      // Invalidate guards even if Close or subsequent queue operations fail.
+      ++m_uRasterizerStateGeneration;
 
       pdevice->defer_throw_hresult(hrCloseCommandList);
 
@@ -382,14 +429,49 @@ namespace gpu_directx12
    void command_buffer::reset()
    {
 
+      // An old guard must never write into a new recording of this list.
+      ++m_uRasterizerStateGeneration;
+
       auto pcommandallocator = m_pcommandallocator;
 
       HRESULT hrResetCommandAllocator = pcommandallocator->Reset();
 
       ::defer_throw_hresult(hrResetCommandAllocator);
 
-      m_pcommandlist->Reset(pcommandallocator, nullptr);
+      ::defer_throw_hresult(m_pcommandlist->Reset(pcommandallocator, nullptr));
 
+      m_uViewportCount = 0;
+      m_uScissorCount = 0;
+      m_bDeviceDescriptorHeapSet = false;
+
+   }
+
+
+   void command_buffer::set_viewports(UINT count, const D3D12_VIEWPORT * pviewports)
+   {
+      if (count > D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE || (count && !pviewports))
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 viewport array");
+      if (!m_pcommandlist || m_estate != ::gpu::command_buffer::e_state_recording)
+         throw ::exception(error_wrong_state, "Setting viewports requires a recording DirectX 12 command buffer");
+
+      m_pcommandlist->RSSetViewports(count, pviewports);
+      for (UINT i = 0; i < count; ++i)
+         m_viewporta[i] = pviewports[i];
+      m_uViewportCount = count;
+   }
+
+
+   void command_buffer::set_scissor_rects(UINT count, const D3D12_RECT * prects)
+   {
+      if (count > D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE || (count && !prects))
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 scissor array");
+      if (!m_pcommandlist || m_estate != ::gpu::command_buffer::e_state_recording)
+         throw ::exception(error_wrong_state, "Setting scissors requires a recording DirectX 12 command buffer");
+
+      m_pcommandlist->RSSetScissorRects(count, prects);
+      for (UINT i = 0; i < count; ++i)
+         m_scissora[i] = prects[i];
+      m_uScissorCount = count;
    }
 
 

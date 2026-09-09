@@ -9084,7 +9084,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto ppixmapPixmap = pixmap.map();
 
-      auto pgpucommandbuffer = ::gpu::current_layer()->getCurrentCommandBuffer4();
+      auto pgpucommandbuffer = gpu_context()->beginSingleTimeCommands();
 
       pgputexture->read_pixels(pgpucommandbuffer, ppixmapPixmap, {});
 

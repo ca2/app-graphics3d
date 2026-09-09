@@ -261,7 +261,7 @@ namespace gpu_directx12
 
       ptextureSwapChain->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
-      if (!ptextureSwapChain->m_pheapRenderTargetView)
+      if (!ptextureSwapChain->m_handleRenderTargetView.ptr)
       {
 
          ptextureSwapChain->create_render_target();

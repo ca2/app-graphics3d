@@ -9,6 +9,8 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "direct2d/_.h"
+#include "direct2d/direct2d.h"
 #include "queue.h"
 #include "window_attachment.h"
 #include "offscreen_render_target_view.h"
@@ -27,6 +29,7 @@
 
 #include "bred/gpu/block.h"
 #include "bred/gpu/queue.h"
+#include "bred/gpu/scoped_texture_state.h"
 #include "bred/gpu/texture_site.h"
 
 using namespace directx12;
@@ -577,7 +580,7 @@ namespace gpu_directx12
    }
 
 
-   void context::copy(::gpu::texture_site * ptexturesiteTarget, ::gpu::texture_site * ptexturesiteSource,
+   void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * ptexturesiteTarget, ::gpu::texture_site * ptexturesiteSource,
                       ::pointer<::gpu::fence> * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
    {
 
@@ -589,9 +592,11 @@ namespace gpu_directx12
 
       //auto pcommandbuffer = prenderer->beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
-      pcommandbuffer->wait_commands_to_execute();
+      ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
+
+      //pcommandbuffer->wait_commands_to_execute();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -599,8 +604,11 @@ namespace gpu_directx12
 
       //texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-      ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_target);
-      ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_source);
+      // The native copy helper validates first and restores the exact D3D12
+      // states (including newly created resources without a logical state yet).
+
+      //ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_target);
+      //ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_source);
 
       //// Transition source to COPY_SOURCE
       //D3D12_RESOURCE_BARRIER barrier1 = {};
@@ -620,7 +628,20 @@ namespace gpu_directx12
       //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
       //pcommandlist->ResourceBarrier(1, &barrier2);
 
-      pcommandbuffer->_copy_resource(ptextureDst, ptextureSrc);
+      if (ptextureDst->size() == ptextureSrc->size())
+      {
+
+         pcommandbuffer->_copy_resource(ptextureDst, ptextureSrc);
+
+      }
+      else
+      {
+
+         pcommandbuffer->_copy_texture_region(ptextureDst, ptextureSrc);
+
+      }
+
+      pcommandbuffer->m_particleaHold.add(ptextureSrc);
 
       //pcommandbuffer->submit_command_buffer();
 
@@ -2082,9 +2103,17 @@ namespace gpu_directx12
 
             //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-            pdevice->d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
-               ptexture->d3d11()->m_d3d11resourceaWrapped,
-               _countof(ptexture->d3d11()->m_d3d11resourceaWrapped));
+            auto pinterop = pdevice->d3d11on12();
+            auto pwrapped = ptexture->d3d11();
+            {
+               // Direct2D automatically takes this same factory lock. Do not
+               // mutate its shared D3D11-on-12 context during a worker's D2D call.
+               // Keep dispatch, command recording and GPU waits outside this scope.
+               ::direct2d_lock interoplock(::direct2d::get());
+               pinterop->m_pd3d11on12->AcquireWrappedResources(
+                  pwrapped->m_d3d11resourceaWrapped,
+                  _countof(pwrapped->m_d3d11resourceaWrapped));
+            }
 
             informationf("DX12 D2D_BIND_STAGE acquired");
 
@@ -2122,49 +2151,59 @@ namespace gpu_directx12
 
          ASSERT(m_etype == e_type_draw2d);
 
-
-
-         ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
-
-         auto ptexturesite = pgpulayer->texture(false);
-
-         ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
-
-         ::cast < device > pgpudevice = m_pgpudevice;
-
-         auto pdxgidevice = pgpudevice->_get_dxgi_device();
-
-         auto pgpurendertarget = m_pgpurenderer->render_target();
-
-         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
-
-         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
-
-         auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
-
-         if (ptexture->d3d11()->m_pd3d11resourceWrapped)
+         if (m_bD3D11On12Shared)
          {
 
-            pgpudevice->d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-               ptexture->d3d11()->m_d3d11resourceaWrapped, 1);
+            ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-            // ReleaseWrappedResources queues the D3D11-on-12 ownership handoff.
-            // Flush the immediate context so that handoff and all Direct2D work
-            // reach the shared D3D12 queue before merge_layers samples it.
-            pgpudevice->d3d11on12()->m_pd3d11devicecontextMain->Flush();
+            auto ptexturesite = pgpulayer->texture(false);
 
-            // The wrapped resource's OutState is shader-readable.  Keep ca2's
-            // D3D12 state tracker synchronized with that implicit transition.
-            //ptexture->m_pd3d12resourceTexture->m_state.m_resourcestates =
-              // D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+            ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
 
-            m_iResourceWrappingCount--;
+            ::cast < device > pgpudevice = m_pgpudevice;
 
-            //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+            auto pdxgidevice = pgpudevice->_get_dxgi_device();
+
+            auto pgpurendertarget = m_pgpurenderer->render_target();
+
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+
+            auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
+
+            auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
+
+            if (ptexture->d3d11()->m_pd3d11resourceWrapped)
+            {
+
+               auto pinterop = pgpudevice->d3d11on12();
+               auto pwrapped = ptexture->d3d11();
+               {
+                  // EndDraw for this layer has already completed. Serialize the
+                  // release and submission together against other D2D contexts,
+                  // including cached-icon/preview drawing on the shell worker.
+                  ::direct2d_lock interoplock(::direct2d::get());
+                  pinterop->m_pd3d11on12->ReleaseWrappedResources(
+                     pwrapped->m_d3d11resourceaWrapped, 1);
+
+                  // Submit the ownership handoff before merge_layers uses it.
+                  // Flush submits work; no CPU fence wait belongs under this lock.
+                  pinterop->m_pd3d11devicecontextMain->Flush();
+               }
+
+               // The wrapped resource's OutState is shader-readable.  Keep ca2's
+               // D3D12 state tracker synchronized with that implicit transition.
+               //ptexture->m_pd3d12resourceTexture->m_state.m_resourcestates =
+                 // D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+               m_iResourceWrappingCount--;
+
+               //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+            }
+
+            ASSERT(m_iResourceWrappingCount == 0);
 
          }
-
-         ASSERT(m_iResourceWrappingCount == 0);
 
       }
 
@@ -2744,6 +2783,13 @@ namespace gpu_directx12
    ::gpu::swap_chain * context::get_swap_chain()
    {
 
+      if (!m_papplication->m_gpu.m_bUseSwapChainWindow)
+      {
+
+         return nullptr;
+
+      }
+
       if (m_etype != e_type_window)
       {
 
@@ -3005,8 +3051,6 @@ namespace gpu_directx12
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
       D3D12_VIEWPORT viewport = {};
 
       viewport.TopLeftX = (FLOAT)rectangle.left;
@@ -3016,7 +3060,7 @@ namespace gpu_directx12
       viewport.MinDepth = 0.0f;
       viewport.MaxDepth = 1.0f;
 
-      pcommandlist->RSSetViewports(1, &viewport);
+      pcommandbuffer->set_viewports(1, &viewport);
 
    }
 
@@ -3026,16 +3070,14 @@ namespace gpu_directx12
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
-      D3D11_RECT scissorRect;
+      D3D12_RECT scissorRect;
 
       scissorRect.left = rectangle.left;
       scissorRect.top = rectangle.top;
       scissorRect.right = rectangle.right;
       scissorRect.bottom = rectangle.bottom;
 
-      pcommandlist->RSSetScissorRects(1, &scissorRect);
+      pcommandbuffer->set_scissor_rects(1, &scissorRect);
 
    }
 

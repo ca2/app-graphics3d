@@ -70,15 +70,8 @@ namespace gpu_directx12
 
       m_pd3d12resourceBlock->m_presource->SetName(::wstring(m_strBlockName));
 
-      D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-
-      cbvDesc.BufferLocation = m_pd3d12resourceBlock->m_presource->GetGPUVirtualAddress();
-
-      cbvDesc.SizeInBytes = ::directx12::Align256(iBufferSize); // must be 256-byte aligned
-
-      auto handle = prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart();
-
-      pgpudevice->m_pd3d12device->CreateConstantBufferView(&cbvDesc, handle);
+      // This block is bound with SetGraphicsRootConstantBufferView (GPU VA),
+      // not a descriptor table. No separate renderer-local heap is needed.
 
       CD3DX12_RANGE readRange(0, 0);
 
