@@ -248,6 +248,7 @@ namespace app_graphics3d_hello_space
          /// floor.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
          screen.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
          screen.m_prenderable->m_egpumodel = ::gpu::e_model_wavefront_for_texture;
+         screen.m_erendersystem = ::graphics3d::e_render_system_texture;
          screen.m_strName = "Screen";
          //screen.m_prenderable->m_pimageTextureNew = image()->path_image("dropbox://Photos/p.jpg");
          //screen.m_prenderable->m_pimageTextureNew = image()->path_image("dropbox://Photos/tbs8.jpg");
@@ -256,7 +257,20 @@ namespace app_graphics3d_hello_space
 
       //m_pimageHelloMultiverseScreen = image()->path_image("dropbox://Photos/weather/day/clear/ocean.jpg");
       
-      auto pathBackground = directory_system()->roaming() / "app-core/ambient/background.png";
+      auto pdisplay = system()->windowing()->display();
+
+      ::i32_rectangle rectangleMainMonitor;
+
+      auto iMainMonitor = pdisplay->get_main_monitor(rectangleMainMonitor);
+
+      ::file::path pathBackground = pdisplay->get_wallpaper(iMainMonitor);
+
+      if (pathBackground.is_empty() || !file()->exists(pathBackground))
+      {
+
+         pathBackground = directory_system()->roaming() / "app-core/ambient/background.png";
+
+      }
 
       if (!file()->exists(pathBackground))
       {
@@ -500,7 +514,21 @@ namespace app_graphics3d_hello_space
       }
 
 
-      auto sizeMainMonitor = system()->windowing()->display()->get_main_monitor_size();
+      auto pdisplay = system()->windowing()->display();
+
+      ::i32_rectangle rectangleMainMonitor;
+
+      pdisplay->get_main_monitor(rectangleMainMonitor);
+
+      auto sizeMainMonitor = rectangleMainMonitor.size();
+
+      if (sizeMainMonitor.is_empty())
+      {
+
+         sizeMainMonitor = pdisplay->get_main_monitor_size();
+         rectangleMainMonitor = {0, 0, sizeMainMonitor.cx, sizeMainMonitor.cy};
+
+      }
 
 
       defer_construct_newø(m_pgputexturesiteHelloMultiverseScreen);
@@ -522,6 +550,7 @@ namespace app_graphics3d_hello_space
 
                ::gpu::texture_flags flagsHelloMultiverseScreen;
                flagsHelloMultiverseScreen.m_bShaderResource = true;
+               flagsHelloMultiverseScreen.m_bTransferTarget = true;
 
                pgputextureHelloMultiverseScreen->create_texture(pgpucontext, m_pimageHelloMultiverseScreen->size(), flagsHelloMultiverseScreen);
 
@@ -539,6 +568,7 @@ namespace app_graphics3d_hello_space
 
                ::gpu::texture_flags flagsMonitorMultisample;
                flagsMonitorMultisample.m_bRenderTarget = true;
+               flagsMonitorMultisample.m_bTransferSource = true;
 
                pgputextureMonitorMultisample->create_texture(pgpucontext, sizeMainMonitor, flagsMonitorMultisample);
 
@@ -546,7 +576,11 @@ namespace app_graphics3d_hello_space
                
                auto pgputextureMonitor2 = m_pgputexturesiteMonitor2->gpu_texture();
 
-               pgputextureMonitor2->create_texture(pgpucontext, sizeMainMonitor);
+               ::gpu::texture_flags flagsMonitor2;
+               flagsMonitor2.m_bShaderResource = true;
+               flagsMonitor2.m_bTransferTarget = true;
+
+               pgputextureMonitor2->create_texture(pgpucontext, sizeMainMonitor, flagsMonitor2);
 
             }
 
@@ -571,29 +605,87 @@ namespace app_graphics3d_hello_space
                try
                {
 
-                  ::i64 *p = (::i64 *)pdata;
+                  auto pheader = (::graphics::bitmap_source_buffer_header *)pdata;
 
-                  auto x = *p++;
-                  auto y = *p++;
-                  auto cx = *p++;
-                  auto cy = *p++;
-                  auto cxRaw = *p++;
-                  auto cyRaw = *p++;
-                  auto iScan = *p++;
+                  ::i64 x;
+                  ::i64 y;
+                  ::i64 cx;
+                  ::i64 cy;
+                  ::i64 cxBitmap;
+                  ::i64 cyBitmap;
+                  ::i64 iScan;
+                  bool bTopLeft;
+                  ::i32_rectangle rectangleBitmapSourceMonitor;
+                  ::memsize sBitmapSourceHeader;
+                  ::image32_t *pimage32;
+
+                  if (pheader->m_iMagic == ::graphics::BITMAP_SOURCE_BUFFER_MAGIC
+                     && pheader->m_iVersion == ::graphics::BITMAP_SOURCE_BUFFER_VERSION)
+                  {
+
+                     x = pheader->m_xWindow;
+                     y = pheader->m_yWindow;
+                     cx = pheader->m_cxWindow;
+                     cy = pheader->m_cyWindow;
+                     cxBitmap = pheader->m_cxBitmap;
+                     cyBitmap = pheader->m_cyBitmap;
+                     iScan = pheader->m_iScan;
+                     bTopLeft = pheader->m_bTopLeft != 0;
+                     rectangleBitmapSourceMonitor = {
+                        (::i32)pheader->m_xMonitor,
+                        (::i32)pheader->m_yMonitor,
+                        (::i32)(pheader->m_xMonitor + pheader->m_cxMonitor),
+                        (::i32)(pheader->m_yMonitor + pheader->m_cyMonitor)};
+                     sBitmapSourceHeader = sizeof(::graphics::bitmap_source_buffer_header);
+                     pimage32 = (::image32_t *)(pheader + 1);
+
+                  }
+                  else
+                  {
+
+                     ::i64 *p = (::i64 *)pdata;
+
+                     x = *p++;
+                     y = *p++;
+                     cx = *p++;
+                     cy = *p++;
+                     cxBitmap = *p++;
+                     cyBitmap = *p++;
+                     iScan = *p++;
+                     bTopLeft = true;
+                     rectangleBitmapSourceMonitor = rectangleMainMonitor;
+                     sBitmapSourceHeader = 7 * sizeof(::i64);
+                     pimage32 = (::image32_t *)p;
+
+                  }
+
+                  auto sBitmapSource = m_pbitmapsourcebuffergraphics->m_pmemorymap->m_size;
+
+                  if (cx <= 0 || cy <= 0
+                     || cxBitmap <= 0 || cyBitmap <= 0
+                     || cxBitmap > 0x7fffffffLL || cyBitmap > 0x7fffffffLL
+                     || iScan < cxBitmap * (::i64)sizeof(::image32_t)
+                     || sBitmapSource < sBitmapSourceHeader
+                     || (::u64)cyBitmap >
+                        (::u64)(sBitmapSource - sBitmapSourceHeader) / (::u64)iScan
+                     || rectangleMainMonitor.is_empty()
+                     || rectangleBitmapSourceMonitor.is_empty())
+                  {
+
+                     throw ::exception(error_bad_argument);
+
+                  }
 
                   //::copy_image32((::color32_t*)p, ppixmap->size(), iScan, ppixmap);
 
                   auto ppixmap = create_newø<::pixmap>();
-                  ppixmap->m_pimage32Raw = (::image32_t *)p;
+                  ppixmap->m_pimage32Raw = pimage32;
                   ppixmap->m_pimage32 = (::image32_t *)nullptr;
-                  ppixmap->m_point.x = (::i32)x;
-                  ppixmap->m_point.y = (::i32)y;
-                  ppixmap->m_size.cx = (::i32)cx;
-                  ppixmap->m_size.cy = (::i32)cy;
-                  ppixmap->m_sizeRaw.cx = (::i32)cxRaw;
-                  ppixmap->m_sizeRaw.cy = (::i32)cyRaw;
+                  ppixmap->m_point = {pheader->m_xWindow, pheader->m_yWindow};
+                  ppixmap->m_size = { pheader->m_cxWindow, pheader->m_cyWindow };
+                  ppixmap->m_sizeRaw = { pheader->m_cxBitmap, pheader->m_cyBitmap };
                   ppixmap->m_iScan = (::i32) iScan;
-                  ppixmap->pixmap_map();
+                  ppixmap->m_bTopLeft = bTopLeft;
 
                   // m_pimageHelloMultiverse->create({cx, cy},e_flag_success, iScan);
 
@@ -607,16 +699,16 @@ namespace app_graphics3d_hello_space
                   if (ppixmap->m_sizeRaw != m_pgputexturesiteHelloMultiverse->gpu_texture()->raw_size())
                   {
 
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->destroy();
+                     ::gpu::texture_flags flagsHelloMultiverse;
+                     flagsHelloMultiverse.m_bShaderResource = true;
+                     flagsHelloMultiverse.m_bTransferTarget = true;
 
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, ppixmap->m_sizeRaw);
-
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->m_textureattributes.m_sizeRaw = ppixmap->m_sizeRaw;
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(
+                        pgpucontext, ppixmap->m_sizeRaw, flagsHelloMultiverse);
 
                   }
 
-                  m_pgputexturesiteHelloMultiverse->m_pointOutput = { x, y };
-                  m_pgputexturesiteHelloMultiverse->gpu_texture()->m_textureattributes.m_size = ppixmap->m_size;
+                  m_pgputexturesiteHelloMultiverse->m_pointOutput = {};
 
 
                   
@@ -645,10 +737,14 @@ namespace app_graphics3d_hello_space
                   if (m_pgputexturesiteHelloMultiverse)
                   {
 
-                     pgpucommandbuffer->clear(m_pgputexturesiteHelloMultiverse->gpu_texture(), color::transparent);
+                     {
 
-                     //m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(pgpucommandbuffer, ppixmap, {x, y});
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(true, ppixmap, { x, y });
+                        auto p = ppixmap->map();
+
+                        //m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(pgpucommandbuffer, ppixmap, {x, y});
+                        m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(true, p, {});
+
+                     }
 
 
                      // pgpucontext->copy(m_pgputextureMonitor, m_pgputextureHelloMultiverseScreen, nullptr);
@@ -689,44 +785,102 @@ namespace app_graphics3d_hello_space
                      //pgpucommandbuffer->bind_slot_set(2, pbindingslotsetTexture);
 
 
-                     auto rectangleMonitor = m_pgputexturesiteHelloMultiverseScreen->output_placement();
+                     auto rectangleMonitor = m_pgputexturesiteMonitorMultisample->output_placement();
 
-                     pgpucommandbuffer->set_viewport(rectangleMonitor, ppixmap->m_sizeRaw);
-                     pgpucommandbuffer->set_scissor(rectangleMonitor, ppixmap->m_sizeRaw);
+                     auto sizeMonitorRaw = m_pgputexturesiteMonitorMultisample->raw_size();
 
-                     m_pgpushaderBlend->set_impact_quad(rectangleMonitor.size(), ppixmap->m_sizeRaw);
+                     pgpucommandbuffer->set_viewport(rectangleMonitor, sizeMonitorRaw);
+                     pgpucommandbuffer->set_scissor(rectangleMonitor, sizeMonitorRaw);
+
+                     m_pgpushaderBlend->set_impact_quad(
+                        m_pgputexturesiteHelloMultiverseScreen->input_placement(),
+                        m_pgputexturesiteHelloMultiverseScreen->raw_size());
 
                      m_pgpushaderBlend->push_properties(pgpucommandbuffer);
 
                      pgpucommandbuffer->draw(m_pmodelbufferDummy);
+
+                     //pgpucommandbuffer->clear(m_pgputexturesiteHelloMultiverse->gpu_texture(), argb(128, 100, 180, 210));
+
 
                      m_pgpushaderBlend->bind_source(pgpucommandbuffer, m_pgputexturesiteHelloMultiverse);
 
-                     auto rectangleHelloMultiverse = m_pgputexturesiteHelloMultiverse->output_placement();
+                     //auto screen_x_to_monitor_texture_x =
+                     //   [&](::i64 iScreenX)
+                     //   {
 
-                     if (0)
+                     //      return rectangleMonitor.left + (::i32)(
+                     //         (iScreenX - rectangleBitmapSourceMonitor.left) *
+                     //         rectangleMonitor.width() /
+                     //         rectangleBitmapSourceMonitor.width());
+
+                     //   };
+
+                     //auto screen_y_to_monitor_texture_y =
+                     //   [&](::i64 iScreenY)
+                     //   {
+
+                     //      return rectangleMonitor.top + (::i32)(
+                     //         (iScreenY - rectangleBitmapSourceMonitor.top) *
+                     //         rectangleMonitor.height() /
+                     //         rectangleBitmapSourceMonitor.height());
+
+                     //   };
+
+                     //::i32_rectangle rectangleHelloMultiverseUnclipped(
+                     //   screen_x_to_monitor_texture_x(x),
+                     //   screen_y_to_monitor_texture_y(y),
+                     //   screen_x_to_monitor_texture_x(x + cx),
+                     //   screen_y_to_monitor_texture_y(y + cy));
+
+                     //auto rectangleHelloMultiverse = rectangleHelloMultiverseUnclipped;
+
+                     //rectangleHelloMultiverse.intersect(rectangleMonitor);
+
+                     auto rectangleHelloMultiverse = ppixmap->rectangle();
+
+                     if (rectangleHelloMultiverse.has_area())
                      {
 
-                        pgpucommandbuffer->set_viewport(rectangleHelloMultiverse, ppixmap->m_sizeRaw);
-                        pgpucommandbuffer->set_scissor(rectangleHelloMultiverse, ppixmap->m_sizeRaw);
+                        pgpucommandbuffer->set_viewport(rectangleHelloMultiverse, sizeMonitorRaw);
+                        pgpucommandbuffer->set_scissor(rectangleHelloMultiverse, sizeMonitorRaw);
 
-                        m_pgpushaderBlend->set_impact_quad(rectangleHelloMultiverse, rectangleMonitor.size());
+                        //::i32_rectangle rectangleHelloMultiverseSource(
+                        //   (::i32)((rectangleHelloMultiverse.left
+                        //      - rectangleHelloMultiverseUnclipped.left)
+                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
+                        //   (::i32)((rectangleHelloMultiverse.top
+                        //      - rectangleHelloMultiverseUnclipped.top)
+                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()),
+                        //   (::i32)((rectangleHelloMultiverse.right
+                        //      - rectangleHelloMultiverseUnclipped.left)
+                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
+                        //   (::i32)((rectangleHelloMultiverse.bottom
+                        //      - rectangleHelloMultiverseUnclipped.top)
+                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()));
+                        //::i32_rectangle rectangleHelloMultiverseSource(
+                        //   (::i32)((rectangleHelloMultiverse.left
+                        //      )
+                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
+                        //   (::i32)((rectangleHelloMultiverse.top
+                        //      )
+                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()),
+                        //   (::i32)((rectangleHelloMultiverse.right
+                        //      )
+                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
+                        //   (::i32)((rectangleHelloMultiverse.bottom
+                        //      )
+                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()));
+                        rectangleHelloMultiverse.offset(-rectangleHelloMultiverse.origin());
+                        m_pgpushaderBlend->set_impact_quad(
+                           rectangleHelloMultiverse,
+                           ppixmap->m_sizeRaw);
+
+                        m_pgpushaderBlend->push_properties(pgpucommandbuffer);
+
+                        pgpucommandbuffer->draw(m_pmodelbufferDummy);
 
                      }
-                     //else
-                     //{
-
-                     //   pgpucommandbuffer->set_viewport(rectangleMonitor, ppixmap->m_sizeRaw);
-                     //   pgpucommandbuffer->set_scissor(rectangleMonitor, ppixmap->m_sizeRaw);
-
-                     //   m_pgpushaderBlend->set_impact_quad(rectangleMonitor.size(), rectangleMonitor.size());
-
-                     //}
-
-
-                     m_pgpushaderBlend->push_properties(pgpucommandbuffer);
-
-                     pgpucommandbuffer->draw(m_pmodelbufferDummy);
 
 
                      //floating_sequence2 seq2TopLeft;
@@ -754,6 +908,8 @@ namespace app_graphics3d_hello_space
 
                      m_pgpushaderBlend->unbind(pgpucommandbuffer);
 
+                     pgpucommandbuffer->end_render();
+
                      pgpucontext->copy(pgpucommandbuffer, m_pgputexturesiteMonitor2, m_pgputexturesiteMonitorMultisample, nullptr, nullptr);
 
                      if (m_prenderable)
@@ -769,8 +925,6 @@ namespace app_graphics3d_hello_space
                         }
 
                      }
-
-                     pgpucommandbuffer->end_render();
                   }
 
                   // memory_copy(p, ppixmap->m_pimage32Raw, ppixmap->height() * iScan);

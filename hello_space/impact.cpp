@@ -119,9 +119,8 @@ namespace app_graphics3d_hello_space
    void impact::on_message_destroy(::message::message * pmessage)
    {
 
+
    }
-
-
 
 
    void impact::handle(::topic * ptopic, ::handler_context * phandlercontext)

@@ -371,8 +371,8 @@ namespace gpu_vulkan
    || iScan < size.cx * iBytesPerPixel
    || point.x < 0
    || point.y < 0
-   || point.x + size.cx > width()
-   || point.y + size.cy > height())
+   || point.x + size.cx > raw_width()
+   || point.y + size.cy > raw_height())
       {
 
          throw ::exception(error_bad_argument);
