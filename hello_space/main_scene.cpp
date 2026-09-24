@@ -3,7 +3,7 @@
 #include "platform.h"
 #include "application.h"
 #include "camera.h"
-#include "impact.h"
+//#include "impact.h"
 #include "input.h"
 #include "main_scene.h"
 #include "acme/filesystem/filesystem/directory_context.h"
@@ -25,12 +25,14 @@
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/graphics3d/engine_instance.h"
+#include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
 #include "bred/graphics3d/render_system/wavefront_obj_render_system.h"
 #include "bred/graphics3d/render_system/point_light_render_system.h"
 #include "bred/graphics3d/render_system/skybox_render_system.h"
 #include "bred/graphics3d/render_system/texture_render_system.h"
+#include "bred/user/user/graphics3d.h"
 
 
 namespace app_graphics3d_hello_space
@@ -40,11 +42,13 @@ namespace app_graphics3d_hello_space
    main_scene::main_scene()
    {
 
+
    }
 
 
    main_scene::~main_scene()
    {
+
 
    }
 
@@ -52,9 +56,7 @@ namespace app_graphics3d_hello_space
    void main_scene::on_initialize_scene()
    {
 
-      scene::on_initialize_particle();
-
-      m_papp->m_pmainscene = this;
+      ::app_graphics3d_continuum::main_scene::on_initialize_scene();
 
    }
 
@@ -89,6 +91,8 @@ namespace app_graphics3d_hello_space
       return m_pcameraDefault;
 
    }
+
+
    inline const ::gpu::property *overlay1_properties()
    {
 
@@ -221,15 +225,22 @@ namespace app_graphics3d_hello_space
 
       //}
 
+   int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+
+   if (iImpactSerial == 1 || iImpactSerial == 2)
+   {
+
+      if(1)
       {
 
-         auto &lcdMonitor = scene_renderable("matter://models/MicrosoftMonitor.obj", false);
-         lcdMonitor.translate({-1.4f, 0.f, -1.0f});
-         lcdMonitor.scale({0.03f, 0.03f, 0.03f});
-         lcdMonitor.m_matrixRotation.rotate({0.0f, 1.0f, 0.0f}, 25_f_degrees);
-            
+         auto & lcdMonitor = scene_renderable("matter://models/MicrosoftMonitor.obj", false);
+         lcdMonitor.translate({ -1.4f, 0.f, -1.0f });
+         lcdMonitor.scale({ 0.03f, 0.03f, 0.03f });
+         lcdMonitor.m_matrixRotation.rotate({ 0.0f, 1.0f, 0.0f }, 25_f_degrees);
+
+         lcdMonitor.m_ecoordinatesystem = ::gpu::e_coordinate_system_none;
          //lcdMonitor.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
-         // woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
+         //lcdMonitor.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          lcdMonitor.m_strName = "LCD Monitor";
       }
 
@@ -237,16 +248,16 @@ namespace app_graphics3d_hello_space
          //f64_angle angleExtra = 80_degrees;
          auto angleExtra = 180_f_degrees;
          double dShift = 0.0;
-         auto &screen = scene_renderable("matter://models/quad2.obj", true);
-         screen.translate({-1.32,0.72, -0.84 - dShift});
+         auto & screen = scene_renderable("matter://models/quad2.obj", true);
+         screen.translate({ -1.32,0.72, -0.84 - dShift });
          // floor.scale({5.f, -1.f, 5.f * fXScale });
-         screen.scale({9.0 * 0.0418, 1.0, 16.4 * 0.0418});
-         screen.m_matrixRotation.rotate({0.0, 1.0, 0.0}, 25_f_degrees + angleExtra);
-         screen.m_matrixRotation.rotate({0.0, 0.0, 1.0}, 270_f_degrees);
-         screen.m_matrixRotation.rotate({1.0, 0.0, 0.0}, 90_f_degrees);
+         screen.scale({ 9.0 * 0.0418, 1.0, 16.4 * 0.0418 });
+         screen.m_matrixRotation.rotate({ 0.0, 1.0, 0.0 }, 25_f_degrees + angleExtra);
+         screen.m_matrixRotation.rotate({ 0.0, 0.0, 1.0 }, 270_f_degrees);
+         screen.m_matrixRotation.rotate({ 1.0, 0.0, 0.0 }, 90_f_degrees);
          m_prenderable = &screen;
          /// floor.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
-         screen.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
+         //screen.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
          screen.m_prenderable->m_egpumodel = ::gpu::e_model_wavefront_for_texture;
          screen.m_erendersystem = ::graphics3d::e_render_system_texture;
          screen.m_strName = "Screen";
@@ -254,6 +265,7 @@ namespace app_graphics3d_hello_space
          //screen.m_prenderable->m_pimageTextureNew = image()->path_image("dropbox://Photos/tbs8.jpg");
          //screen.m_prenderable->m_pimageTextureNew = image()->path_image("dropbox://Photos/weather/clear/day/ocean.jpg");
       }
+
 
       //m_pimageHelloMultiverseScreen = image()->path_image("dropbox://Photos/weather/day/clear/ocean.jpg");
       
@@ -284,6 +296,10 @@ namespace app_graphics3d_hello_space
       construct_newø(m_pbitmapsourcebuffergraphics);
 
       m_pbitmapsourcebuffergraphics->set_bitmap_source("HelloMultiverse!!", false);
+
+
+   }
+
 
       //float fLo = 0.5f;
 
@@ -552,7 +568,9 @@ namespace app_graphics3d_hello_space
                flagsHelloMultiverseScreen.m_bShaderResource = true;
                flagsHelloMultiverseScreen.m_bTransferTarget = true;
 
-               pgputextureHelloMultiverseScreen->create_texture(pgpucontext, m_pimageHelloMultiverseScreen->size(), flagsHelloMultiverseScreen);
+               auto sizeImage = m_pimageHelloMultiverseScreen->size();
+
+               pgputextureHelloMultiverseScreen->create_texture(pgpucontext, sizeImage, flagsHelloMultiverseScreen);
 
                auto ppixmapImageHelloMultiverseScreen = m_pimageHelloMultiverseScreen->map();
 
@@ -742,6 +760,10 @@ namespace app_graphics3d_hello_space
                         auto p = ppixmap->map();
 
                         //m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(pgpucommandbuffer, ppixmap, {x, y});
+                        // p already addresses the mapped window rectangle inside
+                        // the desktop-sized CPU bitmap. Store that window image at
+                        // the GPU texture origin; its desktop offset is applied once
+                        // below by the destination viewport.
                         m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(true, p, {});
 
                      }
@@ -871,10 +893,12 @@ namespace app_graphics3d_hello_space
                         //   (::i32)((rectangleHelloMultiverse.bottom
                         //      )
                         //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()));
+
+                        auto sizePixmapRaw = ppixmap->raw_size();
                         rectangleHelloMultiverse.offset(-rectangleHelloMultiverse.origin());
                         m_pgpushaderBlend->set_impact_quad(
                            rectangleHelloMultiverse,
-                           ppixmap->m_sizeRaw);
+                           sizePixmapRaw);
 
                         m_pgpushaderBlend->push_properties(pgpucommandbuffer);
 
@@ -882,6 +906,7 @@ namespace app_graphics3d_hello_space
 
                      }
 
+                     //pgpucommandbuffer->clear(m_pgputexturesiteMonitorMultisample->gpu_texture(), argb(128, 100, 180, 210));
 
                      //floating_sequence2 seq2TopLeft;
 

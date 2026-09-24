@@ -2,6 +2,7 @@
 #include "application.h"
 #include "main_frame.h"
 #include "document.h"
+#include "immersion.h"
 #include "impact.h"
 #include "main_scene.h"
 #include "pane_impact.h"
@@ -101,6 +102,7 @@ namespace app_graphics3d_continuum
       factory()->add_factory_item <::user::gpu_statistics_impact >();
       factory()->add_factory_item <::app_graphics3d_continuum::switcher_impact >();
       factory()->add_factory_item <::app_graphics3d_continuum::pane_impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::immersion >();
 
       ::core::application::init_instance();
 

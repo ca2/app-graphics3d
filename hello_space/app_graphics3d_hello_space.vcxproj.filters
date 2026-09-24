@@ -13,9 +13,6 @@
     <ClCompile Include="document.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="impact.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main_frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -26,9 +23,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main_scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="aaa_global_ubo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
@@ -43,9 +37,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="document.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="impact.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="main_frame.h">
@@ -63,21 +54,6 @@
     <ClInclude Include="pane_impact.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="_vulkan.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="aaa_global_ubo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics3d\main_scene.h">
-      <Filter>Header Files\graphics3d</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics3d\point_light_system.h">
-      <Filter>Header Files\graphics3d</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics3d\simple_render_system.h">
-      <Filter>Header Files\graphics3d</Filter>
-    </ClInclude>
     <ClInclude Include="immersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -90,12 +66,6 @@
     <ClInclude Include="main_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="opengl\overlay1.frag.h">
-      <Filter>Header Files\opengl</Filter>
-    </ClInclude>
-    <ClInclude Include="opengl\overlay1.vert.h">
-      <Filter>Header Files\opengl</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -104,23 +74,6 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{553e2ad6-0eec-4e39-9937-6581b3f77c18}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\graphics3d">
-      <UniqueIdentifier>{4f7d92d7-443f-4dca-8930-cb18c9455114}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\opengl">
-      <UniqueIdentifier>{d228d1bb-03e7-41c2-888f-e7476a39690a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\opengl">
-      <UniqueIdentifier>{1be12548-a22c-4eef-817c-c969843fc04c}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="opengl\overlay1.frag">
-      <Filter>Source Files\opengl</Filter>
-    </CustomBuild>
-    <CustomBuild Include="opengl\overlay1.vert">
-      <Filter>Source Files\opengl</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="app_graphics3d_hello_space.def">

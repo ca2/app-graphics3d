@@ -750,6 +750,7 @@
     <ClCompile Include="render_system\gltf_render_system.cpp" />
     <ClCompile Include="render_system\scene_render_system.cpp" />
     <ClCompile Include="render_system\skybox_render_system.cpp" />
+    <ClCompile Include="render_system\texture_render_system.cpp" />
     <ClCompile Include="render_system\wavefront_obj_render_system.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="descriptors.cpp" />
@@ -785,6 +786,7 @@
     <ClInclude Include="render_system\gltf_render_system.h" />
     <ClInclude Include="render_system\scene_render_system.h" />
     <ClInclude Include="render_system\skybox_render_system.h" />
+    <ClInclude Include="render_system\texture_render_system.h" />
     <ClInclude Include="render_system\wavefront_obj_render_system.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />

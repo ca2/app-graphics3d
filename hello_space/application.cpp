@@ -2,9 +2,10 @@
 #include "application.h"
 #include "main_frame.h"
 #include "document.h"
-#include "impact.h"
+#include "immersion.h"
 #include "main_scene.h"
 #include "pane_impact.h"
+#include "app-graphics3d/continuum/impact.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/filesystem/filesystem/file_system_options.h"
@@ -20,6 +21,7 @@
 #include "berg/user/user/single_document_template.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/graphics3d.h"
+#include "bred/user/user/gpu_statistics_impact.h"
 
 
 __IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_hello_space);
@@ -75,10 +77,25 @@ namespace app_graphics3d_hello_space
    {
 
 
+      auto pcontext = m_papplication;
+
+      auto psession = pcontext->m_psession;
+
+      auto puser = psession->m_puser;
+
+      puser->will_use_impact_hint("font_selection_impact");
+      puser->will_use_impact_hint("color_selection_impact");
+
+
       factory()->add_factory_item <::app_graphics3d_hello_space::document >();
       factory()->add_factory_item <::app_graphics3d_hello_space::main_frame >();
-      factory()->add_factory_item <::app_graphics3d_hello_space::impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::switcher_impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::skybox_impact >();
       factory()->add_factory_item <::app_graphics3d_hello_space::pane_impact >();
+      factory()->add_factory_item <::user::gpu_statistics_impact >();
+      factory()->add_factory_item <::app_graphics3d_hello_space::immersion, ::app_graphics3d_continuum::immersion >();
+
 
       ::core::application::init_instance();
 
@@ -95,13 +112,40 @@ namespace app_graphics3d_hello_space
 
       add_impact_system("main", pimpactsystemMain);
       
-      add_impact_system(
-         "impact", __initialize_new::user::single_document_template(
-            "impact",
-            ::type<document>(),
-            ::type<main_frame>(),
-            ::type<impact>()));
+      //add_impact_system(
+      //   "impact", __initialize_new::user::single_document_template(
+      //      "impact",
+      //      ::type<document>(),
+      //      ::type<main_frame>(),
+      //      ::type<impact>()));
 
+      add_impact_system(
+   "impact", __initialize_new::user::single_document_template(
+      "impact",
+      ::type<document>(),
+      ::type<main_frame>(),
+      ::type<::app_graphics3d_continuum::impact>()));
+
+      add_impact_system(
+   "switcher_impact", __initialize_new::user::single_document_template(
+      "impact",
+      ::type<document>(),
+      ::type<main_frame>(),
+      ::type<::app_graphics3d_continuum::switcher_impact>()));
+
+      add_impact_system(
+"skybox_impact", __initialize_new::user::single_document_template(
+   "impact",
+   ::type<document>(),
+   ::type<main_frame>(),
+   ::type<::app_graphics3d_continuum::skybox_impact>()));
+
+      add_impact_system(
+"statistics_impact", __initialize_new::user::single_document_template(
+   "impact",
+   ::type<document>(),
+   ::type<main_frame>(),
+   ::type<::user::gpu_statistics_impact>()));
 #if defined(APPLE_IOS)
 
       m_pathApplicationText = "icloud://iCloud.app-simple/Documents/application/application.txt";
@@ -207,125 +251,131 @@ namespace app_graphics3d_hello_space
    void application::create_options_body(const ::atom & atom, ::user::interaction* pparent)
    {
 
-      auto pstillTitle = create_label<::user::still>(pparent, "graphics3d hello_space Options");
+      ::app_graphics3d_continuum::application::create_options_body(atom, pparent);
 
-      defer_constructø(pstillTitle->m_pwritetextfont);
+      //auto pstillTitle = create_label<::user::still>(pparent, "graphics3d hello_space Options");
 
-      pstillTitle->m_pwritetextfont->create_font(e_font_sans_ui, 24_pt);
+      //defer_constructø(pstillTitle->m_pwritetextfont);
 
-      auto playoutLine = create_line_layout(pparent, e_orientation_horizontal);
+      //pstillTitle->m_pwritetextfont->create_font(e_font_sans_ui, 24_pt);
 
-      playoutLine->m_atomMatterId = "::user::line_layout(1)";
+      //auto playoutLine = create_line_layout(pparent, e_orientation_horizontal);
 
-      {
+      //playoutLine->m_atomMatterId = "::user::line_layout(1)";
 
-         auto pcheckbox = create_check_box<::user::check_box>(playoutLine, "");
+      //{
 
-         bool bAbsoluteMousePosition = false;
+      //   auto pcheckbox = create_check_box<::user::check_box>(playoutLine, "");
 
-         if (datastream()->get("Absolute Mouse Position", bAbsoluteMousePosition))
-         {
+      //   bool bAbsoluteMousePosition = false;
 
-            pcheckbox->set_check(bAbsoluteMousePosition, ::e_source_initialize);
+      //   if (datastream()->get("Absolute Mouse Position", bAbsoluteMousePosition))
+      //   {
 
-         }
+      //      pcheckbox->set_check(bAbsoluteMousePosition, ::e_source_initialize);
 
-         m_bAbsoluteMousePosition = bAbsoluteMousePosition;
+      //   }
 
-         pcheckbox->check_changed(this) += [this](auto& check)
-            {
+      //   m_bAbsoluteMousePosition = bAbsoluteMousePosition;
 
-               auto bAbsoluteMousePosition = check.payload().as_bool();
+      //   pcheckbox->check_changed(this) += [this](auto& check)
+      //      {
 
-               datastream()->set("Absolute Mouse Position", bAbsoluteMousePosition);
+      //         auto bAbsoluteMousePosition = check.payload().as_bool();
 
-
-            bAbsoluteMousePosition = false;
-            datastream()->get("Absolute Mouse Position", bAbsoluteMousePosition);
-
-            m_bAbsoluteMousePosition = bAbsoluteMousePosition;
-
-               //on_change_synchronize_with_weather();
-
-            };
-
-         create_label<::user::still>(playoutLine, "Absolute Mouse Position");
-
-         
-
-      }
+      //         datastream()->set("Absolute Mouse Position", bAbsoluteMousePosition);
 
 
-      for(int i = 0; i < m_straSkybox.size(); i++)
-      {
+      //      bAbsoluteMousePosition = false;
+      //      datastream()->get("Absolute Mouse Position", bAbsoluteMousePosition);
 
-         auto playoutSkyboxCheckbox = create_line_layout(pparent, e_orientation_horizontal);
+      //      m_bAbsoluteMousePosition = bAbsoluteMousePosition;
 
-         ::string strId;
+      //         //on_change_synchronize_with_weather();
 
-         strId.formatf("(2)(%d)", i);
+      //      };
 
-         playoutSkyboxCheckbox->m_atomMatterId = "::user::line_layout" + strId;
+      //   create_label<::user::still>(playoutLine, "Absolute Mouse Position");
 
-         auto pcheckbox = create_check_box<::user::check_box>(playoutSkyboxCheckbox, "");
+      //   
 
-         create_label<::user::still>(playoutSkyboxCheckbox, m_straSkybox[i]);
+      //}
 
-         m_checkboxaSkyBox.add(pcheckbox);
 
-         if (m_straSkybox[i] == m_strSkybox)
-         {
-            m_checkboxaSkyBox[i]->set_check(e_check_checked, ::e_source_sync);
-         }
+      //for(int i = 0; i < m_straSkybox.size(); i++)
+      //{
 
-         pcheckbox->check_changed(this) += [this, i](::data::check_change& change)
-            {
+      //   auto playoutSkyboxCheckbox = create_line_layout(pparent, e_orientation_horizontal);
 
-               if (!change.action_context().is_user_source())
-               {
+      //   ::string strId;
 
-                  return;
+      //   strId.formatf("(2)(%d)", i);
 
-               }
+      //   playoutSkyboxCheckbox->m_atomMatterId = "::user::line_layout" + strId;
 
-               auto bChecked = change.payload().as_bool();
+      //   auto pcheckbox = create_check_box<::user::check_box>(playoutSkyboxCheckbox, "");
 
-               if (bChecked)
-               {
+      //   create_label<::user::still>(playoutSkyboxCheckbox, m_straSkybox[i]);
 
-                  for (int j = 0; j < m_straSkybox.size(); j++)
-                  {
+      //   m_checkboxaSkyBox.add(pcheckbox);
 
-                     if (j != i)
-                     {
+      //   if (m_straSkybox[i] == m_strSkybox)
+      //   {
+      //      m_checkboxaSkyBox[i]->set_check(e_check_checked, ::e_source_sync);
+      //   }
 
-                        m_checkboxaSkyBox[j]->set_check(e_check_unchecked, ::e_source_sync);
+      //   pcheckbox->check_changed(this) += [this, i](::data::check_change& change)
+      //      {
 
-                     }
+      //         if (!change.action_context().is_user_source())
+      //         {
 
-                  }
+      //            return;
 
-               }
-               else
-               {
+      //         }
 
-                  m_checkboxaSkyBox[i]->set_check(e_check_checked, ::e_source_sync);
+      //         auto bChecked = change.payload().as_bool();
 
-               }
+      //         if (bChecked)
+      //         {
 
-               ::string strSkybox = m_straSkybox[i];
+      //            for (int j = 0; j < m_straSkybox.size(); j++)
+      //            {
 
-               datastream()->set("skybox", strSkybox);
+      //               if (j != i)
+      //               {
 
-               m_strSkybox = strSkybox;
+      //                  m_checkboxaSkyBox[j]->set_check(e_check_unchecked, ::e_source_sync);
 
-               m_pmainscene->m_strSkybox = strSkybox;
+      //               }
 
-               m_pmainscene->m_pskyboxCurrent2 = m_pmainscene->m_pimmersionlayer->m_pgraphics3dengineinstance->m_pgraphics3d->m_mapSkybox[strSkybox];
+      //            }
 
-            };
+      //         }
+      //         else
+      //         {
 
-      }
+      //            m_checkboxaSkyBox[i]->set_check(e_check_checked, ::e_source_sync);
+
+      //         }
+
+      //         ::string strSkybox = m_straSkybox[i];
+
+      //         datastream()->set("skybox", strSkybox);
+
+      //         m_strSkybox = strSkybox;
+
+      //         m_pmainscene->m_strSkybox = strSkybox;
+
+      //         auto pgraphics3dengineinstance = m_pmainscene->m_pimmersionlayer->m_pgraphics3dengineinstance;
+
+      //         auto pgraphics3d = pgraphics3dengineinstance->m_pgraphics3d;
+
+      //         m_pmainscene->m_pskyboxCurrent2 = pgraphics3d->m_mapSkybox[strSkybox];
+
+      //      };
+
+      //}
 
 
 

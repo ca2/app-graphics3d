@@ -1,7 +1,7 @@
 #include "platform.h"
 #include "pane_impact.h"
 #include "application.h"
-#include "impact.h"
+//s#include "impact.h"
 #include "document.h"
 //#include "switcher_impact.h"
 //#include "render.h"
@@ -54,7 +54,7 @@ namespace app_graphics3d_hello_space
    void pane_impact::install_message_routing(::channel * pchannel)
    {
 
-      ::userex::pane_tab_impact::install_message_routing(pchannel);
+      ::app_graphics3d_continuum::pane_impact::install_message_routing(pchannel);
 
       USER_MESSAGE_LINK(::user::e_message_create, pchannel, this, &pane_impact::on_message_create);
 
@@ -76,30 +76,30 @@ namespace app_graphics3d_hello_space
 
       get_app()->m_ppaneimpact = this;
 
-      set_tab("Options", APP_OPTIONS_IMPACT);
-      set_tab("GPU", "options_impact_handler://gpu");
-      //set_tab("gcom", GCOM_IMPACT);
-      set_tab("hello_space", MAIN_IMPACT);
-      set_tab("switcher", MAIN_SWITCHER_IMPACT);
-      set_tab("Font", "font_selection_impact");
-      set_tab("Color", "color_selection_impact");
-#if 1
-      set_tab("Open", "file_manager_impact");
-#endif
-
-      m_mapoptionsimpacthandler.set_at("options_impact_handler://gpu", get_app());
-
-#if DEBUG_GCOM
-
-      set_current_tab_by_id(GCOM_IMPACT);
-      set_current_tab_by_id(MAIN_IMPACT);
-      set_current_tab_by_id(MAIN_SWITCHER_IMPACT);
-
-#else
-
-      set_current_tab_by_id(MAIN_IMPACT);
-
-#endif
+//      set_tab("Options", APP_OPTIONS_IMPACT);
+//      set_tab("GPU", "options_impact_handler://gpu");
+//      //set_tab("gcom", GCOM_IMPACT);
+//      set_tab("hello_space", MAIN_IMPACT);
+//      set_tab("switcher", MAIN_SWITCHER_IMPACT);
+//      set_tab("Font", "font_selection_impact");
+//      set_tab("Color", "color_selection_impact");
+//#if 1
+//      set_tab("Open", "file_manager_impact");
+//#endif
+//
+//      m_mapoptionsimpacthandler.set_at("options_impact_handler://gpu", get_app());
+//
+//#if DEBUG_GCOM
+//
+//      set_current_tab_by_id(GCOM_IMPACT);
+//      set_current_tab_by_id(MAIN_IMPACT);
+//      set_current_tab_by_id(MAIN_SWITCHER_IMPACT);
+//
+//#else
+//
+//      set_current_tab_by_id(MAIN_IMPACT);
+//
+//#endif
 
    }
 
@@ -123,193 +123,195 @@ namespace app_graphics3d_hello_space
    void pane_impact::on_change_cur_sel()
    {
 
-      ::userex::pane_tab_impact::on_change_cur_sel();
-      string strId = get_impact_id();
-      string_array stra;
-      m_prollfps = nullptr;
-      m_checkptraBilbo.erase_all();
+      ::app_graphics3d_continuum::pane_impact::on_change_cur_sel();
 
-      stra.explode("->:<-", strId);
+      //::userex::pane_tab_impact::on_change_cur_sel();
+      //string strId = get_impact_id();
+      //string_array stra;
+      //m_prollfps = nullptr;
+      //m_checkptraBilbo.erase_all();
 
-      if (get_impact_id() == GCOM_IMPACT
-         || get_impact_id() == MAIN_IMPACT
-         || get_impact_id() == MAIN_SWITCHER_IMPACT
-         || stra.contains(::as_string((int)GCOM_IMPACT))
-         || stra.contains(::as_string((int)MAIN_IMPACT))
-         || stra.contains(::as_string((int)MAIN_SWITCHER_IMPACT)))
-      {
+      //stra.explode("->:<-", strId);
 
-         auto ptabpaneFileManager = get_tab_by_id("file_manager_impact");
+      //if (get_impact_id() == GCOM_IMPACT
+      //   || get_impact_id() == MAIN_IMPACT
+      //   || get_impact_id() == MAIN_SWITCHER_IMPACT
+      //   || stra.contains(::as_string((int)GCOM_IMPACT))
+      //   || stra.contains(::as_string((int)MAIN_IMPACT))
+      //   || stra.contains(::as_string((int)MAIN_SWITCHER_IMPACT)))
+      //{
 
-         if (ptabpaneFileManager != nullptr && ptabpaneFileManager->m_pplaceholder != nullptr)
-         {
+      //   auto ptabpaneFileManager = get_tab_by_id("file_manager_impact");
 
-            ptabpaneFileManager->m_pplaceholder->display(::e_display_hide, {});
+      //   if (ptabpaneFileManager != nullptr && ptabpaneFileManager->m_pplaceholder != nullptr)
+      //   {
 
-         }
+      //      ptabpaneFileManager->m_pplaceholder->display(::e_display_hide, {});
 
-         auto ptabpaneFontSel = get_tab_by_id("font_selection_impact");
+      //   }
 
-         if (ptabpaneFontSel != nullptr && ptabpaneFontSel->m_pplaceholder != nullptr)
-         {
+      //   auto ptabpaneFontSel = get_tab_by_id("font_selection_impact");
 
-            ptabpaneFontSel->m_pplaceholder->display(::e_display_hide, {});
+      //   if (ptabpaneFontSel != nullptr && ptabpaneFontSel->m_pplaceholder != nullptr)
+      //   {
 
-         }
+      //      ptabpaneFontSel->m_pplaceholder->display(::e_display_hide, {});
 
-         auto ptabpaneColorSel = get_tab_by_id("color_selection_impact");
+      //   }
 
-         if (ptabpaneColorSel != nullptr && ptabpaneColorSel->m_pplaceholder != nullptr)
-         {
+      //   auto ptabpaneColorSel = get_tab_by_id("color_selection_impact");
 
-            ptabpaneColorSel->m_pplaceholder->display(::e_display_hide, {});
+      //   if (ptabpaneColorSel != nullptr && ptabpaneColorSel->m_pplaceholder != nullptr)
+      //   {
 
-         }
+      //      ptabpaneColorSel->m_pplaceholder->display(::e_display_hide, {});
 
-         auto ptabpaneAppOptions = get_tab_by_id(APP_OPTIONS_IMPACT);
+      //   }
 
-         if (ptabpaneAppOptions != nullptr && ptabpaneAppOptions->m_pplaceholder != nullptr)
-         {
+      //   auto ptabpaneAppOptions = get_tab_by_id(APP_OPTIONS_IMPACT);
 
-            ptabpaneAppOptions->m_pplaceholder->display(::e_display_hide, {});
+      //   if (ptabpaneAppOptions != nullptr && ptabpaneAppOptions->m_pplaceholder != nullptr)
+      //   {
 
-         }
+      //      ptabpaneAppOptions->m_pplaceholder->display(::e_display_hide, {});
 
-         auto ptabpaneGpuOptions = get_tab_by_id("options_impact_handler://gpu");
+      //   }
 
-         if (ptabpaneGpuOptions != nullptr && ptabpaneGpuOptions->m_pplaceholder != nullptr)
-         {
+      //   auto ptabpaneGpuOptions = get_tab_by_id("options_impact_handler://gpu");
 
-            ptabpaneGpuOptions->m_pplaceholder->display(::e_display_hide, {});
+      //   if (ptabpaneGpuOptions != nullptr && ptabpaneGpuOptions->m_pplaceholder != nullptr)
+      //   {
 
-         }
+      //      ptabpaneGpuOptions->m_pplaceholder->display(::e_display_hide, {});
 
+      //   }
 
-         // if (m_pimpactdata->m_pplaceholder)
-         //{
 
-         //   m_pimpactdata->m_pplaceholder->get_typed_child(m_pimpactLastBase);
+      //   // if (m_pimpactdata->m_pplaceholder)
+      //   //{
 
-         //   m_pimpactdata->m_pplaceholder->get_typed_child(m_pimpactLastImpact);
+      //   //   m_pimpactdata->m_pplaceholder->get_typed_child(m_pimpactLastBase);
 
-         //}
+      //   //   m_pimpactdata->m_pplaceholder->get_typed_child(m_pimpactLastImpact);
 
-         if (get_impact_id() == GCOM_IMPACT)
-         {
-            
-            get_tab_by_id(GCOM_IMPACT);
+      //   //}
 
-            //auto ptabpane = get_tab_by_id(GCOM_IMPACT);
+      //   if (get_impact_id() == GCOM_IMPACT)
+      //   {
+      //      
+      //      get_tab_by_id(GCOM_IMPACT);
 
-            //auto pchild = ptabpane->m_pplaceholder->get_child_by_id("hello_multiverse_gcom");
+      //      //auto ptabpane = get_tab_by_id(GCOM_IMPACT);
 
-            //::pointer < impact_base >  pimpactbase = pchild;
+      //      //auto pchild = ptabpane->m_pplaceholder->get_child_by_id("hello_multiverse_gcom");
 
-            //m_pimpactLastBase = pimpactbase;
-            //m_pimpactdataTopic = m_pimpactdata;
-            //m_strTopicTitle = ptabpane->m_straTitle.implode(" ");
+      //      //::pointer < impact_base >  pimpactbase = pchild;
 
-         }
-         else if (get_impact_id() == MAIN_IMPACT)
-         {
+      //      //m_pimpactLastBase = pimpactbase;
+      //      //m_pimpactdataTopic = m_pimpactdata;
+      //      //m_strTopicTitle = ptabpane->m_straTitle.implode(" ");
 
-            auto ptabpaneMain = get_tab_by_id(MAIN_IMPACT);
+      //   }
+      //   else if (get_impact_id() == MAIN_IMPACT)
+      //   {
 
-            m_pimpactdataTopic = m_pimpactdata;
+      //      auto ptabpaneMain = get_tab_by_id(MAIN_IMPACT);
 
-            m_strTopicTitle = ptabpaneMain->m_straTitle.implode(" ");
+      //      m_pimpactdataTopic = m_pimpactdata;
 
-            //m_pimpactLastImpact = ptabpaneMain->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
+      //      m_strTopicTitle = ptabpaneMain->m_straTitle.implode(" ");
 
-         }
-         else if (get_impact_id() == MAIN_SWITCHER_IMPACT)
-         {
+      //      //m_pimpactLastImpact = ptabpaneMain->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
 
-            auto ptabpaneMainSwitcher = get_tab_by_id(MAIN_SWITCHER_IMPACT);
+      //   }
+      //   else if (get_impact_id() == MAIN_SWITCHER_IMPACT)
+      //   {
 
-            //m_pimpactLastBase->set_need_layout();
-            m_pimpactdataTopic = m_pimpactdata;
-            m_strTopicTitle = ptabpaneMainSwitcher->m_straTitle.implode(" ");
+      //      auto ptabpaneMainSwitcher = get_tab_by_id(MAIN_SWITCHER_IMPACT);
 
-            //m_pimpactLastImpact = ptabpaneMainSwitcher->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
+      //      //m_pimpactLastBase->set_need_layout();
+      //      m_pimpactdataTopic = m_pimpactdata;
+      //      m_strTopicTitle = ptabpaneMainSwitcher->m_straTitle.implode(" ");
 
-         }
-         else if (stra.contains(::as_string((int)MAIN_IMPACT))
-                  && stra.contains(::as_string((int)MAIN_SWITCHER_IMPACT)))
-         {
+      //      //m_pimpactLastImpact = ptabpaneMainSwitcher->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
 
-      /*      if (m_pimpactLastBase)
-            {
+      //   }
+      //   else if (stra.contains(::as_string((int)MAIN_IMPACT))
+      //            && stra.contains(::as_string((int)MAIN_SWITCHER_IMPACT)))
+      //   {
 
-               m_pimpactLastBase->set_need_layout();
+      ///*      if (m_pimpactLastBase)
+      //      {
 
-            }*/
+      //         m_pimpactLastBase->set_need_layout();
 
-         }
+      //      }*/
 
-      }
-      else if (get_impact_id() == "font_selection_impact")
-      {
+      //   }
 
-         //auto pinteractionFont = get_font_interaction();
-         
-         get_font_interaction();
+      //}
+      //else if (get_impact_id() == "font_selection_impact")
+      //{
 
-         //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionFont))
-         //{
+      //   //auto pinteractionFont = get_font_interaction();
+      //   
+      //   get_font_interaction();
 
-         //   pinteractionFont->set_sel_by_name(m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFont);
+      //   //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionFont))
+      //   //{
 
-         //   pinteractionFont->ensure_sel_visible();
+      //   //   pinteractionFont->set_sel_by_name(m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFont);
 
-         //}
+      //   //   pinteractionFont->ensure_sel_visible();
 
-      }
-      else if (get_impact_id() == "color_selection_impact")
-      {
+      //   //}
 
-         //auto pinteractionColor = get_color_interaction();
-         
-         get_color_interaction();
+      //}
+      //else if (get_impact_id() == "color_selection_impact")
+      //{
 
-         //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionColor))
-         //{
+      //   //auto pinteractionColor = get_color_interaction();
+      //   
+      //   get_color_interaction();
 
-         //   pinteractionColor->set_sel_color(m_pimpactLastImpact->m_prender->m_phellomultiverse->get_foreground_hls());
+      //   //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionColor))
+      //   //{
 
-         //}
+      //   //   pinteractionColor->set_sel_color(m_pimpactLastImpact->m_prender->m_phellomultiverse->get_foreground_hls());
 
-      }
+      //   //}
 
-      if (m_pimpactdataOld != nullptr && m_pimpactdataOld->id() == "font_selection_impact")
-      {
+      //}
 
-         //auto pinteractionFont = get_font_interaction();
-         
-         get_font_interaction();
+      //if (m_pimpactdataOld != nullptr && m_pimpactdataOld->id() == "font_selection_impact")
+      //{
 
-         //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionFont))
-         //{
+      //   //auto pinteractionFont = get_font_interaction();
+      //   
+      //   get_font_interaction();
 
-         //   string strHoverFont = m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFontHover;
+      //   //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionFont))
+      //   //{
 
-         //   if (strHoverFont.has_character())
-         //   {
+      //   //   string strHoverFont = m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFontHover;
 
-         //      m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFontHover.empty();
+      //   //   if (strHoverFont.has_character())
+      //   //   {
 
-         //      if (strHoverFont != m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFontSel)
-         //      {
+      //   //      m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFontHover.empty();
 
-         //         m_pimpactLastImpact->set_need_layout();
+      //   //      if (strHoverFont != m_pimpactLastImpact->m_prender->m_phellomultiverse->m_strFontSel)
+      //   //      {
 
-         //      }
+      //   //         m_pimpactLastImpact->set_need_layout();
 
-         //   }
+      //   //      }
 
-         //}
+      //   //   }
 
-      }
+      //   //}
+
+      //}
 
    }
 
@@ -317,54 +319,56 @@ namespace app_graphics3d_hello_space
    void pane_impact::on_create_impact(::user::impact_data * pimpactdata)
    {
 
-      //if (pimpactdata->id().is_text())
-      //{
+      ::app_graphics3d_continuum::pane_impact::on_create_impact(pimpactdata);
 
-      //   if (pimpactdata->id() == "gpu_options")
+      ////if (pimpactdata->id().is_text())
+      ////{
+
+      ////   if (pimpactdata->id() == "gpu_options")
+      ////   {
+      ////   }
+      ////}
+      ////else
+      //{
+      //   switch (pimpactdata->id().as_i32())
       //   {
+      //         // case GCOM_IMPACT:
+      //         //{
+
+      //         //   create_impact < gcom >(pimpactdata);
+
+      //         //}
+
+      //         // break;
+      //      case MAIN_IMPACT:
+      //      {
+
+      //         auto prequest = m_pusersystem->m_prequest;
+
+      //         auto &payloadFile = prequest->m_payloadFile;
+
+      //         auto papp = get_app();
+
+      //         information() << "pane_impact::on_create_impact MAIN_IMPACT";
+
+      //         get_app()->impact_system("impact")->open_document_file(papp, payloadFile, true,
+      //                                                                pimpactdata->m_pplaceholder);
+      //      }
+      //      break;
+      //      case MAIN_SWITCHER_IMPACT:
+      //      {
+
+      //         // create_impact < switcher_impact >(
+      //         //    get_app()->impact_system("impact")->get_document(),
+      //         //    pimpactdata->m_pplaceholder);
+
+      //         // get_app()->impact_system("impact")->get_document()->id_update_all_impacts(id_update_render);
+      //      }
+      //      break;
       //   }
       //}
-      //else
-      {
-         switch (pimpactdata->id().as_i32())
-         {
-               // case GCOM_IMPACT:
-               //{
 
-               //   create_impact < gcom >(pimpactdata);
-
-               //}
-
-               // break;
-            case MAIN_IMPACT:
-            {
-
-               auto prequest = m_pusersystem->m_prequest;
-
-               auto &payloadFile = prequest->m_payloadFile;
-
-               auto papp = get_app();
-
-               information() << "pane_impact::on_create_impact MAIN_IMPACT";
-
-               get_app()->impact_system("impact")->open_document_file(papp, payloadFile, true,
-                                                                      pimpactdata->m_pplaceholder);
-            }
-            break;
-            case MAIN_SWITCHER_IMPACT:
-            {
-
-               // create_impact < switcher_impact >(
-               //    get_app()->impact_system("impact")->get_document(),
-               //    pimpactdata->m_pplaceholder);
-
-               // get_app()->impact_system("impact")->get_document()->id_update_all_impacts(id_update_render);
-            }
-            break;
-         }
-      }
-
-      ::userex::pane_tab_impact::on_create_impact(pimpactdata);
+      //::userex::pane_tab_impact::on_create_impact(pimpactdata);
 
    }
 
@@ -759,7 +763,7 @@ namespace app_graphics3d_hello_space
 //
 //      //}
 
-      ::userex::pane_tab_impact::handle(ptopic, phandlercontext);
+      ::app_graphics3d_continuum::pane_impact::handle(ptopic, phandlercontext);
 
    }
 
@@ -767,28 +771,30 @@ namespace app_graphics3d_hello_space
    string pane_impact::get_impact_options_main_body()
    {
 
-      string strMainBody;
+      return ::app_graphics3d_continuum::pane_impact::get_impact_options_main_body();
 
-      auto papp = get_app();
+      //string strMainBody;
 
-      //if (m_pimpactLastBase == nullptr && m_pimpactLastImpact == nullptr)
+      //auto papp = get_app();
+
+      ////if (m_pimpactLastBase == nullptr && m_pimpactLastImpact == nullptr)
+      ////{
+
+      ////   strMainBody = papp->file()->as_string("matter://home.html");
+
+      ////}
+      ////else
       //{
 
-      //   strMainBody = papp->file()->as_string("matter://home.html");
+      //   strMainBody = papp->file()->as_string("matter://menu_impact.partial.html");
 
       //}
-      //else
-      {
 
-         strMainBody = papp->file()->as_string("matter://menu_impact.partial.html");
+      //string strBilbo = get_bilbo_html();
 
-      }
+      //strMainBody.find_replace("***bilbo***", strBilbo);
 
-      string strBilbo = get_bilbo_html();
-
-      strMainBody.find_replace("***bilbo***", strBilbo);
-
-      return strMainBody;
+      //return strMainBody;
 
    }
 
@@ -796,58 +802,60 @@ namespace app_graphics3d_hello_space
    string pane_impact::get_bilbo_html()
    {
 
-      string strBilbo;
-
-      //if (m_pimpactLastImpact == m_pimpactLastBase)
-      //{
-
-      //   if (!m_pimpactLastImpact->is_alternate())
-      //   {
-
-      //      get_app()->add_yee_bulb_html(strBilbo);
-
-      //   }
-
-      //   int i = 1;
-
-      //   //auto pslideshow = m_pimpactLastImpact->m_prender->m_pslideshow->slideshow();
-
-      //   //for (auto & pslide : pslideshow->m_slidea)
-      //   //{
-
-      //   //   ::file::path path = pslide->m_strPath;
-
-      //   //   string strName = path.title();
-
-      //   //   string strId = "slide" + ::as_string(i) + ".checkbox";
-
-      //   //   strBilbo += "<input type=\"checkbox\" id=\"" + strId + "\" />" + strName + "<br/>";
-
-      //   //   i++;
-
-      //   //}
-
-      //}
-      /*else if (m_pimpactLastBase->id() == "hello_multiverse_gcom")
-      {
-
-#if defined(FREEBSD) || defined(OPENBSD)
-
-         strBilbo += "Animated Wallpaper prohibited at FreeBSD.<br/>";
-
-#else
-
-         string strName = "Wallpaper";
-
-         string strId = "wallpaper.checkbox";
-
-         strBilbo += "<input type=\"checkbox\" id=\"" + strId + "\" />" + strName + "<br/>";
-
-#endif
-
-      }*/
-
-      return strBilbo;
+      return ::app_graphics3d_continuum::pane_impact::get_bilbo_html();
+//
+//      string strBilbo;
+//
+//      //if (m_pimpactLastImpact == m_pimpactLastBase)
+//      //{
+//
+//      //   if (!m_pimpactLastImpact->is_alternate())
+//      //   {
+//
+//      //      get_app()->add_yee_bulb_html(strBilbo);
+//
+//      //   }
+//
+//      //   int i = 1;
+//
+//      //   //auto pslideshow = m_pimpactLastImpact->m_prender->m_pslideshow->slideshow();
+//
+//      //   //for (auto & pslide : pslideshow->m_slidea)
+//      //   //{
+//
+//      //   //   ::file::path path = pslide->m_strPath;
+//
+//      //   //   string strName = path.title();
+//
+//      //   //   string strId = "slide" + ::as_string(i) + ".checkbox";
+//
+//      //   //   strBilbo += "<input type=\"checkbox\" id=\"" + strId + "\" />" + strName + "<br/>";
+//
+//      //   //   i++;
+//
+//      //   //}
+//
+//      //}
+//      /*else if (m_pimpactLastBase->id() == "hello_multiverse_gcom")
+//      {
+//
+//#if defined(FREEBSD) || defined(OPENBSD)
+//
+//         strBilbo += "Animated Wallpaper prohibited at FreeBSD.<br/>";
+//
+//#else
+//
+//         string strName = "Wallpaper";
+//
+//         string strId = "wallpaper.checkbox";
+//
+//         strBilbo += "<input type=\"checkbox\" id=\"" + strId + "\" />" + strName + "<br/>";
+//
+//#endif
+//
+//      }*/
+//
+//      return strBilbo;
 
    }
 

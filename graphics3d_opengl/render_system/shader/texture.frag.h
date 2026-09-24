@@ -38,22 +38,9 @@ uniform sampler2D textureSampler;
 
 void main()
 {
-
-    if (gl_FrontFacing)
-    {
-        outColor = texture(textureSampler, fragTexCoord);
-    }
-    else
-    {
-        outColor = vec4(1.0, 1.0, 1.0, 1.0);
-    }
-    //outColor = texture(textureSampler, fragTexCoord);
-        //outColor = vec4(
-        //fragTexCoord.x,
-        //fragTexCoord.y,
-        //0.0,
-        //1.0);
-})frag_text";
+    outColor = texture(textureSampler, fragTexCoord);
+}
+)frag_text";
 
 
 

@@ -18,7 +18,7 @@ namespace app_graphics3d_hello_space
    class application;
    class pane_impact;
    class document;
-   class impact;
+   //class impact;
 
 
    class main_scene;

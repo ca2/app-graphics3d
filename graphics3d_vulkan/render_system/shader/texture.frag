@@ -36,16 +36,5 @@ layout(set = 1, binding = 0) uniform sampler2D textureSampler;
 
 void main()
 {
-    if (gl_FrontFacing)
-    {
-
-    outColor = vec4(1.0, 1.0, 1.0, 1.0);
-    
-        
-    }
-    else
-    {
-        
     outColor = texture(textureSampler, fragTexCoord);
-    }
 }

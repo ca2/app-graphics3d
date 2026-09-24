@@ -45,12 +45,6 @@ namespace graphics3d_directx11
          //s.z = -s.z;
       
       }
-      else
-      {
-
-         s.z = -s.z;
-
-      }
       //else if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
       //{
 

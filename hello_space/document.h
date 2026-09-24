@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "berg/user/user/document.h"
+#include "app-graphics3d/continuum/document.h"
 
 
 namespace app_graphics3d_hello_space
@@ -9,7 +9,7 @@ namespace app_graphics3d_hello_space
 
 
    class CLASS_DECL_APP_GRAPHICS3D_HELLO_SPACE document :
-      public ::user::document
+      public ::app_graphics3d_continuum::document
    {
    public:
       

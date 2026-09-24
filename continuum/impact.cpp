@@ -357,7 +357,7 @@ namespace app_graphics3d_continuum
    ::pointer < ::prodevian::immersion > impact::create_immersion()
    {
 
-      auto pimmersion = create_newø<::app_graphics3d_continuum::immersion>();
+      auto pimmersion = createø<::app_graphics3d_continuum::immersion>();
 
       return pimmersion;
 

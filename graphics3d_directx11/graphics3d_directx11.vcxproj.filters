@@ -85,6 +85,9 @@
     <ClCompile Include="graphics3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render_system\texture_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="platform.h">
@@ -167,6 +170,9 @@
     </ClInclude>
     <ClInclude Include="graphics3d.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render_system\texture_render_system.h">
+      <Filter>Header Files\render_system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

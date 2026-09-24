@@ -169,6 +169,11 @@ namespace gpu_directx12
       void on_end_layer(::gpu::layer * pgpulayer);
       void set_bitmap_1(::image::image *pimage) override;
 
+
+
+      ::memory _001BlendVertexShaderMemory() override;
+      ::memory _001BlendFragmentShaderMemory() override;
+  
       //virtual ID3D12CommandQueue* command_queue();
       
 

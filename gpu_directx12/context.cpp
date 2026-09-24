@@ -24,6 +24,8 @@
 #include "acme_windows_common/dxgi_surface_bindable.h"
 #include "gpu_directx12/descriptors.h"
 #include "windowing_win32/window.h"
+#include "gpu/hlsl/_001Blend.vert.h"
+#include "gpu/hlsl/_001Blend.frag.h"
 #define USE_PIX
 #include <pix.h>
 
@@ -2019,6 +2021,21 @@ namespace gpu_directx12
 
 
    //}
+
+   ::memory context::_001BlendVertexShaderMemory()
+   {
+
+      return ::as_memory_block(g_psz__001Blend_vert);
+
+   }
+
+
+   ::memory context::_001BlendFragmentShaderMemory()
+   {
+
+      return ::as_memory_block(g_psz__001Blend_frag);
+
+   }
 
 
    void context::on_start_layer(::gpu::layer * pgpulayer)

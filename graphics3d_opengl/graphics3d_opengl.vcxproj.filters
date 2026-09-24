@@ -218,6 +218,8 @@
     <CustomBuild Include="render_system\shader\texture.frag">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="render_system\shader\texture.vert" />
+    <CustomBuild Include="render_system\shader\texture.vert">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
