@@ -107,21 +107,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A00E19B26611D5E00517464 /* write_text_quartz2d.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A64C1702660C62C0074030F;
+			remoteGlobalIDString = 3FBE4F816C5083BB91284264;
 			remoteInfo = write_text_quartz2d;
 		};
 		9A00E64226616FAE00517464 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A00E12C26611D5900517464 /* draw2d_quartz2d.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A1CFD777154F5EAA007447E2;
+			remoteGlobalIDString = 3B61A12F1DD2DF06D10E4B14;
 			remoteInfo = draw2d_quartz2d;
 		};
 		9A00E651266171C800517464 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A00E644266170F400517464 /* experience_core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A81F48027500224003F38EC;
+			remoteGlobalIDString = CC356870FC3D096289451151;
 			remoteInfo = experience_core;
 		};
 		9A112C5E2F23749100360960 /* PBXContainerItemProxy */ = {
@@ -149,7 +149,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9AC019332748A002006BEBCC;
+			remoteGlobalIDString = C28F9735175451903826BC82;
 			remoteInfo = networking_bsd;
 		};
 		9A191D452CF3D880001239A6 /* PBXContainerItemProxy */ = {
@@ -163,7 +163,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9AE12EC02661EA22009F476A /* database_sqlite3.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A0DB38F2864309200D061F7;
+			remoteGlobalIDString = 7DFB89294025D29AC4083FDA;
 			remoteInfo = database_sqlite3;
 		};
 		9A35D5582F23762F00998589 /* PBXContainerItemProxy */ = {
@@ -191,7 +191,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A574B9716AAB906000CC4EF;
+			remoteGlobalIDString = 941202E72C293EB1F351942D;
 			remoteInfo = imaging_coreimage;
 		};
 		9A35D5672F23773E00998589 /* PBXContainerItemProxy */ = {
@@ -212,7 +212,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9AC09A2C274DFC67008B042E;
+			remoteGlobalIDString = 272F83AF96D70A0829E90C2A;
 			remoteInfo = folder_zip;
 		};
 		9A7EE73C2F26AC35006AA868 /* PBXContainerItemProxy */ = {
@@ -226,7 +226,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A5A9D6A2F26AC0D00F3FA1F /* fs_raw_folder_protocol_dropbox.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A668EA82C5829050068BD50;
+			remoteGlobalIDString = 29467C3C1064EDFE2A429C46;
 			remoteInfo = fs_raw_folder_protocol_dropbox;
 		};
 		9A83645228E538E90009BAF5 /* PBXContainerItemProxy */ = {
@@ -317,7 +317,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9AC01E332748D0E0006BEBCC /* crypto_openssl.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9AC019332748A002006BEBCC;
+			remoteGlobalIDString = FE307D1C790A8B6E88DC1152;
 			remoteInfo = crypto_openssl;
 		};
 		9AC942442F23974B00038E29 /* PBXContainerItemProxy */ = {
@@ -352,7 +352,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A46319E2CF3846600426444 /* operating_ambient_macos.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A6FBA322EBD3C15003BBE61;
+			remoteGlobalIDString = 9725F51AA96BFA72A5B8F723;
 			remoteInfo = operating_ambient_macos;
 		};
 		9AED7308275195F800397A57 /* PBXContainerItemProxy */ = {
@@ -775,12 +775,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 070B8F071B6E53FA00D26137 /* Build configuration list for PBXNativeTarget "_app_graphics3d_continuum" */;
 			buildPhases = (
-				9A932B4A2D6DB96D006557FC /* ShellScript */,
+				9A930ED22D6DAC42006557FC /* _on_before_build_executable */,
 				070B8EE61B6E53F900D26137 /* Sources */,
 				070B8EE71B6E53F900D26137 /* Frameworks */,
 				070B8EE81B6E53F900D26137 /* Resources */,
 				9AA802A42665789E00A6B449 /* Embed Libraries */,
-				9A930ED22D6DAC42006557FC /* ShellScript */,
+				9A932B4A2D6DB96D006557FC /* _on_after_build_executable */,
 			);
 			buildRules = (
 			);
@@ -1132,7 +1132,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		9A930ED22D6DAC42006557FC /* ShellScript */ = {
+		9A930ED22D6DAC42006557FC /* _on_before_build_executable */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1143,6 +1143,7 @@
 				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_FOLDER_PATH)/$(EXECUTABLE_NAME)",
 				"$(WorkspaceDir)/output_copy.txt",
 			);
+			name = _on_before_build_executable;
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -1150,9 +1151,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = ". $HOME/code/operating_system/tool/bin/_on_after_build_executable\n";
+			shellScript = "${WorkspaceDir}/../operating_system/tool/bin/_on_before_build_executable\n";
 		};
-		9A932B4A2D6DB96D006557FC /* ShellScript */ = {
+		9A932B4A2D6DB96D006557FC /* _on_after_build_executable */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1160,16 +1161,22 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(PROJECT_DIR)/matter.txt",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_FOLDER_PATH)/$(EXECUTABLE_NAME)",
+				"$(WorkspaceDir)/output_copy.txt",
+				"$(SRCROOT)/input.xcfilelist",
+				$HOME/code/operating_system/tool/bin/application_build_helper,
+				$HOME/code/operating_system/tool/bin/_on_after_build_executable,
 			);
+			name = _on_after_build_executable;
 			outputFileListPaths = (
+				"$(SRCROOT)/output.xcfilelist",
 			);
 			outputPaths = (
-				"$(PROJECT_DIR)/_matter.zip",
+				"$(WorkspaceDir)/time-$(PLATFORM_MODIFIER)/output-$(CONFIIGURATION)/$(EXECUTABLE_NAME)",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = ". $HOME/code/operating_system/tool/bin/_on_before_build_executable\n";
+			shellScript = ". $HOME/code/operating_system/tool/bin/_on_after_build_executable\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
