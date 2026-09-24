@@ -15,7 +15,6 @@
 		9A4334CD2F232D9400705FD8 /* _factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43340D2F232D1500705FD8 /* _factory.cpp */; };
 		9A4334CE2F232D9A00705FD8 /* _.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334072F232D1500705FD8 /* _.cpp */; };
 		9A4334CF2F232DAB00705FD8 /* input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334282F232D1500705FD8 /* input.cpp */; };
-		9A4334D02F232DAB00705FD8 /* engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43341E2F232D1500705FD8 /* engine.cpp */; };
 		9A4334D12F232DAB00705FD8 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334212F232D1500705FD8 /* platform.cpp */; };
 		9A4334D22F232DAB00705FD8 /* buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334142F232D1500705FD8 /* buffer.cpp */; };
 		9A4334D32F232DAB00705FD8 /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334162F232D1500705FD8 /* camera.cpp */; };
@@ -25,6 +24,8 @@
 		9A4334D72F232DAB00705FD8 /* descriptors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43341C2F232D1500705FD8 /* descriptors.cpp */; };
 		9A4334D82F232DAB00705FD8 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334182F232D1500705FD8 /* context.cpp */; };
 		9A5A9D692F23D74300F3FA1F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5A9D662F23D74300F3FA1F /* OpenGL.framework */; };
+		9A8D30C63064F18F00631964 /* engine_instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A8D30C43064F18F00631964 /* engine_instance.h */; };
+		9A8D30C73064F18F00631964 /* engine_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D30C53064F18F00631964 /* engine_instance.cpp */; };
 		9AC7C7292F232F3200A059F9 /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C7282F232F3200A059F9 /* libaxis.dylib */; };
 		9AC7C72B2F232F3200A059F9 /* libberg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72A2F232F3200A059F9 /* libberg.dylib */; };
 		9AC7C72D2F232F3200A059F9 /* libbred.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72C2F232F3200A059F9 /* libbred.dylib */; };
@@ -48,7 +49,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A35D57A2F23785600998589 /* gpu_opengl.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 9A43332C2F232BA800705FD8;
+			remoteGlobalIDString = 9C735AB02AFC6A414256CCAD;
 			remoteInfo = gpu_opengl;
 		};
 		9AC7C7252F232F0F00A059F9 /* PBXContainerItemProxy */ = {
@@ -78,8 +79,6 @@
 		9A4334192F232D1500705FD8 /* cube_map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cube_map.h; sourceTree = "<group>"; };
 		9A43341A2F232D1500705FD8 /* cube_map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cube_map.cpp; sourceTree = "<group>"; };
 		9A43341C2F232D1500705FD8 /* descriptors.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = descriptors.cpp; sourceTree = "<group>"; };
-		9A43341D2F232D1500705FD8 /* engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
-		9A43341E2F232D1500705FD8 /* engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = engine.cpp; sourceTree = "<group>"; };
 		9A4334202F232D1500705FD8 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		9A4334212F232D1500705FD8 /* platform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
 		9A4334272F232D1500705FD8 /* input.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
@@ -135,6 +134,8 @@
 		9A43347C2F232D1500705FD8 /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		9A5A9D662F23D74300F3FA1F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		9A8A57732F23855D00FBC673 /* glad.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = glad.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A8D30C43064F18F00631964 /* engine_instance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = engine_instance.h; sourceTree = "<group>"; };
+		9A8D30C53064F18F00631964 /* engine_instance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = engine_instance.cpp; sourceTree = "<group>"; };
 		9AC7C7282F232F3200A059F9 /* libaxis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaxis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C72A2F232F3200A059F9 /* libberg.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libberg.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C72C2F232F3200A059F9 /* libbred.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libbred.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -190,12 +191,10 @@
 		9A43334A2F232C1500705FD8 /* graphics3d_opengl */ = {
 			isa = PBXGroup;
 			children = (
-				9A4334712F232D1500705FD8 /* render_system */,
-				9A43347A2F232D1500705FD8 /* system */,
-				9A4334082F232D1500705FD8 /* _____debug.xcconfig */,
-				9A4334092F232D1500705FD8 /* _____release.xcconfig */,
 				9A4334062F232D1500705FD8 /* _.h */,
 				9A4334072F232D1500705FD8 /* _.cpp */,
+				9A4334082F232D1500705FD8 /* _____debug.xcconfig */,
+				9A4334092F232D1500705FD8 /* _____release.xcconfig */,
 				9A43340A2F232D1500705FD8 /* _constant.h */,
 				9A43340D2F232D1500705FD8 /* _factory.cpp */,
 				9A43340E2F232D1500705FD8 /* _graphics3d_opengl.h */,
@@ -206,10 +205,8 @@
 				9A4334192F232D1500705FD8 /* cube_map.h */,
 				9A43341A2F232D1500705FD8 /* cube_map.cpp */,
 				9A43341C2F232D1500705FD8 /* descriptors.cpp */,
-				9A43341D2F232D1500705FD8 /* engine.h */,
-				9A43341E2F232D1500705FD8 /* engine.cpp */,
-				9A4334202F232D1500705FD8 /* platform.h */,
-				9A4334212F232D1500705FD8 /* platform.cpp */,
+				9A8D30C43064F18F00631964 /* engine_instance.h */,
+				9A8D30C53064F18F00631964 /* engine_instance.cpp */,
 				9A4334272F232D1500705FD8 /* input.h */,
 				9A4334282F232D1500705FD8 /* input.cpp */,
 				9A4334362F232D1500705FD8 /* mesh.h */,
@@ -217,12 +214,16 @@
 				9A4334382F232D1500705FD8 /* model_mesh.h */,
 				9A4334392F232D1500705FD8 /* model_shader.h */,
 				9A4334422F232D1500705FD8 /* pipeline.h */,
+				9A4334202F232D1500705FD8 /* platform.h */,
+				9A4334212F232D1500705FD8 /* platform.cpp */,
 				9A4334442F232D1500705FD8 /* render_data.h */,
 				9A4334452F232D1500705FD8 /* render_system.h */,
+				9A4334712F232D1500705FD8 /* render_system */,
 				9A4334722F232D1500705FD8 /* render_system.cpp */,
 				9A4334732F232D1500705FD8 /* resource.h */,
 				9A4334742F232D1500705FD8 /* scene_object.h */,
 				9A4334752F232D1500705FD8 /* shapes.h */,
+				9A43347A2F232D1500705FD8 /* system */,
 				9A43347B2F232D1500705FD8 /* targetver.h */,
 				9A43347C2F232D1500705FD8 /* types.h */,
 			);
@@ -327,6 +328,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A8D30C63064F18F00631964 /* engine_instance.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +441,6 @@
 				9A4334CD2F232D9400705FD8 /* _factory.cpp in Sources */,
 				9A4334CE2F232D9A00705FD8 /* _.cpp in Sources */,
 				9A4334CF2F232DAB00705FD8 /* input.cpp in Sources */,
-				9A4334D02F232DAB00705FD8 /* engine.cpp in Sources */,
 				9A4334D12F232DAB00705FD8 /* platform.cpp in Sources */,
 				9A4334D22F232DAB00705FD8 /* buffer.cpp in Sources */,
 				9A4334D32F232DAB00705FD8 /* camera.cpp in Sources */,
@@ -451,6 +452,7 @@
 				9A4334D52F232DAB00705FD8 /* cube_map.cpp in Sources */,
 				9A4334D62F232DAB00705FD8 /* render_system.cpp in Sources */,
 				9A4334D72F232DAB00705FD8 /* descriptors.cpp in Sources */,
+				9A8D30C73064F18F00631964 /* engine_instance.cpp in Sources */,
 				9A4334D82F232DAB00705FD8 /* context.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
