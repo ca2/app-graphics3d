@@ -45,7 +45,8 @@ void main()
 
     // ca2 model UVs use a top-left origin; OpenGL texture UVs use bottom-left.
     fragTexCoord = vec2(uv.x, 1.0 - uv.y);
-})vert_text";
+}
+)vert_text";
 
 
 
