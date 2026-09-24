@@ -1,6 +1,7 @@
-#include "framework.h"
+#include "platform.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "_nanovg.h"
+#include "bitmap.h"
 #include "draw2d.h"
 #include "pen.h"
 #include "font.h"
@@ -14,23 +15,32 @@
 //
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/parallelization/task.h"
+#include "acme/graphics/image/pixmap.h"
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
 #include "acme/prototype/geometry2d/_text_stream.h"
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "acme/prototype/string/str.h"
+#include "aura/graphics/graphics/buffer_item.h"
 #include "gpu_opengl/approach.h"
 #include "gpu_opengl/renderer.h"
 #include "gpu_opengl/texture.h"
+#if defined(WINDOWS_DESKTOP)
+#include "gpu_opengl/wgl_context.h"
+#pragma comment(lib, "opengl32.lib")
+#endif
+#include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context_lock.h"
-#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/buffer.h"
+#include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render.h"
+#include "bred/gpu/texture_site.h"
 #include "aura/graphics/draw2d/clip.h"
 #include "aura/graphics/graphics/context.h"
 #include "aura/graphics/image/drawing.h"
-#include "aura/graphics/image/target.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/layer.h"
@@ -104,6 +114,32 @@ namespace draw2d_nanovg
 {
 
 
+   int draw2d::nanovg_create_flags() const
+   {
+
+      int iFlags = NVG_STENCIL_STROKES | NVG_DEBUG;
+
+      if (m_bNanoVGGeometryAntialias)
+      {
+
+         iFlags |= NVG_ANTIALIAS;
+
+      }
+
+      return iFlags;
+
+   }
+
+
+   static ::i64 performance_steady_nanoseconds()
+   {
+
+      return ::std::chrono::duration_cast<::std::chrono::nanoseconds>(
+         ::std::chrono::steady_clock::now().time_since_epoch()).count();
+
+   }
+
+
    graphics* thread_graphics()
    {
 
@@ -112,10 +148,10 @@ namespace draw2d_nanovg
    }
 
 
-   void thread_graphics(graphics* pgraphics)
+   void thread_graphics(graphics* pdraw2dgraphics)
    {
 
-      ::get_task()->payload("draw2d_nanovg::graphics") = pgraphics;
+      ::get_task()->payload("draw2d_nanovg::graphics") = pdraw2dgraphics;
 
    }
 
@@ -151,7 +187,7 @@ namespace draw2d_nanovg
 
    //void graphics::dump(dump_context& dumpcontext) const
    //{
-   //   
+   //
    //   object::dump(dumpcontext);
 
    //   dumpcontext << "m_hdc = " << (iptr) m_hdc;
@@ -217,27 +253,296 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::create_memory_graphics(const ::i32_size& size)
+   //void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+   ////void graphics::create_memory_graphics(const ::i32_size& size)
+   //{
+
+   //   ::i32_size sizeMemory(sizeParameter);
+
+   //   if (sizeMemory.is_empty())
+   //   {
+
+   //      sizeMemory = { 1920, 1080 };
+
+   //   }
+
+   //   ::gpu::graphics::create_memory_graphics(sizeMemory);
+
+   //}
+
+
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
-      ::gpu::graphics::create_memory_graphics(size);
+      _create_memory_graphics(pdraw2dbitmap->size(), pacmeuserinteractionAffinity);
 
-      //::i32_rectangle rectanglePlacement;
+   }
 
-      //if (size.is_empty())
-      //{
 
-      //   rectanglePlacement.set_size({ 1920, 1080 });
+   //void graphics::_create_memory_graphics(const ::i32_size& size)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   {
 
-      //}
-      //else
-      //{
+      auto puserinteraction = pacmeuserinteractionAffinity;
 
-      //   rectanglePlacement.set_size(size);
+      if (puserinteraction)
+      {
 
-      //}
+         m_pacmeuserinteractionAffinity = puserinteraction;
 
-      //opengl_create_offscreen_buffer(rectanglePlacement);
+      }
+
+      if (!m_pacmeuserinteractionAffinity)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "No user interaction is available to acquire the OpenGL GPU device.");
+
+      }
+
+      auto pwindow = m_pacmeuserinteractionAffinity->window();
+
+      if (!pwindow)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "No window is available to acquire the OpenGL GPU device.");
+
+      }
+
+      if (::is_set(puserinteraction))
+      {
+
+         m_pacmeuserinteractionAffinity = puserinteraction;
+
+      }
+
+      auto pgpuapproach = application()->get_gpu_approach();
+      auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
+
+      if (!pgpudevice)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "Failed to acquire the OpenGL GPU device for NanoVG memory graphics.");
+
+      }
+
+      if (!m_pgpucontextOwned)
+      {
+
+         m_pgpucontextOwned = pgpudevice->allocate_gpu_context();
+
+         //::i32_rectangle rectanglePlacement(sizeParameter);
+         ::i32_size sizeRaw = sizeParameter;
+
+         if (::is_set(pacmeuserinteractionAffinity))
+         {
+
+            sizeRaw = pacmeuserinteractionAffinity->acme_windowing_window()->get_raw_buffer_size().maximum(sizeParameter);
+
+         }
+
+         m_pgpucontextOwned->create_draw2d_gpu_context(
+            pgpudevice,
+            ::is_set(pacmeuserinteractionAffinity) ? pacmeuserinteractionAffinity->acme_windowing_window() : nullptr,
+            this,
+            {},
+            {},
+            sizeParameter,
+            sizeRaw);
+         //   ::gpu::e_output_gpu_buffer,
+         //   //m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         //   sizeParameter);
+
+         //set_context_lease(::transfer(contextlease));
+
+      }
+
+      // NanoVG owns context-local OpenGL objects (in particular its VAO).
+      // Keep the compositor context identical to the context used to create
+      // m_pdc; a WGL share group does not make VAOs shareable.
+      set_gpu_context(m_pgpucontextOwned);
+
+      auto pgpucontextNew = gpu_context();
+
+      if (!pgpucontextNew)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "Failed to create the NanoVG offscreen GPU context.");
+
+      }
+
+      pgpucontextNew->m_pgpucompositor = this;
+
+      m_sizeScaleOutput = { 1.0, -1.0 };
+      m_pointTranslateOutput = { 0.0, (double)sizeParameter.cy };
+      m_size = sizeParameter;
+      m_sizeWindow = sizeParameter;
+
+      {
+
+         ::gpu::context_lock contextlockNew(pgpucontextNew);
+
+         pgpucontextNew->get_gpu_renderer();
+         ::opengl::resize(sizeParameter, false);
+
+         if (!m_pdc)
+         {
+
+            clear_nanovg_gpu_image_wrapper_cache();
+            m_pdc = nvgCreateGL3(::draw2d_nanovg::get()->nanovg_create_flags());
+
+            if (!m_pdc)
+            {
+
+               throw ::exception(
+                  error_failed,
+                  "nvgCreateGL3 failed for NanoVG memory graphics.");
+
+            }
+
+         }
+
+      }
+
+   }
+
+
+   //void graphics::on_acquire_memory_graphics(
+     // ::image::image * pimage,
+     // const ::i32_size & size)
+   void graphics::on_acquire_memory_graphics(
+      bool bExternalRendering,
+      ::image::image * pimage,
+      const ::i32_size & size,
+      ::acme::user::interaction * pacmeuserinteractionAffinity)
+   {
+
+      auto pgpucontext = gpu_context();
+
+      if (!pgpucontext || !m_pdc)
+      {
+
+//         context_lease().mark_damaged();
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG memory graphics has no warm GPU context.");
+
+      }
+
+      try
+      {
+
+         //pgpucontext->send(
+           // [this, pgpucontext, pimage, size, pacmeuserinteractionAffinity]()
+            //{
+
+               ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pacmeuserinteractionAffinity);
+
+               m_egraphics = ::e_graphics_draw;
+               m_sizeScaleOutput = { 1.0, -1.0 };
+               m_pointTranslateOutput = { 0.0, (double)size.cy };
+               m_size = size;
+               m_sizeWindow = size;
+
+               ::gpu::context_lock contextlock(pgpucontext);
+
+                pgpucontext->m_pgpucompositor = this;
+
+                if (::draw2d::is_debug_flag_set(0))
+                {
+
+                   informationf("draw2d::debug_flag(0) about to call ::gpu::context::on_resize");
+
+                }
+
+                pgpucontext->on_resize(size);
+
+
+                ::i32_rectangle rectangleFrame;
+
+                rectangleFrame.set(::i32_point(), size);
+
+                begin_draw(bExternalRendering, pacmeuserinteractionAffinity->user_interaction(), rectangleFrame, pimage);
+                ///::opengl::resize(size, false);
+
+             //});
+
+      }
+      catch (...)
+      {
+
+         //context_lease().mark_damaged();
+
+         throw;
+
+      }
+
+   }
+
+
+   void graphics::on_release_memory_graphics()
+   {
+
+      auto pgpucontext = gpu_context();
+
+      if (!pgpucontext)
+      {
+
+         //context_lease().mark_damaged();
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG memory graphics lost its GPU context.");
+
+      }
+
+      try
+      {
+
+         pgpucontext->send(
+            [this, pgpucontext]()
+            {
+
+                ::gpu::context_lock contextlock(pgpucontext);
+
+                end_draw();
+
+
+                glFlush();
+               ::opengl::check_error("");
+
+               ::cast < ::gpu::image > pgpuimage = m_pimageTarget;
+
+               if (pgpuimage && pgpuimage->gpu_texture())
+               {
+
+                  pgpuimage->gpu_texture()->defer_fence();
+
+               }
+
+
+               ::gpu::graphics::on_release_memory_graphics();
+               m_pimageTarget = nullptr;
+
+            });
+
+      }
+      catch (...)
+      {
+
+         //context_lease().mark_damaged();
+
+         throw;
+
+      }
 
    }
 
@@ -269,20 +574,36 @@ namespace draw2d_nanovg
 
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
-      auto pgpucontextNew = pgpudevice->main_draw2d_context();
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pwindow);
 
-      set_gpu_context(pgpucontextNew);
+      auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
 
-      auto pcontext = gpu_context();
+      m_pgpucontextOwned = pgpucontextNew;
 
-      pcontext->m_pgpucompositor = this;
+      // update_as_render_target can cause a compositor placement update. Set
+      // its context first so that update cannot allocate a second WGL context
+      // and later flush a NanoVG VAO in the wrong native context.
+      set_gpu_context(m_pgpucontextOwned);
 
-      pcontext->defer_create_window_context(pwindow);
+      if (m_pgraphicsbufferitem)
+      {
 
-      ::cast < ::gpu_opengl::context > pcontextOpengl = pcontext;
+         constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
+
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
+
+      }
+
+
+
+      //pcontext->defer_create_window_context(pwindow);
+
+      //pcontext->create_draw2d_gpu_context(pgpudevice, pwindow, size);
+
+      ::cast < ::gpu_opengl::context > pcontextOpengl = m_pgpucontextOwned;
       ::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
-      ::gpu::context_lock contextlock(pcontext);
+      ::gpu::context_lock contextlock(m_pgpucontextOwned);
 
       //nanovg_device_create_info_t createinfo;
       //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -300,10 +621,11 @@ namespace draw2d_nanovg
          nvgDeleteGL3(m_pdc);
 
          m_pdc = nullptr;
+         clear_nanovg_gpu_image_wrapper_cache();
 
       }
 
-      m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+      m_pdc = nvgCreateGL3(::draw2d_nanovg::get()->nanovg_create_flags());
 
       if (!m_pdc)
       {
@@ -349,264 +671,264 @@ namespace draw2d_nanovg
       //    }
 
       //}
-
+      m_estatus = success;
       set_ok_flag();
 
    }
 
 
-   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
-   {
+   //void graphics::create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics)
+   //{
 
-      ::gpu::graphics::create_compatible_graphics(pgraphics);
-      //opengl_create_offscreen_buffer({ 920, 1080 });
-      //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
+   //   ::gpu::graphics::create_compatible_graphics(pdraw2dgraphics);
+   //   //opengl_create_offscreen_buffer({ 920, 1080 });
+   //   //opengl_create_offscreen_buffer(pdraw2dgraphics->m_pimage->size());
 
-   }
-
-
-   bool graphics::opengl_create_offscreen_buffer(const ::i32_size & sizePlacement)
-   {
-
-      return opengl_create_offscreen_buffer(sizePlacement);
-
-      //if (m_puserinteractionDraw2dGraphics)
-      //{
-
-      //   on_gpu_context_placement_change(rectanglePlacement, m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
-      //}
-      //else
-      //{
-
-      //   on_gpu_context_placement_change(rectanglePlacement, nullptr);
-
-      //}
+   //}
 
 
-      ////if (!draw2d_nanovg()->m_popenglcontext) {
-      ////   informationf("MS GDI - RegisterClass failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
+   //bool graphics::opengl_create_offscreen_buffer(const ::i32_size & sizePlacement)
+   //{
 
-      ////if (!m_pgpucontext)
-      ////{
+   //   return opengl_create_offscreen_buffer(sizePlacement);
 
-      ////   auto pgpuapproach = application()->get_gpu_approach();
+   //   //if (m_puserinteractionDraw2dGraphics)
+   //   //{
 
-      ////   if (!m_puserinteractionDraw2dGraphics)
-      ////   {
+   //   //   on_gpu_context_placement_change(rectanglePlacement, m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+   //   //}
+   //   //else
+   //   //{
 
-      ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+   //   //   on_gpu_context_placement_change(rectanglePlacement, nullptr);
 
-      ////   }
-
-      ////   ASSERT(m_puserinteractionDraw2dGraphics);
-
-      ////   auto pgpudevice = pgpuapproach->get_gpu_device();
-
-      ////   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
-
-      ////}
-
-      //auto pgpuapproach = application()->get_gpu_approach();
-
-      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+   //   //}
 
 
-      //::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
-      //::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
+   //   ////if (!draw2d_nanovg()->m_popenglcontext) {
+   //   ////   informationf("MS GDI - RegisterClass failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
 
-      ////nanovg_device_create_info_t createinfo;
-      ////createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      ////createinfo.deferredResolve = true;
-      ////createinfo.inst = papproachOpengl->m_vkinstance;
-      ////createinfo.phy = pcontextOpengl->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-      ////createinfo.vkdev = pcontextOpengl->logicalDevice();
-      ////createinfo.qFamIdx = pcontextOpengl->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      ////createinfo.qIndex = 0;
-      ////createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+   //   ////if (!m_pgpucontext)
+   //   ////{
 
-      ////m_pdc = nanovg_device_create(&createinfo);
-      ////m_nanovgsurface = nanovg_surface_create(m_pdc, rectanglePlacement.width(),
-      ////   rectanglePlacement.height());
+   //   ////   auto pgpuapproach = application()->get_gpu_approach();
 
-      ////m_pdc = nanovg_create(m_nanovgsurface);
-      ////if (!m_pgpucontext)
-      ////{
+   //   ////   if (!m_puserinteractionDraw2dGraphics)
+   //   ////   {
 
-      ////   return false;
+   //   ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(pacmeuserinteractionMain.m_p);
 
-      ////}
+   //   ////   }
 
+   //   ////   ASSERT(m_puserinteractionDraw2dGraphics);
 
-      ////      ::opengl::resize(size);
+   //   ////   auto pgpudevice = pgpuapproach->get_gpu_device();
 
+   //   ////   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
 
-      ////}
+   //   ////}
 
-      ////LPCTSTR lpClassName = L"draw2d_nanovg_offscreen_buffer_window";
-      ////LPCTSTR lpWindowName = L"draw2d_nanovg_offscreen_buffer_window";
-      //////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
-      ////unsigned int dwExStyle = 0;
-      ////unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
-      ////dwStyle |= WS_POPUP;
-      //////dwStyle |= WS_VISIBLE;
-      //////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-      ////dwStyle &= ~WS_CAPTION;
-      //////dwStyle = 0;
-      ////dwStyle &= ~WS_THICKFRAME;
-      ////dwStyle &= ~WS_BORDER;
-      ////int x = 0;
-      ////int y = 0;
-      ////int nWidth = size.cx;
-      ////int nHeight = size.cy;
-      ////HWND hWndParent = nullptr;
-      ////HMENU hMenu = nullptr;
-      ///////HINSTANCE hInstance = psystem->m_hinstance;
-      ////void * lpParam = nullptr;
+   //   //auto pgpuapproach = application()->get_gpu_approach();
 
-      //////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-      ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
-
-      ////if (window == nullptr) 
-      ////{
-      ////   informationf("MS GDI - CreateWindow failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////// create WGL context, make current
-
-      ////PIXELFORMATDESCRIPTOR pixformat;
-      ////int chosenformat;
-      ////HDC hdc = GetDC(window);
-      ////if (hdc == nullptr)
-      ////{
-      ////   informationf("MS GDI - GetDC failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////ZeroMemory(&pixformat, sizeof(pixformat));
-      ////pixformat.nSize = sizeof(pixformat);
-      ////pixformat.nVersion = 1;
-      ////pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-      ////pixformat.iPixelType = PFD_TYPE_RGBA;
-      ////pixformat.cColorBits = 24;
-      ////pixformat.cAlphaBits = 8;
-      ////pixformat.cDepthBits = 24;
-      ////pixformat.cStencilBits = 8;
-
-      ////chosenformat = ChoosePixelFormat(hdc, &pixformat);
-      ////if (chosenformat == 0) 
-      ////{
-      ////   informationf("MS GDI - ChoosePixelFormat failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-      ////if (!spfok) 
-      ////{
-      ////   informationf("MS GDI - SetPixelFormat failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////HGLRC hglrcTime = wglCreateContext(hdc);
-      ////if (hglrcTime == nullptr)
-      ////{
-      ////   informationf("MS WGL - wglCreateContext failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   ReleaseDC(m_hwnd, m_hdc);
-      ////   return false;
-      ////}
-
-      ////bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
-      ////if (!okMakeCurrent)
-      ////{
-      ////   informationf("MS WGL - wglMakeCurrent failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-      //////vkfwInit();
-      ////// ... <snip> ... setup a window and a context
-      ////
-      ////auto wglCurrentContext = wglGetCurrentContext();
-
-      ////// Load all Opengl functions using the vkfw loader function
-      ////// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
-      //////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
-      //////   std::cout << "Failed to initialize Opengl context" << std::endl;
-      //////   return -1;
-      //////}
-      ////if (!vkadLoadWGL(hdc))
-      ////{
-      ////   // Problem: vkewInit failed, something is seriously wrong.
-      ////   informationf("vkadLoadWGL failed");
-      ////   //return false;
-      ////   //throw resource_exception();
-
-      ////   return false;
-
-      ////}
-      ////int attribs[] =
-      ////{
-      ////   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-      ////   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-      ////   WGL_CONTEXT_FLAGS_ARB, 0,
-      ////   WGL_CONTEXT_PROFILE_MASK_ARB,
-      ////   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
-      ////};
-
-      //////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-      //////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-
-      ////auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
-      ////wglMakeCurrent(nullptr, nullptr);
-      ////wglDeleteContext(hglrcTime);
-      ////   wglMakeCurrent(hdc, m_hglrc);
-      //////draw2d_nanovg()->defer_initialize_glew();
-      ////
-      //////draw2d_nanovg()->defer_initialize_glew();
+   //   //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
 
-      ////m_hwnd = window;
-      ////m_hdc = hdc;
-      ////m_hglrc = hglrc;
-      ////m_size = size;
+   //   //::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
+   //   //::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
-      //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+   //   ////nanovg_device_create_info_t createinfo;
+   //   ////createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   ////createinfo.deferredResolve = true;
+   //   ////createinfo.inst = papproachOpengl->m_vkinstance;
+   //   ////createinfo.phy = pcontextOpengl->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+   //   ////createinfo.vkdev = pcontextOpengl->logicalDevice();
+   //   ////createinfo.qFamIdx = pcontextOpengl->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+   //   ////createinfo.qIndex = 0;
+   //   ////createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-      //::opengl::resize(rectanglePlacement.size(), bYSwap);
+   //   ////m_pdc = nanovg_device_create(&createinfo);
+   //   ////m_nanovgsurface = nanovg_surface_create(m_pdc, rectanglePlacement.width(),
+   //   ////   rectanglePlacement.height());
 
-      //return true;
+   //   ////m_pdc = nanovg_create(m_nanovgsurface);
+   //   ////if (!m_pgpucontext)
+   //   ////{
 
-   }
+   //   ////   return false;
+
+   //   ////}
 
 
-   bool graphics::opengl_delete_offscreen_buffer()
-   {
+   //   ////      ::opengl::resize(size);
 
-      //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
-      //{
 
-      //   return true;
+   //   ////}
 
-      //}
+   //   ////LPCTSTR lpClassName = L"draw2d_nanovg_offscreen_buffer_window";
+   //   ////LPCTSTR lpWindowName = L"draw2d_nanovg_offscreen_buffer_window";
+   //   //////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
+   //   ////unsigned int dwExStyle = 0;
+   //   ////unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
+   //   ////dwStyle |= WS_POPUP;
+   //   //////dwStyle |= WS_VISIBLE;
+   //   //////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+   //   ////dwStyle &= ~WS_CAPTION;
+   //   //////dwStyle = 0;
+   //   ////dwStyle &= ~WS_THICKFRAME;
+   //   ////dwStyle &= ~WS_BORDER;
+   //   ////int x = 0;
+   //   ////int y = 0;
+   //   ////int nWidth = size.cx;
+   //   ////int nHeight = size.cy;
+   //   ////HWND hWndParent = nullptr;
+   //   ////HMENU hMenu = nullptr;
+   //   ///////HINSTANCE hInstance = psystem->m_hinstance;
+   //   ////void * lpParam = nullptr;
 
-      //wglMakeCurrent(nullptr, nullptr);
-      //wglDeleteContext(m_hglrc);
-      //::ReleaseDC(m_hwnd, m_hdc);
-      //::DestroyWindow(m_hwnd);
-      m_size.set(0, 0);
-      //m_hglrc = NULL;
-      //m_hwnd = NULL;
-      //m_hdc = NULL;
-      return true;
+   //   //////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+   //   ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
 
-   }
+   //   ////if (window == nullptr)
+   //   ////{
+   //   ////   informationf("MS GDI - CreateWindow failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////// create WGL context, make current
+
+   //   ////PIXELFORMATDESCRIPTOR pixformat;
+   //   ////int chosenformat;
+   //   ////HDC hdc = GetDC(window);
+   //   ////if (hdc == nullptr)
+   //   ////{
+   //   ////   informationf("MS GDI - GetDC failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////ZeroMemory(&pixformat, sizeof(pixformat));
+   //   ////pixformat.nSize = sizeof(pixformat);
+   //   ////pixformat.nVersion = 1;
+   //   ////pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+   //   ////pixformat.iPixelType = PFD_TYPE_RGBA;
+   //   ////pixformat.cColorBits = 24;
+   //   ////pixformat.cAlphaBits = 8;
+   //   ////pixformat.cDepthBits = 24;
+   //   ////pixformat.cStencilBits = 8;
+
+   //   ////chosenformat = ChoosePixelFormat(hdc, &pixformat);
+   //   ////if (chosenformat == 0)
+   //   ////{
+   //   ////   informationf("MS GDI - ChoosePixelFormat failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+   //   ////if (!spfok)
+   //   ////{
+   //   ////   informationf("MS GDI - SetPixelFormat failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////HGLRC hglrcTime = wglCreateContext(hdc);
+   //   ////if (hglrcTime == nullptr)
+   //   ////{
+   //   ////   informationf("MS WGL - wglCreateContext failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   ReleaseDC(m_hwnd, m_hdc);
+   //   ////   return false;
+   //   ////}
+
+   //   ////bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
+   //   ////if (!okMakeCurrent)
+   //   ////{
+   //   ////   informationf("MS WGL - wglMakeCurrent failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+   //   //////vkfwInit();
+   //   ////// ... <snip> ... setup a window and a context
+   //   ////
+   //   ////auto wglCurrentContext = wglGetCurrentContext();
+
+   //   ////// Load all Opengl functions using the vkfw loader function
+   //   ////// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
+   //   //////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
+   //   //////   std::cout << "Failed to initialize Opengl context" << std::endl;
+   //   //////   return -1;
+   //   //////}
+   //   ////if (!vkadLoadWGL(hdc))
+   //   ////{
+   //   ////   // Problem: vkewInit failed, something is seriously wrong.
+   //   ////   informationf("vkadLoadWGL failed");
+   //   ////   //return false;
+   //   ////   //throw resource_exception();
+
+   //   ////   return false;
+
+   //   ////}
+   //   ////int attribs[] =
+   //   ////{
+   //   ////   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+   //   ////   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+   //   ////   WGL_CONTEXT_FLAGS_ARB, 0,
+   //   ////   WGL_CONTEXT_PROFILE_MASK_ARB,
+   //   ////   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
+   //   ////};
+
+   //   //////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
+   //   //////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+   //   ////auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
+   //   ////wglMakeCurrent(nullptr, nullptr);
+   //   ////wglDeleteContext(hglrcTime);
+   //   ////   wglMakeCurrent(hdc, m_hglrc);
+   //   //////draw2d_nanovg()->defer_initialize_glew();
+   //   ////
+   //   //////draw2d_nanovg()->defer_initialize_glew();
+
+
+   //   ////m_hwnd = window;
+   //   ////m_hdc = hdc;
+   //   ////m_hglrc = hglrc;
+   //   ////m_size = size;
+
+   //   //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+   //   //::opengl::resize(rectanglePlacement.size(), bYSwap);
+
+   //   //return true;
+
+   //}
+
+
+   //bool graphics::opengl_delete_offscreen_buffer()
+   //{
+
+   //   //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
+   //   //{
+
+   //   //   return true;
+
+   //   //}
+
+   //   //wglMakeCurrent(nullptr, nullptr);
+   //   //wglDeleteContext(m_hglrc);
+   //   //::ReleaseDC(m_hwnd, m_hdc);
+   //   //::DestroyWindow(m_hwnd);
+   //   m_size.set(0, 0);
+   //   //m_hglrc = NULL;
+   //   //m_hwnd = NULL;
+   //   //m_hdc = NULL;
+   //   return true;
+
+   //}
 
 
    bool graphics::opengl_defer_create_window_context(::windowing::window* pwindow)
@@ -616,9 +938,13 @@ namespace draw2d_nanovg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
-      auto pgpucontext = pgpudevice->main_context();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      auto pgpucontextWindow = pgpuwindowattachment->window_context();
 
       ////if (!m_pgpucontext)
       ////{
@@ -630,7 +956,7 @@ namespace draw2d_nanovg
 
       //pgpucontext->defer_create_window_context(pwindow);
 
-      ::cast < ::gpu_opengl::context > pcontextOpengl = pgpucontext;
+      ::cast < ::gpu_opengl::context > pcontextOpengl = pgpucontextWindow;
       ::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
       //nanovg_device_create_info_t createinfo;
@@ -710,34 +1036,23 @@ namespace draw2d_nanovg
    //    return 0;
    // }
 
-   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
+   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pdraw2dbitmap)
    {
 
-      if (m_pbitmap == pbitmap)
+      if (m_pdraw2dbitmap == pdraw2dbitmap)
       {
 
-         return m_pbitmap;
+         return m_pdraw2dbitmap;
 
       }
 
-      opengl_delete_offscreen_buffer();
-
-      if (!opengl_create_offscreen_buffer(pbitmap->get_size()))
-      {
-
-         return NULL;
-
-      }
-
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      ::opengl::resize(pbitmap->get_size(), bYSwap);
+      create_memory_graphics(pdraw2dbitmap->size(), m_pacmeuserinteractionAffinity);
 
       //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
 
-      m_pbitmap = pbitmap;
+      m_pdraw2dbitmap = pdraw2dbitmap;
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -761,13 +1076,13 @@ namespace draw2d_nanovg
 
    //      HBITMAP hbitmap = (HBITMAP) hObject;
 
-   //      if(m_pbitmap.is_null())
-   //         m_pbitmap.create();
+   //      if(m_pdraw2dbitmap.is_null())
+   //         m_pdraw2dbitmap.create();
 
-   //      if(m_pbitmap.is_null())
+   //      if(m_pdraw2dbitmap.is_null())
    //         return nullptr;
 
-   //      //(dynamic_cast < ::draw2d_nanovg::bitmap * > (m_pbitmap.m_p))->m_pbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
+   //      //(dynamic_cast < ::draw2d_nanovg::bitmap * > (m_pdraw2dbitmap.m_p))->m_pdraw2dbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
 
    //      //if(m_pgraphics != nullptr)
    //      //{
@@ -789,7 +1104,7 @@ namespace draw2d_nanovg
 
    //      //}
 
-   //      //m_pgraphics = allocateø< plusplus::Graphics((plusplus::Bitmap *) m_pbitmap->get_os_data >());
+   //      //m_pgraphics = allocateø< plusplus::Graphics((plusplus::Bitmap *) m_pdraw2dbitmap->get_os_data >());
 
    //      //m_pgraphics->SetPageUnit(plusplus::UnitPixel);
 
@@ -1102,6 +1417,13 @@ namespace draw2d_nanovg
 
       nanovg_keep keep(m_pdc);
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgTranslate(m_pdc, (float) centerx, (float)centery);
 
       nvgScale(m_pdc, (float)radiusx, (float)radiusy);
@@ -1158,19 +1480,19 @@ namespace draw2d_nanovg
    //}
 
 
-   bool graphics::fill(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   bool graphics::fill(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return true;
 
       }
 
-      if (_fill1(pbrush, xOrg, yOrg))
+      if (_fill1(pdraw2dbrush, xOrg, yOrg))
       {
 
          return false;
@@ -1179,17 +1501,17 @@ namespace draw2d_nanovg
 
       nvgFill(m_pdc);
 
-      _fill2(pbrush, xOrg, yOrg);
+      _fill2(pdraw2dbrush, xOrg, yOrg);
 
       return true;
 
    }
 
 
-   bool graphics::_fill1(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   bool graphics::_fill1(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    {
 
-      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return true;
@@ -1203,20 +1525,20 @@ namespace draw2d_nanovg
 
       //   nanovg_push_group(m_pdc);
 
-      //   _set(pbrush, xOrg, yOrg);
+      //   _set(pdraw2dbrush, xOrg, yOrg);
 
       //}
       //else
-      if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
+      if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
       {
 
-         float x0 = (float)(pbrush->m_point1.x - xOrg);
+         float x0 = (float)(pdraw2dbrush->m_point1.x - xOrg);
 
-         float y0 = (float)(pbrush->m_point1.y - yOrg);
+         float y0 = (float)(pdraw2dbrush->m_point1.y - yOrg);
 
-         float x1 = (float)(pbrush->m_point2.x - xOrg);
+         float x1 = (float)(pdraw2dbrush->m_point2.x - xOrg);
 
-         float y1 = (float)(pbrush->m_point2.y - yOrg);
+         float y1 = (float)(pdraw2dbrush->m_point2.y - yOrg);
 
          //float xform[6];
 
@@ -1231,8 +1553,8 @@ namespace draw2d_nanovg
             m_pdc,
             x0, y0,         // start point (top of the rectangle)
             x1, y1,     // end point (bottom of the rectangle)
-            as_nvg_color(pbrush->m_color1),    // start color (red)
-            as_nvg_color(pbrush->m_color2)     // end color (blue)
+            as_nvg_color(pdraw2dbrush->m_color1),    // start color (red)
+            as_nvg_color(pdraw2dbrush->m_color2)     // end color (blue)
          );
 
          nvgFillPaint(m_pdc, gradient);
@@ -1241,9 +1563,9 @@ namespace draw2d_nanovg
 
          //VkvgPattern ppattern = nanovg_pattern_create_linear(x0, y0, x1, y1);
 
-         //nanovg_pattern_add_color_stop(ppattern, 0., __expand_double_rgba(pbrush->m_color1));
+         //nanovg_pattern_add_color_stop(ppattern, 0., __expand_double_rgba(pdraw2dbrush->m_color1));
 
-         //nanovg_pattern_add_color_stop(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
+         //nanovg_pattern_add_color_stop(ppattern, 1., __expand_double_rgba(pdraw2dbrush->m_color2));
 
          return false;
 
@@ -1251,7 +1573,7 @@ namespace draw2d_nanovg
       else
       {
 
-         _set(pbrush, xOrg, yOrg);
+         _set(pdraw2dbrush, xOrg, yOrg);
 
       }
 
@@ -1260,20 +1582,20 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(::draw2d::brush* pbrush, double x, double y)
+   bool graphics::_set(::draw2d::brush* pdraw2dbrush, double x, double y)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
+      if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
       {
 
-         auto radius = maximum(::abs(pbrush->m_size.cx), ::abs(pbrush->m_size.cy)) / 2.0;
+         auto radius = maximum(::abs(pdraw2dbrush->m_size.cx), ::abs(pdraw2dbrush->m_size.cy)) / 2.0;
 
          if (radius <= 0.0)
          {
 
-            nvgFillColor(m_pdc, as_nvg_color(pbrush->m_color1));
+            nvgFillColor(m_pdc, as_nvg_color(pdraw2dbrush->m_color1));
 
          }
          else
@@ -1281,34 +1603,34 @@ namespace draw2d_nanovg
 
             auto paint = nvgRadialGradient(
                m_pdc,
-               (float)(pbrush->m_point.x - x),
-               (float)(pbrush->m_point.y - y),
+               (float)(pdraw2dbrush->m_point.x - x),
+               (float)(pdraw2dbrush->m_point.y - y),
                0.f,
                (float)radius,
-               as_nvg_color(pbrush->m_color1),
-               as_nvg_color(pbrush->m_color2));
+               as_nvg_color(pdraw2dbrush->m_color1),
+               as_nvg_color(pdraw2dbrush->m_color2));
 
             nvgFillPaint(m_pdc, paint);
 
          }
 
       }
-      else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
+      else if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
       {
 
-         //double x0 = pbrush->m_point1.x - x;
+         //double x0 = pdraw2dbrush->m_point1.x - x;
 
-         //double y0 = pbrush->m_point1.y - y;
+         //double y0 = pdraw2dbrush->m_point1.y - y;
 
-         //double x1 = pbrush->m_point2.x - x;
+         //double x1 = pdraw2dbrush->m_point2.x - x;
 
-         //double y1 = pbrush->m_point2.y - y;
+         //double y1 = pdraw2dbrush->m_point2.y - y;
 
          //VkvgPattern ppattern = nanovg_pattern_create_linear(x0, y0, x1, y1);
 
-         //nanovg_pattern_add_color_stop(ppattern, 0., __expand_double_rgba(pbrush->m_color1));
+         //nanovg_pattern_add_color_stop(ppattern, 0., __expand_double_rgba(pdraw2dbrush->m_color1));
 
-         //nanovg_pattern_add_color_stop(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
+         //nanovg_pattern_add_color_stop(ppattern, 1., __expand_double_rgba(pdraw2dbrush->m_color2));
 
          //nanovg_set_source(m_pdc, ppattern);
 
@@ -1316,14 +1638,14 @@ namespace draw2d_nanovg
 
 
       }
-      //else if (pbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
+      //else if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
       //{
 
-      //   f64_rectangle outer(pbrush->m_point, pbrush->m_size);
+      //   f64_rectangle outer(pdraw2dbrush->m_point, pdraw2dbrush->m_size);
       //   f64_rectangle inner(outer);
-      //   inner.deflate(pbrush->m_dRadius);
+      //   inner.deflate(pdraw2dbrush->m_dRadius);
       //   double K = 0.5522847498; // For HalfPi arc (90 degrees)
-      //   double KR = K * pbrush->m_dRadius;
+      //   double KR = K * pdraw2dbrush->m_dRadius;
 
 
       //   //https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve
@@ -1355,10 +1677,10 @@ namespace draw2d_nanovg
       //   //nanovg_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
       //   //nanovg_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
       //   //nanovg_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
       //   int iStatus = nanovg_pattern_status(ppattern);
 
@@ -1368,10 +1690,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_line_to(ppattern, outer.right, inner.top);
       //   nanovg_mesh_pattern_line_to(ppattern, outer.right, inner.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
       //   ///* Add a Coons patch */
@@ -1412,10 +1734,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_curve_to(ppattern, outer.right, inner.bottom + KR, inner.right + KR, outer.bottom,
       //      inner.right, outer.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
 
@@ -1424,10 +1746,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, outer.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, outer.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
 
@@ -1436,10 +1758,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.top);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
       //   // clockwise bottom-left
@@ -1456,10 +1778,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_curve_to(ppattern, inner.left - KR, outer.bottom, outer.left, inner.bottom + KR, outer.left,
       //      inner.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
 
@@ -1468,10 +1790,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_line_to(ppattern, outer.left, inner.top);
       //   nanovg_mesh_pattern_line_to(ppattern, outer.left, inner.bottom);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
 
@@ -1491,10 +1813,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_curve_to(ppattern, outer.left, inner.top - KR, inner.left - KR, outer.top, inner.left,
       //      outer.top);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.top);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
 
@@ -1503,10 +1825,10 @@ namespace draw2d_nanovg
       //   nanovg_mesh_pattern_line_to(ppattern, inner.left, outer.top);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, outer.top);
       //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.top);
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   nanovg_mesh_pattern_end_patch(ppattern);
 
 
@@ -1514,17 +1836,17 @@ namespace draw2d_nanovg
 
 
       //}
-      //else if (pbrush->m_ebrush == ::draw2d::e_brush_pattern)
+      //else if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_pattern)
       //{
 
-      //   if (pbrush->m_pimage.nok())
+      //   if (pdraw2dbrush->m_pimage.nok())
       //   {
 
       //      return false;
 
       //   }
 
-      //   nanovg_surface_t* psurface = nanovg_get_target((nanovg_t*)pbrush->m_pimage->g()->get_os_data());
+      //   nanovg_surface_t* psurface = nanovg_get_target((nanovg_t*)pdraw2dbrush->m_pimage->g()->get_os_data());
 
       //   if (psurface == nullptr)
       //   {
@@ -1559,7 +1881,7 @@ namespace draw2d_nanovg
       else
       {
 
-         nvgFillColor(m_pdc, as_nvg_color(pbrush->m_color));
+         nvgFillColor(m_pdc, as_nvg_color(pdraw2dbrush->m_color));
 
       }
 
@@ -1569,10 +1891,10 @@ namespace draw2d_nanovg
 
 
 
-   bool graphics::_fill2(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   bool graphics::_fill2(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    {
 
-      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return true;
@@ -1601,7 +1923,7 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pbrush)
+   void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pdraw2dbrush)
    {
 
       if (!m_pdc)
@@ -1611,6 +1933,14 @@ namespace draw2d_nanovg
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
       nvgBeginPath(m_pdc);
 
       nvgRect(m_pdc,
@@ -1619,10 +1949,10 @@ namespace draw2d_nanovg
          (float)(rectangle.right - rectangle.left),
          (float)(rectangle.bottom - rectangle.top));
 
-      fill(pbrush);
+      fill(pdraw2dbrush);
       //vkBegin(VK_QUADS);
 
-      //set(pbrush);
+      //set(pdraw2dbrush);
 
       //::opengl::vertex2f(rectangle);
 
@@ -1984,7 +2314,7 @@ namespace draw2d_nanovg
 
       ::draw2d::graphics::draw_ellipse(rectangleParam);
 
-      _synchronous_lock ml(::draw2d_nanovg::mutex());
+      //_synchronous_lock ml(::draw2d_nanovg::mutex());
 
       //double centerx = (x2 + x1) / 2.0;
 
@@ -2009,10 +2339,10 @@ namespace draw2d_nanovg
 
       //nvgTranslate(m_pdc, centerx, centery);
 
-      //if (m_ppen->m_epenalign == ::draw2d::e_pen_align_inset)
+      //if (m_pdraw2dpen->m_epenalign == ::draw2d::e_pen_align_inset)
       //{
 
-      //   nvgScale(m_pdc, radiusx - m_ppen->m_dWidth / 2.0, radiusy - m_ppen->m_dWidth / 2.0);
+      //   nvgScale(m_pdc, radiusx - m_pdraw2dpen->m_dWidth / 2.0, radiusy - m_pdraw2dpen->m_dWidth / 2.0);
 
       //}
       //else
@@ -2026,7 +2356,7 @@ namespace draw2d_nanovg
 
       //keep.pulse();
 
-      //_set(m_ppen);
+      //_set(m_pdraw2dpen);
 
       //nvgStroke(m_pdc);
 
@@ -2114,28 +2444,36 @@ namespace draw2d_nanovg
 
       }
 
-      if (!m_pbrush)
+      if (!m_pdraw2dbrush)
       {
 
          return;
 
       }
 
-      if (m_pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (m_pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return;
 
       }
 
-      if (m_pbrush->m_ebrush == ::draw2d::e_brush_solid
-         && m_pbrush->m_color.is_transparent()
+      if (m_pdraw2dbrush->m_ebrush == ::draw2d::e_brush_solid
+         && m_pdraw2dbrush->m_color.is_transparent()
          && m_ealphamode == ::draw2d::e_alpha_mode_blend)
       {
 
          return;
 
       }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
 
       nanovg_keep keep(m_pdc);
 
@@ -2154,7 +2492,7 @@ namespace draw2d_nanovg
 
       //keep.pulse();
 
-      _set(m_pbrush);
+      _set(m_pdraw2dbrush);
 
       nvgFill(m_pdc);
 
@@ -2187,16 +2525,24 @@ namespace draw2d_nanovg
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
       nanovg_keep keep(m_pdc);
 
       nvgBeginPath(m_pdc);
 
       //nvgTranslate(m_pdc, (float)centerx, (float)centery);
 
-      //if (m_ppen->m_epenalign == ::draw2d::e_pen_align_inset)
+      //if (m_pdraw2dpen->m_epenalign == ::draw2d::e_pen_align_inset)
       //{
 
-      //   nvgScale(m_pdc, (float)(radiusx - m_ppen->m_dWidth / 2.0), (float)(radiusy - m_ppen->m_dWidth / 2.0));
+      //   nvgScale(m_pdc, (float)(radiusx - m_pdraw2dpen->m_dWidth / 2.0), (float)(radiusy - m_pdraw2dpen->m_dWidth / 2.0));
 
       //}
       //else
@@ -2210,9 +2556,19 @@ namespace draw2d_nanovg
 
       //keep.pulse();
 
-      _set(m_ppen);
+      _set(m_pdraw2dpen);
 
       nvgStroke(m_pdc);
+
+      float xform[6];
+      nvgCurrentTransform(m_pdc, xform);
+
+      // NanoVG matrix layout:
+      // [ xform[0]  xform[2]  xform[4] ]  ->  [ a  c  e ]  ->  [ sx  kx  tx ]
+      // [ xform[1]  xform[3]  xform[5] ]  ->  [ b  d  f ]  ->  [ ky  sy  ty ]
+
+      float scaleX = sqrtf(xform[0] * xform[0] + xform[1] * xform[1]);
+      float scaleY = sqrtf(xform[2] * xform[2] + xform[3] * xform[3]);
 
       //return true;
 
@@ -2293,6 +2649,21 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
+
+      for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)lpPoints[i].x, (float)lpPoints[i].y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      draw();
+
 
       nvgBeginPath(m_pdc);
       nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
@@ -2407,6 +2778,14 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
 
       nvgBeginPath(m_pdc);
       nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
@@ -2731,7 +3110,7 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* ppen)
+   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* pdraw2dpen)
    {
 
       if (!m_pdc)
@@ -2740,6 +3119,14 @@ namespace draw2d_nanovg
          throw ::exception(error_wrong_state);
 
       }
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
 
       nvgBeginPath(m_pdc);
 
@@ -2749,10 +3136,10 @@ namespace draw2d_nanovg
          (float)(rectangle.right - rectangle.left),
          (float)(rectangle.bottom - rectangle.top));
 
-      draw(ppen);
+      draw(pdraw2dpen);
       //vkBegin(VK_QUADS);
 
-      //set(pbrush);
+      //set(pdraw2dbrush);
 
       //::opengl::vertex2f(rectangle);
 
@@ -2767,7 +3154,7 @@ namespace draw2d_nanovg
    void graphics::draw_rectangle(const ::f64_rectangle& rectangle)
    {
 
-      draw_rectangle(rectangle, m_ppen);
+      draw_rectangle(rectangle, m_pdraw2dpen);
 
       //return true;
 
@@ -2777,7 +3164,7 @@ namespace draw2d_nanovg
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle)
    {
 
-      fill_rectangle(rectangle, m_pbrush);
+      fill_rectangle(rectangle, m_pdraw2dbrush);
 
    }
 
@@ -2831,12 +3218,12 @@ namespace draw2d_nanovg
    //         if (pgraphicsSrc->get_current_bitmap() == nullptr)
    //            return false;
    //
-   //         if (pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
+   //         if (pgraphicsSrc->get_current_bitmap()->nok())
    //            return false;
    //
-   //         ::pointer<bitmap>pbitmap = pgraphicsSrc->get_current_bitmap();
+   //         ::pointer<bitmap>pdraw2dbitmap = pgraphicsSrc->get_current_bitmap();
    //
-   //         //pbitmap->create_texture(0);
+   //         //pdraw2dbitmap->create_texture(0);
    //
    //         //vkBegin(VK_QUADS);
    //         //// Front Face
@@ -3071,14 +3458,14 @@ namespace draw2d_nanovg
    void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
 
-      _set(m_pfont);
-      //if (!set(m_pfont))
+      _set(m_pwritetextfont);
+      //if (!set(m_pwritetextfont))
       //{
 
       //   return false;
 
       //}
-      
+
 
 
       float ascender = 0.f;
@@ -3096,43 +3483,43 @@ namespace draw2d_nanovg
       lpMetrics->m_dInternalLeading = 0.0;
       lpMetrics->m_dExternalLeading =
          maximum(0.0, (double)lineh - ((double)ascender - (double)descender));
-       
+
 //#if defined(WINDOWS_DESKTOP)
-//      ::pointer<font>pfont = m_pfont;
+//      ::pointer<font>pwritetextfont = m_pwritetextfont;
 //
 //      TEXTMETRIC tm;
 //
-//      GetTextMetrics(pfont->m_hdcFont, &tm);
+//      GetTextMetrics(pwritetextfont->m_hdcFont, &tm);
 //
 //      lpMetrics->m_dAscent = tm.tmAscent;
 //      lpMetrics->m_dHeight = tm.tmHeight;
 //      lpMetrics->m_dDescent = tm.tmDescent;
 //
 //#endif
-      
+
       //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
       //if (m_pgraphics == nullptr)
       //   return false;
 
-      //graphics * pgraphics = ((graphics *)this);
+      //graphics * pdraw2dgraphics = ((graphics *)this);
 
-      //if(pgraphics->vk2d_font() == nullptr)
+      //if(pdraw2dgraphics->vk2d_font() == nullptr)
       //   return false;
 
-      //plusplus::Font * pfont = pgraphics->vk2d_font();
+      //plusplus::Font * pwritetextfont = pdraw2dgraphics->vk2d_font();
 
       //plusplus::FontFamily family;
 
-      //pfont->GetFamily(&family);
+      //pwritetextfont->GetFamily(&family);
 
-      //::double iStyle = pfont->GetStyle();
+      //::double iStyle = pwritetextfont->GetStyle();
 
       //double dHeight = family.GetEmHeight(iStyle);
 
-      //double dSize = pfont->GetSize();
+      //double dSize = pwritetextfont->GetSize();
 
-      //double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
+      //double dFontHeight = pwritetextfont->GetHeight((plusplus::REAL) pdraw2dgraphics->get_dpiy());
 
       //lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
       //lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
@@ -3156,7 +3543,7 @@ namespace draw2d_nanovg
 
 
       ///*wstr = L"";
-      //m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
+      //m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pwritetextfont->get_os_data(), origin, &rect2);*/
 
       //lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
 
@@ -3253,7 +3640,7 @@ namespace draw2d_nanovg
    //                        const ::f64_rectangle & lpRectScroll,const ::f64_rectangle & rectangleClip,
    //                        ::draw2d::region* pRgnUpdate, ::f64_rectangle * lpRectUpdate)
    //{
-   //   
+   //
    //   // ASSERT(m_hdc != nullptr);
    //   //return ::ScrollDC(m_hdc,Δx,Δy,&rectangleClip,
    //     //                &rectangleClip, (HRGN)pRgnUpdate->get_os_data(), lpRectUpdate) != false;
@@ -3459,7 +3846,7 @@ namespace draw2d_nanovg
    //         if(pgraphicsSrc->get_current_bitmap() == nullptr)
    //            return false;
    //
-   //         if(pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
+   //         if(pgraphicsSrc->get_current_bitmap()->nok())
    //            return false;
    //
    //         plusplus::Point p[3];
@@ -3552,18 +3939,40 @@ namespace draw2d_nanovg
    //
    // }
 
+   void graphics::set_target_image(::image::image * pimage)
+   {
+
+      auto pgpulayer = ::gpu::current_layer();
+
+      if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
+      {
+
+         return;
+
+      }
+
+      ::cast < ::draw2d_nanovg::image > popenglimage = pimage;
+
+      ::cast < ::draw2d_nanovg::bitmap > pdraw2dbitmap = popenglimage->m_pdraw2dbitmap;
+
+      ::cast < ::gpu_opengl::texture > ptexture = pdraw2dbitmap->m_pgputexture;
+
+      ptexture->bind_render_target();
+
+   }
+
 
    ::draw2d::pen* graphics::get_current_pen()
    {
 
-      return m_ppen;
+      return m_pdraw2dpen;
 
    }
 
    ::draw2d::brush* graphics::get_current_brush()
    {
 
-      return m_pbrush;
+      return m_pdraw2dbrush;
 
    }
 
@@ -3577,14 +3986,14 @@ namespace draw2d_nanovg
    ::write_text::font* graphics::get_current_font()
    {
 
-      return m_pfont;
+      return m_pwritetextfont;
 
    }
 
    ::draw2d::bitmap* graphics::get_current_bitmap()
    {
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -3793,12 +4202,19 @@ namespace draw2d_nanovg
    //}
 
 
-   void graphics::draw(::draw2d::path* ppath)
+   void graphics::draw(::draw2d::path* pdraw2dpath)
    {
+
+      if (::is_null(pdraw2dpath) || pdraw2dpath->m_itema.is_empty())
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (!_set(ppath))
+      if (!_set(pdraw2dpath))
       {
 
          throw ::exception(error_failed);
@@ -3810,12 +4226,12 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
+   void graphics::draw(::draw2d::path* pdraw2dpath, ::draw2d::pen* pdraw2dpen)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (!_set(ppath))
+      if (!_set(pdraw2dpath))
       {
 
          throw ::exception(error_failed);
@@ -3823,14 +4239,15 @@ namespace draw2d_nanovg
       }
 
       //return
-      draw(ppen);
+      draw(pdraw2dpen);
 
    }
 
-   bool graphics::_set(::draw2d::path* ppath)
+
+   bool graphics::_set(::draw2d::path* pdraw2dpath)
    {
 
-      if (::is_null(ppath) || ppath->m_itema.is_empty())
+      if (::is_null(pdraw2dpath) || pdraw2dpath->m_itema.is_empty())
       {
 
          return false;
@@ -3848,7 +4265,7 @@ namespace draw2d_nanovg
       //if (!m_bOutline)
       {
 
-         //if (ppath->m_efillmode == ::draw2d::e_fill_mode_alternate)
+         //if (pdraw2dpath->m_efillmode == ::draw2d::e_fill_mode_alternate)
          //{
 
          //   nanovg_set_fill_rule(m_pdc, VKVG_FILL_RULE_EVEN_ODD);
@@ -3863,10 +4280,10 @@ namespace draw2d_nanovg
 
       }
 
-      for (int i = 0; i < ppath->m_itema.get_count(); i++)
+      for (int i = 0; i < pdraw2dpath->m_itema.get_count(); i++)
       {
 
-         _set(ppath->m_itema[i]);
+         _set(pdraw2dpath->m_itema[i]);
 
       }
 
@@ -4021,7 +4438,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::f64_arc& arc, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::f64_arc& arc, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(arc);
@@ -4029,7 +4446,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::f64_line& line, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::f64_line& line, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(line);
@@ -4037,7 +4454,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::f64_lines& lines, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::f64_lines& lines, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(lines);
@@ -4045,7 +4462,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::f64_rectangle& rectangle, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::f64_rectangle& rectangle, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(rectangle);
@@ -4053,7 +4470,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::f64_ellipse& ellipse, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::f64_ellipse& ellipse, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(ellipse);
@@ -4061,7 +4478,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::f64_polygon& polygon, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::f64_polygon& polygon, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(polygon);
@@ -4069,7 +4486,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(textout);
@@ -4077,7 +4494,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::_set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& ppath)
+   bool graphics::_set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& pdraw2dpath)
    {
 
       return _set(drawtext);
@@ -4103,6 +4520,13 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       nanovg_keep keep(m_pdc);
 
@@ -4175,12 +4599,19 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       if (m_bHasCurrentPoint)
       {
 
-         float x = (float)m_point.x;
+         float x = (float)m_pointCurrent.x;
 
-         float y = (float)m_point.y;
+         float y = (float)m_pointCurrent.y;
 
          //nanovg_get_current_point(m_pdc, &x, &y);
 
@@ -4201,9 +4632,9 @@ namespace draw2d_nanovg
 
       nvgLineTo(m_pdc, (float)line.m_p2.x, (float)line.m_p2.y);
 
-      m_point.x = line.m_p2.x;
+      m_pointCurrent.x = line.m_p2.x;
 
-      m_point.y = line.m_p2.y;
+      m_pointCurrent.y = line.m_p2.y;
 
       m_bHasCurrentPoint = true;
 
@@ -4224,12 +4655,19 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       if (m_bHasCurrentPoint)
       {
 
-         float x = (float)m_point.x;
+         float x = (float)m_pointCurrent.x;
 
-         float y = (float)m_point.y;
+         float y = (float)m_pointCurrent.y;
 
          //nanovg_get_current_point(m_pdc, &x, &y);
 
@@ -4278,12 +4716,19 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       if (m_bHasCurrentPoint)
       {
 
-         float x = (float)m_point.x;
+         float x = (float)m_pointCurrent.x;
 
-         float y = (float)m_point.y;
+         float y = (float)m_pointCurrent.y;
 
          if (x != pointa[0].x || y != pointa[0].y)
          {
@@ -4351,6 +4796,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgBeginPath(m_pdc);
 
       _set((const ::f64_point_array&)lines);
@@ -4395,6 +4847,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgBeginPath(m_pdc);
 
       _set((const ::f64_point_array&)int_polygon);
@@ -4428,6 +4887,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgRect(
          m_pdc,
          (float)rectangle.left,
@@ -4444,6 +4910,13 @@ namespace draw2d_nanovg
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       double Δx = ellipse.center_x();
 
@@ -4479,6 +4952,13 @@ namespace draw2d_nanovg
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       auto rectangle = ::f64_rectangle(textout.m_point, f64_size(65535.0, 65535.0));
 
@@ -4569,12 +5049,19 @@ namespace draw2d_nanovg
 
 
 
-   void graphics::fill(::draw2d::path* ppath)
+   void graphics::fill(::draw2d::path* pdraw2dpath)
    {
+
+      if (::is_null(pdraw2dpath) || pdraw2dpath->m_itema.is_empty())
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (!_set(ppath))
+      if (!_set(pdraw2dpath))
       {
 
          throw ::exception(error_failed);
@@ -4588,12 +5075,12 @@ namespace draw2d_nanovg
 
 
 
-   void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
+   void graphics::fill(::draw2d::path* pdraw2dpath, ::draw2d::brush* pdraw2dbrush)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (!_set(ppath))
+      if (!_set(pdraw2dpath))
       {
 
          throw ::exception(error_failed);
@@ -4601,7 +5088,7 @@ namespace draw2d_nanovg
       }
 
       //return
-      fill(pbrush);
+      fill(pdraw2dbrush);
 
    }
 
@@ -4611,14 +5098,14 @@ namespace draw2d_nanovg
 
    //   _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-   //   bool bPen = m_ppen->m_epen != ::draw2d::e_pen_null;
+   //   bool bPen = m_pdraw2dpen->m_epen != ::draw2d::e_pen_null;
 
    //   nanovg_keep keep(m_pdc);
 
-   //   if (m_pbrush->m_ebrush != ::draw2d::e_brush_null)
+   //   if (m_pdraw2dbrush->m_ebrush != ::draw2d::e_brush_null)
    //   {
 
-   //      _set(m_pbrush);
+   //      _set(m_pdraw2dbrush);
 
    //      set_alpha_mode(m_ealphamode);
 
@@ -4642,7 +5129,7 @@ namespace draw2d_nanovg
    //   if (bPen)
    //   {
 
-   //      _set(m_ppen);
+   //      _set(m_pdraw2dpen);
 
    //      set_alpha_mode(m_ealphamode);
 
@@ -4655,33 +5142,33 @@ namespace draw2d_nanovg
    //}
 
 
-   //bool graphics::fill(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   //bool graphics::fill(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    //{
 
    //   _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-   //   if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+   //   if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
    //   {
 
    //      return true;
 
    //   }
 
-   //   _fill1(pbrush, xOrg, yOrg);
+   //   _fill1(pdraw2dbrush, xOrg, yOrg);
 
    //   nanovg_fill(m_pdc);
 
-   //   _fill2(pbrush, xOrg, yOrg);
+   //   _fill2(pdraw2dbrush, xOrg, yOrg);
 
    //   return true;
 
    //}
 
 
-   //bool graphics::_fill1(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   //bool graphics::_fill1(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    //{
 
-   //   if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+   //   if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
    //   {
 
    //      return true;
@@ -4695,13 +5182,13 @@ namespace draw2d_nanovg
 
    //      nanovg_push_group(m_pdc);
 
-   //      _set(pbrush, xOrg, yOrg);
+   //      _set(pdraw2dbrush, xOrg, yOrg);
 
    //   }
    //   else
    //   {
 
-   //      _set(pbrush, xOrg, yOrg);
+   //      _set(pdraw2dbrush, xOrg, yOrg);
 
    //   }
 
@@ -4710,10 +5197,10 @@ namespace draw2d_nanovg
    //}
 
 
-   //bool graphics::_fill2(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   //bool graphics::_fill2(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    //{
 
-   //   if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+   //   if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
    //   {
 
    //      return true;
@@ -4737,7 +5224,7 @@ namespace draw2d_nanovg
    bool graphics::fill(double xOrg, double yOrg)
    {
 
-      return fill(m_pbrush, xOrg, yOrg);
+      return fill(m_pdraw2dbrush, xOrg, yOrg);
 
    }
 
@@ -4745,7 +5232,7 @@ namespace draw2d_nanovg
    bool graphics::_fill1(double xOrg, double yOrg)
    {
 
-      return _fill1(m_pbrush, xOrg, yOrg);
+      return _fill1(m_pdraw2dbrush, xOrg, yOrg);
 
    }
 
@@ -4753,17 +5240,17 @@ namespace draw2d_nanovg
    bool graphics::_fill2(double xOrg, double yOrg)
    {
 
-      return _fill2(m_pbrush, xOrg, yOrg);
+      return _fill2(m_pdraw2dbrush, xOrg, yOrg);
 
    }
 
 
-   bool graphics::draw(::draw2d::pen* ppen)
+   bool graphics::draw(::draw2d::pen* pdraw2dpen)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (ppen == nullptr || ppen->m_epen == ::draw2d::e_pen_null)
+      if (pdraw2dpen == nullptr || pdraw2dpen->m_epen == ::draw2d::e_pen_null)
       {
 
          return true;
@@ -4772,7 +5259,7 @@ namespace draw2d_nanovg
 
       nanovg_keep keep(m_pdc);
 
-      _set(ppen);
+      _set(pdraw2dpen);
 
       nvgStroke(m_pdc);
 
@@ -4785,18 +5272,18 @@ namespace draw2d_nanovg
    void graphics::draw()
    {
 
-      draw(m_ppen);
+      draw(m_pdraw2dpen);
 
    }
 
 
 
-   //bool graphics::draw(::draw2d::pen* ppen)
+   //bool graphics::draw(::draw2d::pen* pdraw2dpen)
    //{
 
    //   _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-   //   if (ppen == nullptr || ppen->m_epen == ::draw2d::e_pen_null)
+   //   if (pdraw2dpen == nullptr || pdraw2dpen->m_epen == ::draw2d::e_pen_null)
    //   {
 
    //      return true;
@@ -4805,7 +5292,7 @@ namespace draw2d_nanovg
 
    //   //nanovg_keep keep(m_pdc);
 
-   //   _set(ppen);
+   //   _set(pdraw2dpen);
 
    //   nvgStroke(m_pdc);
 
@@ -4814,40 +5301,40 @@ namespace draw2d_nanovg
    //}
 
 
-   bool graphics::_set(::draw2d::pen* ppen)
+   bool graphics::_set(::draw2d::pen* pdraw2dpen)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (ppen->m_epen == ::draw2d::e_pen_brush)
+      if (pdraw2dpen->m_epen == ::draw2d::e_pen_brush)
       {
 
-         _set(ppen->m_pbrush);
+         _set(pdraw2dpen->m_pdraw2dbrush);
 
       }
       else
       {
 
-         nvgStrokeColor(m_pdc, as_nvg_color(ppen->m_color));
+         nvgStrokeColor(m_pdc, as_nvg_color(pdraw2dpen->m_color));
 
       }
 
-      if (ppen->m_elinecapBeg == ::draw2d::e_line_cap_round
-         && ppen->m_elinecapEnd == ::draw2d::e_line_cap_round)
+      if (pdraw2dpen->m_elinecapBeg == ::draw2d::e_line_cap_round
+         && pdraw2dpen->m_elinecapEnd == ::draw2d::e_line_cap_round)
       {
 
          nvgLineCap(m_pdc, NVG_ROUND);
 
       }
-      else if (ppen->m_elinecapBeg == ::draw2d::e_line_cap_flat
-         && ppen->m_elinecapEnd == ::draw2d::e_line_cap_flat)
+      else if (pdraw2dpen->m_elinecapBeg == ::draw2d::e_line_cap_flat
+         && pdraw2dpen->m_elinecapEnd == ::draw2d::e_line_cap_flat)
       {
 
          nvgLineCap(m_pdc, NVG_BUTT);
 
       }
 
-      nvgStrokeWidth(m_pdc, ppen->m_dWidth);
+      nvgStrokeWidth(m_pdc, (float) pdraw2dpen->m_dWidth);
 
       return true;
 
@@ -5038,22 +5525,22 @@ namespace draw2d_nanovg
 ////      if(pgraphicsSrc->get_current_bitmap() == nullptr)
 ////         return false;
 ////
-////      plusplus::Bitmap * pbitmap = nullptr;
+////      plusplus::Bitmap * pdraw2dbitmap = nullptr;
 ////
 ////      try
 ////      {
 ////
-////         pbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
+////         pdraw2dbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
 ////
 ////      }
 ////      catch(...)
 ////      {
 ////      }
 ////
-////      if(pbitmap != nullptr)
+////      if(pdraw2dbitmap != nullptr)
 ////      {
 ////
-////         m_pgraphics->DrawImage(pbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
+////         m_pgraphics->DrawImage(pdraw2dbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
 ////
 ////      }
 ////
@@ -5284,7 +5771,7 @@ namespace draw2d_nanovg
       //      }
       //      else
       //      {
-      //         
+      //
       //         double cxPerInch, cyPerInch;
       //         if (this != nullptr)
       //         {
@@ -5319,7 +5806,7 @@ namespace draw2d_nanovg
       //      }
       //      else
       //      {
-      //         
+      //
       //         double cxPerInch, cyPerInch;
       //         if (this != nullptr)
       //         {
@@ -5543,9 +6030,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //{
 //hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
 //ASSERT(pMap != nullptr);
-//      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
-   //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc == hDC);
-   //  return pgraphics;
+//      ::draw2d::graphics * pdraw2dgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
+   //    ASSERT(pdraw2dgraphics == nullptr || (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->m_hdc == hDC);
+   //  return pdraw2dgraphics;
    // return nullptr;
    //}
 
@@ -5711,6 +6198,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          {
 
          }
+
+         clear_nanovg_gpu_image_wrapper_cache();
 
       }
 
@@ -5908,8 +6397,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if(m_hdc != nullptr)
          hOldObj = ::SelectObject(m_hdc, pPen->get_os_data());
       return dynamic_cast < pen * > (::draw2d_nanovg::object::from_handle(get_app(), hOldObj));*/
-      m_ppen = pPen;
-      return m_ppen;
+      m_pdraw2dpen = pPen;
+      return m_pdraw2dpen;
 
    }
 
@@ -5924,14 +6413,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             if(m_hdc != nullptr)
                hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
             return dynamic_cast < ::draw2d::brush * > (::draw2d_nanovg::object::from_handle(get_app(), hOldObj));*/
-      m_pbrush = pBrush;
+      m_pdraw2dbrush = pBrush;
 
-      return m_pbrush;
+      return m_pdraw2dbrush;
 
    }
 
 
-   ::write_text::font* graphics::SelectObject(::write_text::font* pfont)
+   ::write_text::font* graphics::SelectObject(::write_text::font* pwritetextfont)
    {
       /*      HGDIOBJ hOldObj = nullptr;
             if(pFont == nullptr)
@@ -5950,12 +6439,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             m_fontxyz = *pFont;
             return &m_fontxyz;*/
 
-            //if(!set(pfont))
+            //if(!set(pwritetextfont))
               // return nullptr;
 
-      set(pfont);
+      set(pwritetextfont);
 
-      return m_pfont;
+      return m_pwritetextfont;
 
    }
 
@@ -6138,8 +6627,260 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
+   //void graphics::begin_draw(const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget)
+   //{
+
+   //   ::gpu::graphics::begin_draw(rectangleFrame, pimageTarget);
+
+   //   //auto pgpucontext = gpu_context();
+
+   //   //::gpu::context_lock contextlock(pgpucontext);
+
+   //   //auto pgputextureTarget = pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture();
+
+   //   //prepare_nanovg_render_target(pgputextureTarget);
+
+   //   //_nvg_begin_frame(pgputextureTarget, rectangleFrame.size());
+
+   //}
+
+
+   void graphics::begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget)
    {
+
+      ::i32_rectangle rectangle(rectangleFrame.size());
+
+      if (!m_bBeginDraw)
+      {
+
+         m_bBeginDraw = true;
+
+         if (::is_set(pimageTarget))
+         {
+
+            m_pimageTarget = pimageTarget;
+
+         }
+
+         auto pgpucontext = gpu_context();
+
+         ::gpu::context_lock contextlock(pgpucontext);
+
+         auto pgputextureTarget = m_pimageTarget->get_gpu_texture_as_target(pgpucontext);
+
+         prepare_nanovg_render_target(pgputextureTarget);
+
+         auto sizeTarget = pgputextureTarget->size();
+
+         if (sizeTarget.is_empty())
+         {
+
+            sizeTarget = rectangle.size();
+
+         }
+
+         _nvg_begin_frame(bExternalRendering, pgputextureTarget, sizeTarget);
+
+      }
+
+      ::gpu::graphics::begin_draw(bExternalRendering, puserinteraction, rectangle, m_pimageTarget);
+
+   }
+
+
+   void graphics::end_draw()
+   {
+
+      ::gpu::graphics::end_draw();
+
+      if (m_bBeginDraw)
+      {
+
+         m_bBeginDraw = false;
+
+         _nvg_end_frame(m_bNvgBeginFrameExternalRendering);
+
+      }
+
+   }
+
+
+   void graphics::_nvg_begin_frame(bool bExternalRendering, ::gpu::texture * pgputexture, const ::i32_size & size)
+   {
+
+      if (::is_null(pgputexture))
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
+
+      if (m_pgputextureNvgBeginFrame)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto pgpucontext = gpu_context();
+
+      ::gpu::context_lock contextlock(pgpucontext);
+
+      m_pgputextureNvgBeginFrame = pgputexture;
+
+      m_sizeNvgBeginFrame = size;
+
+      m_bNvgBeginFrameExternalRendering = bExternalRendering;
+
+      m_pgputextureNvgBeginFrame->bind_render_target();
+
+      if (bExternalRendering)
+      {
+
+         // Memory-image rendering is independent of a compositor frame. Do
+         // not request its current frame command buffer here: icon and
+         // thumbnail workers legitimately reach this path without
+         // begin_frame().
+         glViewport(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glViewport for NanoVG target");
+
+         glEnable(GL_SCISSOR_TEST);
+         ::opengl::check_error("glEnable(GL_SCISSOR_TEST) for NanoVG target");
+
+         glScissor(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glScissor for NanoVG target");
+
+      }
+      else
+      {
+
+         auto pcommandbuffer = m_pgpucontextOwned->m_pgpurenderer
+            ->getCurrentCommandBuffer2(::gpu::current_layer());
+
+         ::i32_rectangle rectangleOutput(m_sizeNvgBeginFrame);
+
+         pcommandbuffer->set_viewport(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+         pcommandbuffer->set_scissor(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+      }
+
+      nvgBeginFrame(
+         m_pdc,
+         (float)m_sizeNvgBeginFrame.cx,
+         (float)m_sizeNvgBeginFrame.cy,
+         1.0f);
+
+   }
+
+
+   void graphics::_nvg_end_frame(bool bExternalRendering)
+   {
+
+      if (!m_pgputextureNvgBeginFrame)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto pgpucontext = gpu_context();
+
+      ::gpu::context_lock contextlock(pgpucontext);
+
+      m_pgputextureNvgBeginFrame->bind_render_target();
+
+      // NanoVG defers its OpenGL work until nvgEndFrame. The viewport must
+      // therefore describe this render target, not the affinity window. This
+      // is essential for small offscreen targets such as font previews.
+
+      if (bExternalRendering)
+      {
+
+         glViewport(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glViewport for NanoVG end frame");
+
+         glEnable(GL_SCISSOR_TEST);
+         ::opengl::check_error("glEnable(GL_SCISSOR_TEST) for NanoVG end frame");
+
+         glScissor(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glScissor for NanoVG end frame");
+
+      }
+      else
+      {
+
+         auto pcommandbuffer = m_pgpucontextOwned->m_pgpurenderer
+            ->getCurrentCommandBuffer2(::gpu::current_layer());
+
+         ::i32_rectangle rectangleOutput(m_sizeNvgBeginFrame);
+
+         pcommandbuffer->set_viewport(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+         pcommandbuffer->set_scissor(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+      }
+
+      nvgEndFrame(m_pdc);
+
+      m_pgputextureNvgBeginFrame = nullptr;
+      m_sizeNvgBeginFrame = {};
+      m_bNvgBeginFrameExternalRendering = false;
+
+   }
+
+
+
+   ::gpu::texture_site* graphics::current_target_texture(::gpu::layer * pgpulayer)
+   {
+
+      if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
+      {
+
+         auto pgpucontext = gpu_context();
+
+         if (!pgpucontext)
+         {
+
+            throw ::exception(
+               error_wrong_state,
+               "NanoVG has no GPU context for the active composition layer.");
+
+         }
+
+         return pgpucontext->get_gpu_renderer()->current_render_target_texture(pgpulayer);
+
+      }
+
+      ::cast < ::gpu::image > pgpuimage =m_pimageTarget;
+
+      if (pgpuimage)
+      {
+
+         auto pgputexture = pgpuimage->gpu_texture();
+
+         if (pgputexture)
+         {
+
+            defer_construct_newø(m_pgputexturesiteTarget);
+
+            m_pgputexturesiteTarget->m_pgputextureSite = pgputexture;
+
+            m_pgputexturesiteTarget->m_pointOutput = m_pointCurrent;
+
+            return m_pgputexturesiteTarget;
+
+         }
+
+      }
 
       return ::gpu::graphics::current_target_texture(pgpulayer);
 
@@ -6471,7 +7212,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //int graphics::SetTextJustification(int nBreakExtra, int nBreakCount)
    //{
-   // 
+   //
    //   double nRetVal = 0;
 
    //   //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -6486,11 +7227,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //double graphics::SetTextCharacterExtra(double nCharExtra)
    //{
-   //   
+   //
    //   // ASSERT(m_hdc != nullptr);
 
    //   double nRetVal = 0x8000000;
-   //   
+   //
    //   //if(m_hdc != nullptr && m_hdc != m_hdc)
    //   //   nRetVal = ::SetTextCharacterExtra(m_hdc, nCharExtra);
    //   //if(m_hdc != nullptr)
@@ -6503,7 +7244,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //unsigned int graphics::SetMapperFlags(unsigned int dwFlag)
    //{
-   //   
+   //
    //   // ASSERT(m_hdc != nullptr);
 
    //   unsigned int dwRetVal = GDI_ERROR;
@@ -6759,63 +7500,63 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //    HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
    // {
    //    return 1;
-   //    //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
-   //    //      ASSERT_VALID(pgraphics);
+   //    //      ::draw2d::graphics * pdraw2dgraphics = (::draw2d::graphics *)lParam;
+   //    //      ASSERT_VALID(pdraw2dgraphics);
    //    //
    //    //      switch (pMetaRec->rdFunction)
    //    //      {
    //    //      // these records have effects different for each graphics derived class
    //    //      case META_SETMAPMODE:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETWINDOWEXT:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_window_ext(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->set_window_ext(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETWINDOWORG:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SetWindowOrg(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SetWindowOrg(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETVIEWPORTEXT:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_context_extents(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->set_context_extents(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETVIEWPORTORG:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_origin(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->set_origin(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SCALEWINDOWEXT:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->scale_window_ext(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->scale_window_ext(
    //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SCALEVIEWPORTEXT:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->scale_context_extents(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->scale_context_extents(
    //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_OFFSETVIEWPORTORG:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->offset_origin(
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->offset_origin(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SAVEDC:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SaveDC();
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SaveDC();
    //    //         break;
    //    //      case META_RESTOREDC:
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETBKCOLOR:
    //    //      {
-   //    //         auto pbrush = createø < ::draw2d::brush >();
+   //    //         auto pdraw2dbrush = createø < ::draw2d::brush >();
    //    //
-   //    //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
+   //    //         pdraw2dbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SelectObject(brush);
    //    //      }
    //    //      break;
    //    //      case META_SETTEXTCOLOR:
    //    //      {
-   //    //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
+   //    //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SelectObject(brush);
    //    //      }
    //    //      break;
    //    //
@@ -6828,27 +7569,27 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //    //         {
    //    //            // object type is unknown, determine if it is a font
    //    //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-   //    //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hStockFont);
-   //    //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hObject);
+   //    //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->m_hdc, hStockFont);
+   //    //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->m_hdc, hObject);
    //    //            if (hObjOld == hStockFont)
    //    //            {
    //    //               // got the stock object back, so must be selecting a font
    //    //               throw ::not_implemented();
-   //    ////                  (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    ////                  (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pdraw2dgraphics->get_app(), (HFONT)hObject));
    //    //               break;  // don't play the default record
    //    //            }
    //    //            else
    //    //            {
    //    //               // didn't get the stock object back, so restore everything
-   //    //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hFontOld);
-   //    //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hObjOld);
+   //    //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->m_hdc, hFontOld);
+   //    //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->m_hdc, hObjOld);
    //    //            }
    //    //            // and fall through to PlayMetaFileRecord...
    //    //         }
    //    //         else if (nObjType == OBJ_FONT)
    //    //         {
    //    //            // play back as graphics::SelectObject(::write_text::font*)
-   //    ////               (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    ////               (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pdraw2dgraphics->get_app(), (HFONT)hObject));
    //    //            throw ::not_implemented();
    //    //            break;  // don't play the default record
    //    //         }
@@ -6872,7 +7613,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //   return ::PlayMetaFile(m_hdc, hMF) != false;
    //   //}
 
-   //   //// for special playback, lParam == pgraphics
+   //   //// for special playback, lParam == pdraw2dgraphics
    //   //return ::EnumMetaFile(m_hdc, hMF, __enum_meta_file_procedure, (LPARAM)this) != false;
    //   return false;
 
@@ -7020,9 +7761,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
       //   pmNew->Translate((plusplus::REAL) rectangleParam.left,(plusplus::REAL) rectangleParam.top);
-      //   pmNew->Scale((plusplus::REAL) m_pfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
+      //   pmNew->Scale((plusplus::REAL) m_pwritetextfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
 
-      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
+      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pwritetextfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
 
       //   m_pgraphics->SetTransform(pmNew);
 
@@ -7051,7 +7792,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //ASSERT((nFormat & (DT_PATH_ELLIPSIS | DT_MODIFYSTRING)) != (DT_PATH_ELLIPSIS | DT_MODIFYSTRING));
    //   //wstring wstr = utf8_to_unicode(str);
    //   //return ::DrawTextExW(m_hdc,const_cast<wchar_t *>((const wchar_t *)wstr),(double)wcslen(wstr),(::f64_rectangle *) &rectangleParam,nFormat,lpDTParams);
-   //   
+   //
    //   //return false;
 
    //}
@@ -7064,16 +7805,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-   ::f64_size graphics::get_text_extent(const ::scoped_string& scopedstr)
+   ::f64_size graphics::_get_text_extent(const ::scoped_string& scopedstr)
    {
 
-      return get_text_extent(scopedstr, scopedstr.size());
+      return _get_text_extent(scopedstr, scopedstr.size());
 
    }
 
 
    //f64_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   ::f64_size graphics::get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
+   ::f64_size graphics::_get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
    {
 
       string str(scopedstr.m_begin, minimum_non_negative(iIndex, scopedstr.size()));
@@ -7089,7 +7830,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (m_pfont.is_null())
+      if (m_pwritetextfont.is_null())
       {
 
          //return false;
@@ -7098,7 +7839,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      if (m_pfont->m_dFontWidth <= 0.0)
+      if (m_pwritetextfont->m_dFontWidth <= 0.0)
       {
 
          throw ::exception(error_wrong_state);
@@ -7118,7 +7859,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 #if defined(USE_PANGO)
 
-         PangoFontDescription* pdesc = (PangoFontDescription*)m_pfont->get_os_data(this);
+         PangoFontDescription* pdesc = (PangoFontDescription*)m_pwritetextfont->get_os_data(this);
 
          if (::is_set(pdesc))
          {
@@ -7165,7 +7906,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             nanovg_keep keep(m_pdc);
 
-            _set(m_pfont);
+            _set(m_pwritetextfont);
 
             nvgTextAlign(m_pdc, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
 
@@ -7187,7 +7928,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             //size.cy = x;
 
-            auto dWidth = (double)x_advance * m_pfont->m_dFontWidth;
+            auto dWidth = (double)x_advance * m_pwritetextfont->m_dFontWidth;
 
             return { dWidth, lineh };
 
@@ -7218,7 +7959,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      _set(m_pfont);
+      _set(m_pwritetextfont);
 
       float lineh = 0.f;
 
@@ -7229,6 +7970,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return size;
 
    }
+
+
+   //::f64_size graphics::_get_text_extent(const ::scoped_string & scopedstr)
+   //{
+
+   //   return get_text_extent(scopedstr);
+
+   //}
 
 
    //f64_size graphics::get_text_extent(const ::string & lpszString, character_count nCount)
@@ -7290,15 +8039,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      //// ASSERT(m_hdc != nullptr);
 //
-//      set(m_pfont);
+//      set(m_pwritetextfont);
 //
-//      ::pointer<font>pfont = m_pfont;
+//      ::pointer<font>pwritetextfont = m_pwritetextfont;
 //
 //      ::i32_size s;
 //
 //      wstring wstr = utf8_to_unicode(string(&lpszString[iIndex], nCount));
 //
-//      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+//      //if (!::GetTextExtentPoint32W(pwritetextfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
 ////         return false;
 //
 //      //// FreeType
@@ -7321,7 +8070,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      //// Load first 128 characters of ASCII set
 //      //for (VKubyte c = 0; c < 128; c++)
 //      //{
-//      //   // Load character vkyph 
+//      //   // Load character vkyph
 //      //   if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 //      //   {
 //      //      std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
@@ -7375,15 +8124,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      //// ASSERT(m_hdc != nullptr);
 //
-//      set(m_pfont);
+//      set(m_pwritetextfont);
 //
-//      ::pointer<font>pfont = m_pfont;
+//      ::pointer<font>pwritetextfont = m_pwritetextfont;
 //
 //      ::i32_size s;
 //
 //      wstring wstr = utf8_to_unicode(lpszString, nCount);
 //
-//      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+//      //if (!::GetTextExtentPoint32W(pwritetextfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
 //        // return false;
 //
 //      size.cx = s.cx;
@@ -7400,15 +8149,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      //// ASSERT(m_hdc != nullptr);
 //
-//      set(m_pfont);
+//      set(m_pwritetextfont);
 //
-//      ::pointer<font>pfont = m_pfont;
+//      ::pointer<font>pwritetextfont = m_pwritetextfont;
 //
 //      ::i32_size s;
 //
 //      wstring wstr = utf8_to_unicode(str);
 //
-//      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+//      //if (::GetTextExtentPoint32W(pwritetextfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
 //        // return false;
 //
 //      size.cx = s.cx;
@@ -7426,11 +8175,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   try
    //   {
 
-   //      if (m_pbitmap.is_set())
+   //      if (m_pdraw2dbitmap.is_set())
    //      {
 
 
-   //         ::i32_size s = m_pbitmap.cast < bitmap>()->m_sizeOut;
+   //         ::i32_size s = m_pdraw2dbitmap.cast < bitmap>()->m_sizeOut;
 
    //         if (s.area() <= 0)
    //         {
@@ -7452,33 +8201,56 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   }
    //   catch(...)
    //   {
-   //      
+   //
    //   }
 
    //}
 
 
-   void graphics::draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* ppen)
+   void graphics::draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* pdraw2dpen)
    {
 
-      ::opengl::line(point1.x, point1.y, point2.x, point2.y, (float)(ppen->m_dWidth),
-         ppen->m_color.f32_red(), ppen->m_color.f32_green(),
-         ppen->m_color.f32_blue(),
-         ppen->m_color.f32_opacity(), 0.f, 0.f, true);
+      if (m_bTargetRectangleModified)
+      {
 
-      /*vkLineWidth(ppen->m_dWidth);
+         defer_on_target_rectangle_update();
+
+      }
+
+
+      //::opengl::line(point1.x, point1.y, point2.x, point2.y, (float)(pdraw2dpen->m_dWidth),
+      //   pdraw2dpen->m_color.f32_red(), pdraw2dpen->m_color.f32_green(),
+      //   pdraw2dpen->m_color.f32_blue(),
+      //   pdraw2dpen->m_color.f32_opacity(), 0.f, 0.f, true);
+
+      /*vkLineWidth(pdraw2dpen->m_dWidth);
 
       vkBegin(VK_LINES);
 
-      ::opengl::color(ppen->m_color);
+      ::opengl::color(pdraw2dpen->m_color);
 
       vkVertex2f(point1.x, point1.y);
       vkVertex2f(point2.x, point2.y);
 
       vkEnd();*/
 
-      m_point.x = point2.x;
-      m_point.y = point2.y;
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)point1.x, (float)point1.y);
+
+      //for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)point2.x, (float)point2.y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      draw();
+
+
+      m_pointCurrent.x = point2.x;
+      m_pointCurrent.y = point2.y;
 
       //return true;
 
@@ -7493,10 +8265,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::line(double x1, double y1, double x2, double y2)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * pdraw2dpen)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       nvgBeginPath(m_pdc);
 
@@ -7504,11 +8283,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       nvgLineTo(m_pdc, (float) x2, (float) y2);
 
-      draw();
+      draw(pdraw2dpen);
 
-      m_point.x = x2;
+      m_pointCurrent.x = x2;
 
-      m_point.y = y2;
+      m_pointCurrent.y = y2;
 
    }
 
@@ -7520,16 +8299,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //      _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      auto pfont = m_pfont;
+      auto pwritetextfont = m_pwritetextfont;
 
-      if (::is_null(pfont))
+      if (::is_null(pwritetextfont))
       {
 
          throw ::exception(error_null_pointer);
 
       }
 
-      if (pfont->m_fontsize.is_null_or_negative() || pfont->m_dFontWidth <= 0.0)
+      if (pwritetextfont->m_fontsize.is_null_or_negative() || pwritetextfont->m_dFontWidth <= 0.0)
       {
 
          throw ::exception(error_wrong_state);
@@ -7538,24 +8317,24 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 #if defined(USE_PANGO)
 
-      if (::is_set(pfont->get_os_data(this, 0)))
+      if (::is_set(pwritetextfont->get_os_data(this, 0)))
       {
 
-         return internal_draw_text_pango(pfont, block, rectangle, ealign, edrawtext, &pango_nanovg_show_layout);
+         return internal_draw_text_pango(pwritetextfont, block, rectangle, ealign, edrawtext, &pango_nanovg_show_layout);
 
 
       }
 
 #endif
 
-      //if (::is_set(pfont->get_os_data(this, 1)))
-//      if (::is_set(pfont->get_os_data(this, 0)))
+      //if (::is_set(pwritetextfont->get_os_data(this, 1)))
+//      if (::is_set(pwritetextfont->get_os_data(this, 0)))
   //    {
 
         // return internal_draw_text_nanovg(block, rectangle, ealign, edrawtext, &nanovg_show_text);
 
     //  }
-      //else if (::is_set(pfont->get_os_data(this, 1)))
+      //else if (::is_set(pwritetextfont->get_os_data(this, 1)))
       //{
 
       //return internal_draw_text_nanovg(block, rectangle, ealign, edrawtext, &nanovg_show_text);
@@ -7585,23 +8364,37 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
-      if (m_pfont.is_null())
+      if (m_pwritetextfont.is_null())
       {
 
          throw ::exception(error_null_pointer);
 
       }
 
-      if (m_pfont->m_dFontWidth <= 0.0)
+      if (m_pwritetextfont->m_dFontWidth <= 0.0)
       {
 
          throw ::exception(error_wrong_state);
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+      else
+      {
+
+
+         on_target_rectangle_update();
+
+      }
+
       nanovg_keep keep(m_pdc);
 
-      _set(m_pfont);
+      _set(m_pwritetextfont);
 
       float lineh = 0.f;
 
@@ -7710,25 +8503,27 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          // Match draw2d's reference top-origin placement while preserving NanoVG's line metrics.
-         y += nvgTextBaselineOffset(m_pdc);
+         //auto f1= nvgTextBaselineOffset(m_pdc);
+         //auto f2 = lineh;
+         // y += (f2 - f1);
 
       }
 
       nvgTextAlign(m_pdc, iHorizontalAlign | iVerticalAlign);
 
-      if (m_pfont->m_dFontWidth != 1.0)
+      if (m_pwritetextfont->m_dFontWidth != 1.0)
       {
 
          nvgTranslate(m_pdc, (float)x, 0.f);
-         nvgScale(m_pdc, (float)m_pfont->m_dFontWidth, (float)1.0);
+         nvgScale(m_pdc, (float)m_pwritetextfont->m_dFontWidth, (float)1.0);
          nvgTranslate(m_pdc, (float)-x, 0.f);
 
       }
 
-      //if (m_pbrush.is_set())
+      //if (m_pdraw2dbrush.is_set())
       //{
 
-      //    set_os_color(m_pbrush->m_color);
+      //    set_os_color(m_pdraw2dbrush->m_color);
 
       //}
 
@@ -7749,7 +8544,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          }
          else
          {
-            
+
             nvgText(m_pdc, (float)x, (float)y, strLine.m_begin, strLine.m_end);
 
          }
@@ -7797,6 +8592,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       //auto posdata = pfontParam->get_os_data(this, 1);
 
       //if (::is_null(posdata))
@@ -7806,11 +8608,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      ::string strFamilyName = pfontParam->m_pfontfamily->family_name(this);
+      auto strFontKey = ::draw2d_nanovg::get()->defer_load_font(m_pdc, pfontParam);
 
-      defer_load_font_by_family_name(strFamilyName);
-
-      nvgFontFace(m_pdc, strFamilyName);
+      nvgFontFace(m_pdc, strFontKey);
 
       //nanovg_font_face_t* pfontface = (nanovg_font_face_t*)posdata;
 
@@ -7858,14 +8658,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      if (::is_set(m_puserinteractionDraw2dGraphics))
+      if (::is_set(m_pacmeuserinteractionAffinity))
       {
 
-         fPreferredDpiX = m_puserinteractionDraw2dGraphics->preferred_dpi_x();
+         fPreferredDpiX = m_pacmeuserinteractionAffinity->preferred_dpi_x();
 
-         fPreferredDpiY = m_puserinteractionDraw2dGraphics->preferred_dpi_y();
+         fPreferredDpiY = m_pacmeuserinteractionAffinity->preferred_dpi_y();
 
-         fPreferredDensity = m_puserinteractionDraw2dGraphics->preferred_density();
+         fPreferredDensity = m_pacmeuserinteractionAffinity->preferred_density();
 
       }
 
@@ -7894,7 +8694,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      m_pfontDevice = m_pfont;
+      m_pwritetextfontDevice = m_pwritetextfont;
 
       return true;
 
@@ -7909,13 +8709,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::set(::draw2d::pen* ppen)
+   void graphics::set(::draw2d::pen* pdraw2dpen)
    {
 
-      m_ppen = ppen;
-      //vkLineWidth(ppen->m_dWidth);
+      m_pdraw2dpen = pdraw2dpen;
+      //vkLineWidth(pdraw2dpen->m_dWidth);
 
-      //::opengl::color(ppen->m_color);
+      //::opengl::color(pdraw2dpen->m_color);
 
       //return ::success;
 
@@ -7923,11 +8723,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-   void graphics::set(::draw2d::brush* pbrush)
+   void graphics::set(::draw2d::brush* pdraw2dbrush)
    {
 
-      ::draw2d::graphics::set(pbrush);
-      //::opengl::color(pbrush->m_color);
+      ::draw2d::graphics::set(pdraw2dbrush);
+      //::opengl::color(pdraw2dbrush->m_color);
 
       //return ::success;
 
@@ -7935,21 +8735,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-   void graphics::set(::write_text::font* pfont)
+   void graphics::set(::write_text::font* pwritetextfont)
    {
 
-      if (m_pfont != pfont)
+      if (m_pwritetextfont != pwritetextfont)
       {
 
-         ::string strFontName = pfont->m_pfontfamily->family_name(this);
+         ::string strFontName = pwritetextfont->m_pfontfamily->family_name(this);
 
          auto pszFontName = strFontName.c_str();
 
-         ::draw2d::graphics::set(pfont);
+         ::draw2d::graphics::set(pwritetextfont);
 
       }
 
-      //if (::is_null(pfont))
+      //if (::is_null(pwritetextfont))
       //{
 
       //   //return ::error_failed;
@@ -7957,14 +8757,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      //pfont->get_os_data(this);
+      //pwritetextfont->get_os_data(this);
 
       ////return ::success;
 
    }
 
 
-   void graphics::set(::draw2d::bitmap* pbitmap)
+   void graphics::set(::draw2d::bitmap* pdraw2dbitmap)
    {
 
       //return ::success;
@@ -8070,17 +8870,1027 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::f64_point& pointSrc)
+   void graphics::_draw_nanovg_image(
+      int iImage,
+      const ::i32_size & sizeImage,
+      const ::f64_rectangle & rectangleTarget,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_rectangle & rectangleSource)
    {
 
-      if (!m_pdc || !pimage || rectangleTarget.is_empty() || pimage->is_empty())
+      nanovg_keep keep(m_pdc);
+
+      auto dScaleX = rectangleTarget.width() / rectangleSource.width();
+      auto dScaleY = rectangleTarget.height() / rectangleSource.height();
+
+      auto paint = nvgImagePattern(
+         m_pdc,
+         (float)(rectangleTarget.left - rectangleSource.left * dScaleX),
+         (float)(rectangleTarget.top - rectangleSource.top * dScaleY),
+         (float)(sizeImage.cx * dScaleX),
+         (float)(sizeImage.cy * dScaleY),
+         0.f,
+         iImage,
+         imagedrawingoptions.opacity().f32_opacity());
+
+      nvgBeginPath(m_pdc);
+      nvgRect(
+         m_pdc,
+         (float)rectangleTarget.left,
+         (float)rectangleTarget.top,
+         (float)rectangleTarget.width(),
+         (float)rectangleTarget.height());
+      nvgFillPaint(m_pdc, paint);
+      nvgFill(m_pdc);
+
+   }
+
+
+   void graphics::reset_gpu_image_performance_diagnostics()
+   {
+
+      auto bEnabled = m_papplication
+         && m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed);
+      auto iIntervalMilliseconds = m_papplication
+         ? m_papplication->m_gpu.m_iPerformanceDiagnosticsIntervalMilliseconds.load(
+            ::std::memory_order_relaxed)
+         : 1'000;
+
+      iIntervalMilliseconds = maximum(
+         100,
+         minimum(60'000, iIntervalMilliseconds));
+
+      m_uPerformanceGpuImageDraws.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceCpuFallbackDraws.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCreations.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperDeletions.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCacheHits.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCacheMisses.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperEvictions.store(0, ::std::memory_order_relaxed);
+      m_uPerformancePendingFenceWaits.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceFenceWaitMicroseconds.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperMicroseconds.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceRenderedTextureDiagnostics.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceSampledTextureDiagnostics.store(0, ::std::memory_order_relaxed);
+      m_iPerformanceNextReportNanoseconds.store(
+         performance_steady_nanoseconds()
+            + (::i64)iIntervalMilliseconds * 1'000'000,
+         ::std::memory_order_relaxed);
+      m_bPerformanceDiagnosticsEnabledLast.store(
+         bEnabled,
+         ::std::memory_order_relaxed);
+      m_uPerformanceDiagnosticsGenerationLast.store(
+         m_papplication
+            ? m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+               ::std::memory_order_relaxed)
+            : 0,
+         ::std::memory_order_relaxed);
+
+   }
+
+
+   ::i64 graphics::reserve_rendered_gpu_image_diagnostic()
+   {
+
+      if (!m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return -1;
+
+      }
+
+      auto uGeneration =
+         m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+            ::std::memory_order_relaxed);
+
+      if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+         ::std::memory_order_relaxed))
+      {
+
+         reset_gpu_image_performance_diagnostics();
+
+      }
+
+      auto uDiagnosticIndex =
+         m_uPerformanceRenderedTextureDiagnostics.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      if (uDiagnosticIndex >= 8)
+      {
+
+         return -1;
+
+      }
+
+      return (::i64)uDiagnosticIndex;
+
+   }
+
+
+   void graphics::diagnose_gpu_image_target_state(
+      ::i64 iDiagnosticIndex,
+      ::gpu::context * pgpucontext,
+      ::gpu::layer * pgpulayer,
+      ::gpu_opengl::texture * pgputexture,
+      ::i32 iDrawFramebufferBefore)
+   {
+
+      if (iDiagnosticIndex < 0 || !pgputexture)
       {
 
          return;
 
       }
 
-      pimage->defer_update_image();
+      GLint iDrawFramebufferAfter = 0;
+      GLint iaViewport[4]{};
+      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &iDrawFramebufferAfter);
+      glGetIntegerv(GL_VIEWPORT, iaViewport);
+      auto uTargetFramebuffer = pgputexture->target_frame_buffer_object();
+
+#if defined(WINDOWS_DESKTOP)
+      auto pwglcontext =
+         dynamic_cast < ::gpu_opengl::wgl_context * >(pgpucontext);
+      auto hglrcExpected = pwglcontext ? pwglcontext->m_hglrc : nullptr;
+      auto hdcExpected = pwglcontext ? pwglcontext->m_hdc : nullptr;
+      auto hglrcCurrent = ::wglGetCurrentContext();
+      auto hdcCurrent = ::wglGetCurrentDC();
+      auto bContextMatch = hglrcExpected && hglrcExpected == hglrcCurrent;
+      auto bDeviceContextMatch = hdcExpected && hdcExpected == hdcCurrent;
+#else
+      auto bContextMatch = true;
+      auto bDeviceContextMatch = true;
+#endif
+
+      information() << "[gpu.performance.nanovg_image_boundary] stage=target_state"
+         << " diagnostic=" << iDiagnosticIndex
+         << " graphics=" << (::uptr)this
+         << " image=" << (::uptr)m_pimageTarget.m_p
+         << " context=" << (::uptr)pgpucontext
+         << " layer=" << (::uptr)pgpulayer
+         << " texture_object=" << (::uptr)pgputexture
+         << " texture=" << pgputexture->m_gluTextureID
+#if defined(WINDOWS_DESKTOP)
+         << " expected_context=" << (::uptr)hglrcExpected
+         << " current_context=" << (::uptr)hglrcCurrent
+         << " expected_dc=" << (::uptr)hdcExpected
+         << " current_dc=" << (::uptr)hdcCurrent
+#endif
+         << " context_match=" << bContextMatch
+         << " dc_match=" << bDeviceContextMatch
+         << " framebuffer_before=" << iDrawFramebufferBefore
+         << " target_framebuffer=" << uTargetFramebuffer
+         << " framebuffer_after=" << iDrawFramebufferAfter
+         << " framebuffer_match="
+            << (iDrawFramebufferAfter == (GLint)uTargetFramebuffer)
+         << " viewport=" << iaViewport[0] << "," << iaViewport[1]
+            << "," << iaViewport[2] << "," << iaViewport[3];
+
+   }
+
+
+   void graphics::diagnose_rendered_gpu_image(
+      ::gpu_opengl::texture * pgputexture,
+      ::i64 iDiagnosticIndex)
+   {
+
+      if (!pgputexture || iDiagnosticIndex < 0)
+      {
+
+         return;
+
+      }
+
+      auto sizeTexture = pgputexture->size();
+
+      if (sizeTexture.is_empty())
+      {
+
+         return;
+
+      }
+
+      ::memory memoryPixmap;
+      ::pixmap pixmap;
+
+      pixmap.create_as_descriptor(
+         sizeTexture,
+         DEFAULT_CREATE_IMAGE_FLAG,
+         sizeTexture.cx * (int)sizeof(::image32_t));
+
+      auto ppixmapPixmap = pixmap.map();
+
+      auto pgpucommandbuffer = gpu_context()->beginSingleTimeCommands();
+
+      pgputexture->read_pixels(pgpucommandbuffer, ppixmapPixmap, {});
+
+      auto uPixelCount = (::u64)sizeTexture.cx * (::u64)sizeTexture.cy;
+      auto uTransparentPixels = (::u64)0;
+      auto uOpaquePixels = (::u64)0;
+      auto uPartialAlphaPixels = (::u64)0;
+      auto uNonzeroRgbPixels = (::u64)0;
+      auto uBlackOpaquePixels = (::u64)0;
+      auto uPremultipliedViolations = (::u64)0;
+      auto uAlphaMinimum = (::u32)255;
+      auto uAlphaMaximum = (::u32)0;
+      const auto colorindexes = pixmap.m_colorindexes;
+
+      for (auto y = 0; y < sizeTexture.cy; y++)
+      {
+
+         auto prow = (::image32_t *)((::u8 *)pixmap.m_pimage32Raw
+            + y * pixmap.m_iScan);
+
+         for (auto x = 0; x < sizeTexture.cx; x++)
+         {
+
+            auto & pixel = prow[x];
+            auto uRed = (::u32)pixel.u8_red(colorindexes);
+            auto uGreen = (::u32)pixel.u8_green(colorindexes);
+            auto uBlue = (::u32)pixel.u8_blue(colorindexes);
+            auto uAlpha = (::u32)pixel.u8_opacity(colorindexes);
+
+            uAlphaMinimum = minimum(uAlphaMinimum, uAlpha);
+            uAlphaMaximum = maximum(uAlphaMaximum, uAlpha);
+
+            if (uAlpha == 0)
+            {
+
+               uTransparentPixels++;
+
+            }
+            else if (uAlpha == 255)
+            {
+
+               uOpaquePixels++;
+
+            }
+            else
+            {
+
+               uPartialAlphaPixels++;
+
+            }
+
+            if (uRed || uGreen || uBlue)
+            {
+
+               uNonzeroRgbPixels++;
+
+            }
+            else if (uAlpha == 255)
+            {
+
+               uBlackOpaquePixels++;
+
+            }
+
+            if (uRed > uAlpha || uGreen > uAlpha || uBlue > uAlpha)
+            {
+
+               uPremultipliedViolations++;
+
+            }
+
+         }
+
+      }
+
+      information() << "[gpu.performance.nanovg_image_boundary] stage=render"
+         << " diagnostic=" << iDiagnosticIndex
+         << " texture=" << pgputexture->m_gluTextureID
+         << " fbo=" << pgputexture->target_frame_buffer_object()
+         << " size=" << sizeTexture.cx << "x" << sizeTexture.cy
+         << " pixels=" << uPixelCount
+         << " alpha_min=" << uAlphaMinimum
+         << " alpha_max=" << uAlphaMaximum
+         << " transparent=" << uTransparentPixels
+         << " opaque=" << uOpaquePixels
+         << " partial_alpha=" << uPartialAlphaPixels
+         << " nonzero_rgb=" << uNonzeroRgbPixels
+         << " black_opaque=" << uBlackOpaquePixels
+         << " premult_violations=" << uPremultipliedViolations;
+
+   }
+
+
+   void graphics::diagnose_sampled_gpu_image(
+      ::gpu_opengl::texture * pgputexture,
+      const ::f64_rectangle & rectangleTarget)
+   {
+
+      if (!pgputexture || !m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGeneration =
+         m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+            ::std::memory_order_relaxed);
+
+      if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+         ::std::memory_order_relaxed))
+      {
+
+         reset_gpu_image_performance_diagnostics();
+
+      }
+
+      auto uDiagnosticIndex =
+         m_uPerformanceSampledTextureDiagnostics.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      if (uDiagnosticIndex >= 8)
+      {
+
+         return;
+
+      }
+
+      auto sizeTexture = pgputexture->size();
+
+      information() << "[gpu.performance.nanovg_image_boundary] stage=sample"
+                    << " diagnostic=" << uDiagnosticIndex << " texture=" << pgputexture->m_gluTextureID
+                    << " size=" << sizeTexture.cx << "x" << sizeTexture.cy << " target=" << rectangleTarget.left << ","
+                    << rectangleTarget.top << "," << rectangleTarget.right << "," << rectangleTarget.bottom;
+         //;<< " same_context=" << (pgputexture->context() == gpu_context());
+
+   }
+
+
+   void graphics::record_gpu_image_fast_path(
+      bool bWaitedForFence,
+      bool bCreatedWrapper,
+      ::u64 uFenceMicroseconds,
+      ::u64 uWrapperMicroseconds)
+   {
+
+      m_uPerformanceGpuImageDraws.fetch_add(1, ::std::memory_order_relaxed);
+
+      if (bCreatedWrapper)
+      {
+
+         m_uPerformanceWrapperCreations.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+         m_uPerformanceWrapperCacheMisses.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      }
+      else
+      {
+
+         m_uPerformanceWrapperCacheHits.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      }
+
+      m_uPerformanceWrapperMicroseconds.fetch_add(
+         uWrapperMicroseconds,
+         ::std::memory_order_relaxed);
+
+      if (bWaitedForFence)
+      {
+
+         m_uPerformancePendingFenceWaits.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+         m_uPerformanceFenceWaitMicroseconds.fetch_add(
+            uFenceMicroseconds,
+            ::std::memory_order_relaxed);
+
+      }
+
+      report_gpu_image_performance_diagnostics_if_due();
+
+   }
+
+
+   void graphics::record_gpu_image_cpu_fallback()
+   {
+
+      if (!m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGeneration =
+         m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+            ::std::memory_order_relaxed);
+
+      if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+         ::std::memory_order_relaxed))
+      {
+
+         reset_gpu_image_performance_diagnostics();
+
+      }
+
+      m_uPerformanceCpuFallbackDraws.fetch_add(
+         1,
+         ::std::memory_order_relaxed);
+      report_gpu_image_performance_diagnostics_if_due();
+
+   }
+
+
+   void graphics::report_gpu_image_performance_diagnostics_if_due()
+   {
+
+      if (!m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto iNowNanoseconds = performance_steady_nanoseconds();
+      auto iDeadlineNanoseconds = m_iPerformanceNextReportNanoseconds.load(
+         ::std::memory_order_relaxed);
+
+      if (iNowNanoseconds < iDeadlineNanoseconds)
+      {
+
+         return;
+
+      }
+
+      auto iIntervalMilliseconds = maximum(
+         100,
+         minimum(
+            60'000,
+            m_papplication->m_gpu.m_iPerformanceDiagnosticsIntervalMilliseconds.load(
+               ::std::memory_order_relaxed)));
+      auto iNextNanoseconds = iNowNanoseconds
+         + (::i64)iIntervalMilliseconds * 1'000'000;
+
+      if (!m_iPerformanceNextReportNanoseconds.compare_exchange_strong(
+         iDeadlineNanoseconds,
+         iNextNanoseconds,
+         ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGpuDraws = m_uPerformanceGpuImageDraws.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uCpuFallbacks = m_uPerformanceCpuFallbackDraws.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperCreations = m_uPerformanceWrapperCreations.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperDeletions = m_uPerformanceWrapperDeletions.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperCacheHits = m_uPerformanceWrapperCacheHits.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperCacheMisses = m_uPerformanceWrapperCacheMisses.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperEvictions = m_uPerformanceWrapperEvictions.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uPendingFenceWaits = m_uPerformancePendingFenceWaits.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uFenceWaitMicroseconds = m_uPerformanceFenceWaitMicroseconds.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperMicroseconds = m_uPerformanceWrapperMicroseconds.exchange(
+         0,
+         ::std::memory_order_relaxed);
+
+      information() << "[gpu.performance.nanovg_image] gpu_draws=" << uGpuDraws
+         << " cpu_fallbacks=" << uCpuFallbacks
+         << " wrapper_creates=" << uWrapperCreations
+         << " wrapper_deletes=" << uWrapperDeletions
+         << " wrapper_cache_hits=" << uWrapperCacheHits
+         << " wrapper_cache_misses=" << uWrapperCacheMisses
+         << " wrapper_evictions=" << uWrapperEvictions
+         << " wrapper_cached=" << m_nanovgGpuImageWrapperCache.size()
+         << " pending_fence_waits=" << uPendingFenceWaits
+         << " fence_wait_us=" << uFenceWaitMicroseconds
+         << " wrapper_us=" << uWrapperMicroseconds;
+
+   }
+
+
+   int graphics::acquire_nanovg_gpu_image_wrapper(
+      ::gpu_opengl::texture * pgputexture,
+      const ::i32_size & sizeImage,
+      bool & bCreatedWrapper)
+   {
+
+      for (auto & entry : m_nanovgGpuImageWrapperCache)
+      {
+
+         if (entry.m_iTextureSerial == pgputexture->m_iTextureSerial
+            && entry.m_uOpenGlTexture == pgputexture->m_gluTextureID
+            && entry.m_size.cx == sizeImage.cx
+            && entry.m_size.cy == sizeImage.cy)
+         {
+
+            entry.m_uLastUsedFrame = m_uNanovgGpuImageWrapperFrameSerial;
+            bCreatedWrapper = false;
+
+            return entry.m_iNanovgImage;
+
+         }
+
+      }
+
+      auto iImage = nvglCreateImageFromHandleGL3(
+         m_pdc,
+         pgputexture->m_gluTextureID,
+         sizeImage.cx,
+         sizeImage.cy,
+         NVG_IMAGE_NODELETE |
+            NVG_IMAGE_PREMULTIPLIED |
+            NVG_IMAGE_FLIPY);
+
+      if (iImage == 0)
+      {
+
+         throw ::exception(
+            error_failed,
+            "NanoVG failed to wrap the OpenGL GPU image texture.");
+
+      }
+
+      nanovg_gpu_image_wrapper_cache_entry entry;
+      entry.m_iTextureSerial = pgputexture->m_iTextureSerial;
+      entry.m_uOpenGlTexture = pgputexture->m_gluTextureID;
+      entry.m_size = sizeImage;
+      entry.m_iNanovgImage = iImage;
+      entry.m_pgputexture = pgputexture;
+      entry.m_uLastUsedFrame = m_uNanovgGpuImageWrapperFrameSerial;
+      m_nanovgGpuImageWrapperCache.push_back(entry);
+      bCreatedWrapper = true;
+
+      return iImage;
+
+   }
+
+
+   void graphics::maintain_nanovg_gpu_image_wrapper_cache()
+   {
+
+      auto deleteEntry = [this](nanovg_gpu_image_wrapper_cache_entry & entry)
+      {
+
+         nvgDeleteImage(m_pdc, entry.m_iNanovgImage);
+         m_uPerformanceWrapperDeletions.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+         m_uPerformanceWrapperEvictions.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      };
+
+      for (auto iterator = m_nanovgGpuImageWrapperCache.begin();
+           iterator != m_nanovgGpuImageWrapperCache.end();)
+      {
+
+         auto & entry = *iterator;
+         auto bUsedThisFrame =
+            entry.m_uLastUsedFrame == m_uNanovgGpuImageWrapperFrameSerial;
+         auto uUnusedFrames = m_uNanovgGpuImageWrapperFrameSerial
+            >= entry.m_uLastUsedFrame
+            ? m_uNanovgGpuImageWrapperFrameSerial - entry.m_uLastUsedFrame
+            : 0;
+
+         if (!bUsedThisFrame
+            && uUnusedFrames >= s_uNanovgGpuImageWrapperStaleFrames)
+         {
+
+            deleteEntry(entry);
+            iterator = m_nanovgGpuImageWrapperCache.erase(iterator);
+
+         }
+         else
+         {
+
+            ++iterator;
+
+         }
+
+      }
+
+      while (m_nanovgGpuImageWrapperCache.size()
+         > s_zNanovgGpuImageWrapperPreferredMaximum)
+      {
+
+         auto iteratorOldest = m_nanovgGpuImageWrapperCache.end();
+
+         for (auto iterator = m_nanovgGpuImageWrapperCache.begin();
+              iterator != m_nanovgGpuImageWrapperCache.end();
+              ++iterator)
+         {
+
+            if (iterator->m_uLastUsedFrame
+               == m_uNanovgGpuImageWrapperFrameSerial)
+            {
+
+               continue;
+
+            }
+
+            if (iteratorOldest == m_nanovgGpuImageWrapperCache.end()
+               || iterator->m_uLastUsedFrame
+                  < iteratorOldest->m_uLastUsedFrame)
+            {
+
+               iteratorOldest = iterator;
+
+            }
+
+         }
+
+         if (iteratorOldest == m_nanovgGpuImageWrapperCache.end())
+         {
+
+            break;
+
+         }
+
+         deleteEntry(*iteratorOldest);
+         m_nanovgGpuImageWrapperCache.erase(iteratorOldest);
+
+      }
+
+   }
+
+
+   void graphics::clear_nanovg_gpu_image_wrapper_cache()
+   {
+
+      m_nanovgGpuImageWrapperCache.clear();
+      m_uNanovgGpuImageWrapperFrameSerial = 0;
+
+   }
+
+
+   bool graphics::is_y_flip()
+   {
+
+      return false;
+
+   }
+
+
+   bool graphics::_draw_gpu_image(
+      const ::f64_rectangle & rectangleTarget,
+      ::image::image * pimage,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_rectangle & rectangleSource)
+   {
+
+      auto pgpuimage = dynamic_cast < ::gpu::image * >(pimage);
+
+      if (!pgpuimage)
+      {
+
+         return false;
+
+      }
+
+      //if (m_pimage)
+      //{
+
+      //   // m_pimage is set, so assume the reason for existence of
+      //   // this graphics context, is to draw in this m_pimage.
+
+      //   // we have a pgpuimage to be set in m_pimage owned texture.
+      //   // this pgpuimage may be not a texture yet, but just a
+      //   // pixmap buffer.
+      //   // to avoid creating a texture just to set the image in
+      //   // pixmap to the target texture(m_pimage), we can try
+      //   // to bit blit the pixmap directly to m_pimage, without
+      //   // creating intermediate texture having the pixmap image.
+      //   //
+
+      //   // Example: Modifying the CPU buffer and updating the NanoVG image
+      //   // 1. Alter your raw CPU pixel data buffer (e.g., myCpuBuffer)
+      //   // 2. Push the entire buffer back to the GPU handle
+      //   nvgUpdateImage(vg, nvgImageHandle, myCpuBuffer);
+
+      //   return;
+
+      //}
+
+      auto pgputexture = pgpuimage->gpu_texture();
+
+      if (!pgputexture)
+      {
+
+         ::cast < ::gpu::bitmap > pbitmap =
+            pgpuimage->get_bitmap_as_source(this);
+
+         if (!pbitmap)
+         {
+
+            return false;
+
+         }
+
+         auto pgpucontext = gpu_context();
+
+         pgputexture = pbitmap->gpu_texture(pgpucontext);
+
+      }
+
+      auto pgpuopengltexture = dynamic_cast < ::gpu_opengl::texture * >(pgputexture);
+
+      if (!pgpuopengltexture || !pgpuopengltexture->m_gluTextureID)
+      {
+
+         return false;
+
+      }
+
+      auto pgpucontextCurrent = gpu_context();
+
+      auto pgpucontextTexture = pgpuopengltexture->m_pgpucontext;
+
+      if (!pgpucontextTexture || !pgpucontextCurrent
+         || pgpucontextTexture->m_pgpudevice
+            != pgpucontextCurrent->m_pgpudevice)
+      {
+
+         return false;
+
+      }
+
+      if ((pgpuopengltexture->m_gluType != GL_TEXTURE_2D
+            && pgpuopengltexture->m_gluType
+               != GL_TEXTURE_2D_MULTISAMPLE)
+         || glIsTexture(pgpuopengltexture->m_gluTextureID) != GL_TRUE)
+      {
+
+         return false;
+
+      }
+
+      auto bPerformanceDiagnostics = m_papplication
+         && m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed);
+      auto bPendingFence = false;
+      auto uFenceMicroseconds = (::u64)0;
+
+      if (bPerformanceDiagnostics)
+      {
+
+         auto uGeneration =
+            m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+               ::std::memory_order_relaxed);
+
+         if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+            ::std::memory_order_relaxed))
+         {
+
+            reset_gpu_image_performance_diagnostics();
+
+         }
+
+         bPendingFence = pgpuopengltexture->has_pending_fence();
+
+         if (bPendingFence)
+         {
+
+            auto timeFenceStart = ::std::chrono::steady_clock::now();
+            pgpuopengltexture->wait_fence();
+            uFenceMicroseconds = (::u64)::std::chrono::duration_cast<
+               ::std::chrono::microseconds>(
+                  ::std::chrono::steady_clock::now() - timeFenceStart).count();
+
+         }
+         else
+         {
+
+            pgpuopengltexture->wait_fence();
+
+         }
+
+      }
+      else
+      {
+
+         pgpuopengltexture->wait_fence();
+
+      }
+
+      auto sizeImage = pgpuimage->size();
+
+      // nvglCreateImageFromHandleGL3 always samples the supplied name as a
+      // GL_TEXTURE_2D. Binding a multisample texture name to that target is
+      // GL_INVALID_OPERATION, but NanoVG defers the bind until nvgEndFrame().
+      // Resolve it to a single-sample texture before creating the wrapper.
+      if (pgpuopengltexture->m_gluType == GL_TEXTURE_2D_MULTISAMPLE)
+      {
+
+         try
+         {
+
+            auto pgputextureResolved = pgpuopengltexture->resolved_texture(
+               ::i32_rectangle(sizeImage));
+
+            pgpuopengltexture = dynamic_cast < ::gpu_opengl::texture * >(
+               pgputextureResolved);
+
+         }
+         catch (...)
+         {
+
+            return false;
+
+         }
+
+      }
+
+      if (!pgpuopengltexture
+         || pgpuopengltexture->m_gluType != GL_TEXTURE_2D
+         || !pgpuopengltexture->m_gluTextureID
+         || glIsTexture(pgpuopengltexture->m_gluTextureID) != GL_TRUE)
+      {
+
+         return false;
+
+      }
+
+      diagnose_sampled_gpu_image(pgpuopengltexture, rectangleTarget);
+
+      _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
+
+      auto timeWrapperStart = ::std::chrono::steady_clock::time_point{};
+
+      if (bPerformanceDiagnostics)
+      {
+
+         timeWrapperStart = ::std::chrono::steady_clock::now();
+
+      }
+
+      auto bCreatedWrapper = false;
+      auto iImage = acquire_nanovg_gpu_image_wrapper(pgpuopengltexture,
+         sizeImage,
+         bCreatedWrapper);
+      auto uWrapperMicroseconds = (::u64)0;
+
+      if (bPerformanceDiagnostics)
+      {
+
+         uWrapperMicroseconds = (::u64)::std::chrono::duration_cast<
+            ::std::chrono::microseconds>(
+               ::std::chrono::steady_clock::now() - timeWrapperStart).count();
+
+      }
+
+      _draw_nanovg_image(
+         iImage,
+         sizeImage,
+         rectangleTarget,
+         imagedrawingoptions,
+         rectangleSource);
+
+      if (bPerformanceDiagnostics)
+      {
+
+         record_gpu_image_fast_path(
+            bPendingFence,
+            bCreatedWrapper,
+            uFenceMicroseconds,
+            uWrapperMicroseconds);
+
+      }
+
+      return true;
+
+   }
+
+
+   void graphics::_draw_raw(const ::image::image_drawing & imagedrawing)
+   {
+
+      auto pimage = imagedrawing.image();
+
+      if (!::is_ok(pimage))
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      auto rectangleSource = imagedrawing.source_rectangle();
+      ::f64_rectangle rectangleTarget(imagedrawing.target_rectangle());
+
+      if (rectangleSource.is_empty() || rectangleTarget.is_empty())
+      {
+
+         return;
+
+      }
+
+      if (imagedrawing.m_bIntegerPlacement)
+      {
+
+         rectangleTarget.left = (::f64)(::i32)rectangleTarget.left;
+         rectangleTarget.top = (::f64)(::i32)rectangleTarget.top;
+         rectangleTarget.right = (::f64)(::i32)rectangleTarget.right;
+         rectangleTarget.bottom = (::f64)(::i32)rectangleTarget.bottom;
+
+      }
+
+      auto pcontext = gpu_context();
+
+      if (!pcontext)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      ::gpu::context_lock contextlock(pcontext);
+
+      _draw_raw_with_source_rectangle(
+         rectangleTarget,
+         pimage,
+         imagedrawing,
+         rectangleSource);
+
+   }
+
+
+   void graphics::_draw_raw(
+      const ::f64_rectangle & rectangleTarget,
+      ::image::image * pimageSource,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_point & pointSrc)
+   {
+
+      _draw_raw_with_source_rectangle(
+         rectangleTarget,
+         pimageSource,
+         imagedrawingoptions,
+         ::f64_rectangle(pointSrc, rectangleTarget.size()));
+
+   }
+
+
+   void graphics::_draw_raw_with_source_rectangle(
+      const ::f64_rectangle & rectangleTarget,
+      ::image::image * pimageSource,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_rectangle & rectangleSource)
+   {
+
+      if (!m_pdc || !pimageSource
+         || rectangleTarget.is_empty() || rectangleSource.is_empty())
+      {
+
+         return;
+
+      }
+
+      //pimage->defer_update_image();
+
+      auto pimage = pimageSource->get_source_image();
+
+      if (_draw_gpu_image(
+         rectangleTarget,
+         pimage,
+         imagedrawingoptions,
+         rectangleSource))
+      {
+
+         return;
+
+      }
+
+      record_gpu_image_cpu_fallback();
+
       pimage->map();
 
       auto sizeImage = pimage->size();
@@ -8090,12 +9900,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       memoryRgba.set_size(sizeImage.area() * 4);
 
       auto ptarget = memoryRgba.data();
-      auto colorindexes = pimage->color_indexes();
+
+      auto ppixmapImage = pimage->map();
+
+      auto colorindexes = ppixmapImage->color_indexes();
 
       for (int y = 0; y < sizeImage.cy; y++)
       {
 
-         auto psource = pimage->line_data(y);
+         auto psource = ppixmapImage->line_data(y);
 
          for (int x = 0; x < sizeImage.cx; x++)
          {
@@ -8111,7 +9924,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      _synchronous_lock ml(::draw2d_nanovg::mutex());
+      _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
 
       auto iImage = nvgCreateImageRGBA(
          m_pdc,
@@ -8127,27 +9940,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      nanovg_keep keep(m_pdc);
-
-      auto paint = nvgImagePattern(
-         m_pdc,
-         (float)(rectangleTarget.left - pointSrc.x),
-         (float)(rectangleTarget.top - pointSrc.y),
-         (float)sizeImage.cx,
-         (float)sizeImage.cy,
-         0.f,
+      _draw_nanovg_image(
          iImage,
-         imagedrawingoptionsParam.opacity().f32_opacity());
-
-      nvgBeginPath(m_pdc);
-      nvgRect(
-         m_pdc,
-         (float)rectangleTarget.left,
-         (float)rectangleTarget.top,
-         (float)rectangleTarget.width(),
-         (float)rectangleTarget.height());
-      nvgFillPaint(m_pdc, paint);
-      nvgFill(m_pdc);
+         sizeImage,
+         rectangleTarget,
+         imagedrawingoptions,
+         rectangleSource);
 
       nvgDeleteImage(m_pdc, iImage);
 
@@ -8274,13 +10072,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void* graphics::detach()
    {
 
-      //plusplus::Graphics * pgraphics = m_pgraphics;
+      //plusplus::Graphics * pdraw2dgraphics = m_pgraphics;
 
       //m_pgraphics = nullptr;
 
       //m_hdc = nullptr;
 
-      //return pgraphics;
+      //return pdraw2dgraphics;
 
       return nullptr;
 
@@ -8288,36 +10086,36 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //plusplus::Font * graphics::vk2d_font()
    //{
-   //   if(m_pfont.is_null())
+   //   if(m_pwritetextfont.is_null())
    //   {
-   //      m_pfont.create(this);
-   //      if(m_pfont.is_set())
+   //      m_pwritetextfont.create(this);
+   //      if(m_pwritetextfont.is_set())
    //      {
-   //         m_pfont->m_powner = this;
+   //         m_pwritetextfont->m_powner = this;
    //      }
    //   }
-   //   if(m_pfont.is_null())
+   //   if(m_pwritetextfont.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Font *) m_pfont->get_os_data();
+   //   return (plusplus::Font *) m_pwritetextfont->get_os_data();
    //}
 
    //plusplus::Brush * graphics::vk2d_brush()
    //{
-   //   if(m_pbrush.is_null())
+   //   if(m_pdraw2dbrush.is_null())
    //   {
-   //      m_pbrush.create(this);
-   //      if(m_pbrush.is_set())
+   //      m_pdraw2dbrush.create(this);
+   //      if(m_pdraw2dbrush.is_set())
    //      {
-   //         m_pbrush->m_powner = this;
+   //         m_pdraw2dbrush->m_powner = this;
    //      }
    //   }
-   //   if(m_pbrush.is_null())
+   //   if(m_pdraw2dbrush.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Brush *) m_pbrush->get_os_data();
+   //   return (plusplus::Brush *) m_pdraw2dbrush->get_os_data();
    //}
 
    //plusplus::Pen * graphics::vk2d_pen()
@@ -8325,19 +10123,19 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //   synchronous_lock synchronouslock(this->synchronization());
 
-   //   if(m_ppen.is_null())
+   //   if(m_pdraw2dpen.is_null())
    //   {
-   //      m_ppen.create(this);
-   //      if(m_ppen.is_set())
+   //      m_pdraw2dpen.create(this);
+   //      if(m_pdraw2dpen.is_set())
    //      {
-   //         m_ppen->m_powner = this;
+   //         m_pdraw2dpen->m_powner = this;
    //      }
    //   }
-   //   if(m_ppen.is_null())
+   //   if(m_pdraw2dpen.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Pen *) m_ppen->get_os_data();
+   //   return (plusplus::Pen *) m_pdraw2dpen->get_os_data();
    //}
 
    //plusplus::FillMode graphics::vk2d_get_fill_mode()
@@ -8351,7 +10149,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //   // Commented Out for Running in cosan machine running Windows 2008
 
-      //   //if(m_pbitmap.is_null() || m_pbitmap->get_os_data() == nullptr)
+      //   //if(m_pdraw2dbitmap.is_null() || m_pdraw2dbitmap->nok())
       //   //   return false;
 
       //   //plusplus::BlurParams myBlurParams;
@@ -8385,9 +10183,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //   //rectangle.right     = (::double) points[1].X;
       //   //rectangle.bottom    = (::double) points[1].Y;
 
-      //   //plusplus::Bitmap * pbitmap = ((plusplus::Bitmap *) m_pbitmap->get_os_data());
+      //   //plusplus::Bitmap * pdraw2dbitmap = ((plusplus::Bitmap *) m_pdraw2dbitmap->get_os_data());
 
-      //   //pbitmap->ApplyEffect(&myBlur, &rectangle);
+      //   //pdraw2dbitmap->ApplyEffect(&myBlur, &rectangle);
 
       //   return true;
 
@@ -8499,71 +10297,71 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::create_window_graphics(const ::operating_system::window & window)
-   {
-
-      // http://stackoverflow.com/questions/4052940/how-to-make-an-opengl-rendering-context-with-transparent-background
-      //
-
-      //PIXELFORMATDESCRIPTOR pfd =
-      //{
-      //   sizeof(PIXELFORMATDESCRIPTOR),
-      //   1,                                // Version Number
-      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
-      //   PFD_SUPPORT_OPENGL |         // Format Must Support Opengl
-      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
-      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
-      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
-      //   32,                               // Select Our Color Depth
-      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
-      //   8,                                // An Alpha Buffer
-      //   0,                                // Shift Bit Ignored
-      //   0,                                // No Accumulation Buffer
-      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
-      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
-      //   8,                                // Some Stencil Buffer
-      //   0,                                // No Auxiliary Buffer
-      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
-      //   0,                                // Reserved
-      //   0, 0, 0                           // Layer Masks Ignored
-      //};
-
-
-      //DWM_BLURBEHIND bb = { 0 };
-      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
-      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-      //bb.dwFlags = DWM_BB_ENABLE;
-      ////bb.hRgnBlur = hRgn;
-      //bb.fEnable = true;
-      //DwmEnableBlurBehindWindow(wnd, &bb);
-
-
-      //m_hdc = GetDC(wnd);
-      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
-      //if (PixelFormat == 0)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
-      //if (bResult == false)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-      //m_hglrc = wglCreateContext(m_hdc);
-      //if (!m_hglrc)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-//      return true;
-      //return false;
-
-   }
+//   void graphics::create_window_graphics(const ::operating_system::window & window)
+//   {
+//
+//      // http://stackoverflow.com/questions/4052940/how-to-make-an-opengl-rendering-context-with-transparent-background
+//      //
+//
+//      //PIXELFORMATDESCRIPTOR pfd =
+//      //{
+//      //   sizeof(PIXELFORMATDESCRIPTOR),
+//      //   1,                                // Version Number
+//      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
+//      //   PFD_SUPPORT_OPENGL |         // Format Must Support Opengl
+//      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
+//      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
+//      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
+//      //   32,                               // Select Our Color Depth
+//      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
+//      //   8,                                // An Alpha Buffer
+//      //   0,                                // Shift Bit Ignored
+//      //   0,                                // No Accumulation Buffer
+//      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
+//      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
+//      //   8,                                // Some Stencil Buffer
+//      //   0,                                // No Auxiliary Buffer
+//      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
+//      //   0,                                // Reserved
+//      //   0, 0, 0                           // Layer Masks Ignored
+//      //};
+//
+//
+//      //DWM_BLURBEHIND bb = { 0 };
+//      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
+//      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+//      //bb.dwFlags = DWM_BB_ENABLE;
+//      ////bb.hRgnBlur = hRgn;
+//      //bb.fEnable = true;
+//      //DwmEnableBlurBehindWindow(wnd, &bb);
+//
+//
+//      //m_hdc = GetDC(wnd);
+//      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
+//      //if (PixelFormat == 0)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+//      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
+//      //if (bResult == false)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+//      //m_hglrc = wglCreateContext(m_hdc);
+//      //if (!m_hglrc)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+////      return true;
+//      //return false;
+//
+//   }
 
 
    //oswindow graphics::get_window_handle() const
@@ -8609,6 +10407,83 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   void graphics::prepare_nanovg_render_target(
+      ::gpu::texture * pgputexture)
+   {
+
+      if (!pgputexture)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG has no GPU render target to prepare.");
+
+      }
+
+      ::cast < ::gpu_opengl::texture > popengltexture = pgputexture;
+
+      if (!popengltexture)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG requires an OpenGL render-target texture.");
+
+      }
+
+      if (!popengltexture->m_gluDepthStencilRBO)
+      {
+
+         popengltexture->create_depth_resources();
+
+      }
+
+      auto uFramebuffer = popengltexture->target_frame_buffer_object();
+
+      if (!uFramebuffer)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG could not acquire its OpenGL framebuffer.");
+
+      }
+
+      glBindFramebuffer(GL_FRAMEBUFFER, uFramebuffer);
+      ::opengl::check_error("");
+
+      //auto sizeTarget = popengltexture->size();
+      //glViewport(0, 0, sizeTarget.cx, sizeTarget.cy);
+      //::opengl::check_error("");
+
+      GLint iStencilWriteMask = 0;
+      GLint iStencilBackWriteMask = 0;
+      GLint iStencilClearValue = 0;
+      glGetIntegerv(GL_STENCIL_WRITEMASK, &iStencilWriteMask);
+      glGetIntegerv(GL_STENCIL_BACK_WRITEMASK, &iStencilBackWriteMask);
+      glGetIntegerv(GL_STENCIL_CLEAR_VALUE, &iStencilClearValue);
+      auto bScissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
+
+      glStencilMask(0xffffffffu);
+      glDisable(GL_SCISSOR_TEST);
+      glClearStencil(0);
+      glClear(GL_STENCIL_BUFFER_BIT);
+
+      glClearStencil(iStencilClearValue);
+      glStencilMaskSeparate(GL_FRONT, (::u32)iStencilWriteMask);
+      glStencilMaskSeparate(GL_BACK, (::u32)iStencilBackWriteMask);
+      if (bScissorEnabled)
+      {
+
+         glEnable(GL_SCISSOR_TEST);
+
+      }
+
+      ::opengl::check_error("");
+
+   }
+
+
    void graphics::on_start_layer(::gpu::layer* pgpulayer)
    {
 
@@ -8616,15 +10491,22 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // Clear buffers
       auto pgpucontext = gpu_context();
 
-      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer()), ::color::transparent);
+      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture(), ::color::transparent);
 
-      ::cast < ::gpu::layer > playerPrevious = pgpucontext->m_pgpudevice->get_previous_layer(pgpulayer);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucontext);
+
+      ::cast < ::gpu::layer > playerPrevious = pgpuwindowattachment->get_previous_layer(pgpulayer);
 
       if (playerPrevious)
       {
 
-         nvgBeginFrame(m_pdc, pgpucontext->m_rectangle.width(),
-            pgpucontext->m_rectangle.height(), 1.f);
+         auto pgputextureTarget = pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture();
+
+         prepare_nanovg_render_target(pgputextureTarget);
+
+         _nvg_begin_frame(false, pgputextureTarget, pgpucontext->size());
+         //nvgBeginFrame(m_pdc,(float) pgpucontext->width(),
+           // (float) pgpucontext->height(), 1.f);
 
       }
 
@@ -8646,12 +10528,76 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::on_end_layer(::gpu::layer* pgpulayer)
    {
 
-      nvgEndFrame(m_pdc);
+      auto pgpucontext = gpu_context();
+      ::gpu::context_lock contextlock(pgpucontext);
+      auto pgputexturesiteTarget = pgpucontext
+         ? pgpucontext->current_target_texture(pgpulayer)
+         : nullptr;
+
+      if (!pgputexturesiteTarget || !pgputexturesiteTarget->gpu_texture())
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG has no current GPU target at the end-frame flush boundary.");
+
+      }
+
+      auto pgputextureTarget = pgputexturesiteTarget->gpu_texture();
+
+      ::cast <::gpu::image >pgpuimage =m_pimageTarget;
+      ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
+         pgputextureTarget;
+      auto iDiagnosticIndex = pgpuimage && pgpuimage->gpu_texture()
+         ? reserve_rendered_gpu_image_diagnostic()
+         : -1;
+      GLint iDrawFramebufferBefore = 0;
+
+      if (iDiagnosticIndex >= 0)
+      {
+
+         glGetIntegerv(
+            GL_DRAW_FRAMEBUFFER_BINDING,
+            &iDrawFramebufferBefore);
+
+      }
+
+      //pgputextureTarget->bind_render_target();
+      diagnose_gpu_image_target_state(
+         iDiagnosticIndex,
+         pgpucontext,
+         pgpulayer,
+         ptextureDiagnostic,
+         iDrawFramebufferBefore);
+
+      end_draw();
+      //_nvg_end_frame();
+      //nvgEndFrame(m_pdc);
+
+      {
+
+         _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
+         maintain_nanovg_gpu_image_wrapper_cache();
+
+      }
+
+      ++m_uNanovgGpuImageWrapperFrameSerial;
+
+      if (pgpuimage && pgpuimage->gpu_texture())
+      {
+
+         diagnose_rendered_gpu_image(
+            ptextureDiagnostic,
+            iDiagnosticIndex);
+         pgpuimage->gpu_texture()->defer_fence();
+
+      }
 
       glFlush();
       ::opengl::check_error("");
 
       m_bHadEndLayer = true;
+
 
       //glClearColor(r, g, b, a);  // Set background color
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // Clear buffers
@@ -8674,7 +10620,45 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::start_layer(bool bFirstLayer)
+   //void graphics::on_set_target_rectangle(::image::image * pimage)
+   //{
+
+   //}
+
+
+   //void graphics::begin_draw()
+   //{
+
+   //   ::gpu::graphics::begin_draw();
+
+   //   auto pgputexturesiteTarget = current_target_texture(
+   //      ::gpu::current_layer());
+
+   //   prepare_nanovg_render_target(pgputexturesiteTarget->gpu_texture());
+   //
+   //   auto size = m_size;
+
+   //   _nvg_begin_frame(pgputexturesiteTarget->gpu_texture(), size);
+
+   //   //nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
+   //
+   //}
+
+
+   //void graphics::end_draw()
+   //{
+   //
+   //   //nvgEndFrame(m_pdc);
+
+   //   _nvg_end_frame();
+
+
+   //   ::gpu::graphics::end_draw();
+   //
+   //}
+
+
+   void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteractionContext)
    {
 
       thread_select();
@@ -8683,78 +10667,92 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::context_lock contextlock(gpu_context());
 
-      ::gpu::graphics::start_layer(bFirstLayer);
+      ::gpu::graphics::start_layer(bFirstLayer, puserinteractionContext);
 
-      //auto pgraphics = pgraphicscontext->draw2d_graphics();
+      ////auto pdraw2dgraphics = pgraphicscontext->draw2d_graphics();
 
-      if (m_egraphics == e_graphics_draw)
-      {
+      //if (m_egraphics == e_graphics_draw)
+      //{
 
-         auto size = total_size();
+      //   auto rectangleGpuContext = gpu_context()->input_placement();
 
-         ::i32_rectangle rectangle;
+      //   auto size = this->m_sizeTarget;
 
-         rectangle.set_size(size);
+      //   ::i32_rectangle rectangle;
 
-         {
+      //   rectangle.set_size(size);
 
-            ::string strMessage;
+      //   {
 
-            strMessage.formatf("ø on_begin_draw");
+      //      ::string strMessage;
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
-                                 -1, strMessage);
-         }
+      //      strMessage.formatf("ø on_begin_draw");
 
-         {
+      //      glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+      //                           -1, strMessage);
+      //   }
 
-            ::string strMessage;
+      //   {
 
-            ::cast<::gpu_opengl::texture> ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
+      //      ::string strMessage;
 
-            auto uTexture = ptexture->m_gluTextureID;
+      //      auto ptexturesite = gpu_context()->current_target_texture(::gpu::current_layer());
 
-            auto uFbo = ptexture->frame_buffer_object();
+      //      ::cast<::gpu_opengl::texture> ptexture = ptexturesite->gpu_texture();
 
-            strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
+      //      auto uTexture = ptexture->m_gluTextureID;
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
-                                 -1, strMessage);
-         }
+      //      auto uFbo = ptexture->target_frame_buffer_object();
 
-         {
+      //      strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 
-            GLint drawFbo = 0;
-            glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFbo);
+      //      glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+      //                           -1, strMessage);
+      //   }
 
-            GLint readFbo = 0;
-            glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFbo);
+      //   {
 
-            ::string strMessage;
+      //      GLint drawFbo = 0;
+      //      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFbo);
 
-            strMessage.formatf("ø drawFbo=%d readFbo=%d", drawFbo, readFbo);
+      //      GLint readFbo = 0;
+      //      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFbo);
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
-                                 -1, strMessage);
-         }
+      //      ::string strMessage;
 
-         nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
+      //      strMessage.formatf("ø drawFbo=%d readFbo=%d", drawFbo, readFbo);
 
-         set_alpha_mode(::draw2d::e_alpha_mode_set);
+      //      glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+      //                           -1, strMessage);
+      //   }
 
-         fill_rectangle(rectangle, ::color::transparent);
+      //   auto pgputextureTarget = gpu_context()->current_target_texture(::gpu::current_layer())->gpu_texture();
 
-         set_alpha_mode(::draw2d::e_alpha_mode_blend);
+      //   prepare_nanovg_render_target(pgputextureTarget);
 
-         nvgResetScissor(m_pdc);
+      //   _nvg_begin_frame(pgputextureTarget, rectangleGpuContext.size());
 
-         reset_clip();
+      //   //nvgBeginFrame(m_pdc, (float)rectangleGpuContext.width(), (float)rectangleGpuContext.height(), 1.0f);
 
-         reset_impact_area();
+      //   set_alpha_mode(::draw2d::e_alpha_mode_set);
 
-         update_matrix();
+      //   fill_rectangle(rectangle, ::color::transparent);
 
-      }
+      //   set_alpha_mode(::draw2d::e_alpha_mode_blend);
+
+      //   nvgResetScissor(m_pdc);
+
+      //   reset_clip();
+
+      //   //set_target_rectangle({ m_pimage->m_point, m_pimage->m_size    });
+      //   //on_set_target_rectangle(m_pimage);
+      //   //set_target_rectangle({ puserinteractionContext->host_origin(), puserinteractionContext->size() });
+
+      //   m_pointTarget = puserinteractionContext->host_origin();
+
+      //   update_matrix();
+
+      //}
 
       // bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
@@ -8965,10 +10963,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          ::i32_rectangle rectangle;
 
-         if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
+         ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
+
+         if (puserinteraction && !puserinteraction->host_rectangle().size().is_empty())
          {
 
-            rectangle = m_puserinteractionDraw2dGraphics->host_rectangle();
+            rectangle = puserinteraction->host_rectangle();
 
          }
          else
@@ -8993,13 +10993,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //}
 
-         if (!m_bHadEndLayer)
-         {
-
-            nvgEndFrame(m_pdc);
-
-         }
-
          {
 
             {
@@ -9019,11 +11012,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::string strMessage;
 
-            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
+            auto ptexturesite = gpu_context()->current_target_texture(::gpu::current_layer());
+
+            ::cast < ::gpu_opengl::texture > ptexture = ptexturesite->gpu_texture();
 
             auto uTexture = ptexture->m_gluTextureID;
 
-            auto uFbo = ptexture->frame_buffer_object();
+            auto uFbo = ptexture->target_frame_buffer_object();
 
             strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 
@@ -9172,7 +11167,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      return ::is_set(this) && m_pgpucontextCompositor2;
+      return ::is_set(this) && (
+         m_pgpucontextOwned || m_pgpucontextOwned);
 
    }
 
@@ -9183,6 +11179,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
 
       nvgIntersectScissor(
          m_pdc,
@@ -9296,15 +11300,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       };
 
    }
-
-
-   void graphics::defer_load_font_by_family_name(const ::scoped_string& scopedstrName)
-   {
-
-      ::draw2d_nanovg::get()->defer_load_font_by_family_name(m_pdc, scopedstrName);
-
-   }
-
 
 
 } // namespace draw2d_nanovg

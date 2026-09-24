@@ -30,6 +30,7 @@ namespace gpu_vulkan
 
       std::atomic<std::uint64_t> m_uNextSerial{0};
       std::atomic<std::uint32_t> m_uActiveCallCount{0};
+      std::recursive_mutex m_mutexHostCall;
 
 
    };
@@ -99,6 +100,7 @@ namespace gpu_vulkan
 
       explicit scoped_queue_host_call(const std::shared_ptr<queue_host_call_diagnostic_state> &pstate) :
          m_pstate(pstate),
+         m_lock(m_pstate->m_mutexHostCall),
          m_entry(enter_queue_host_call(*m_pstate))
       {
 
@@ -129,6 +131,7 @@ namespace gpu_vulkan
 
 
       std::shared_ptr<queue_host_call_diagnostic_state> m_pstate;
+      std::unique_lock<std::recursive_mutex> m_lock;
       queue_host_call_diagnostic_entry m_entry;
 
 

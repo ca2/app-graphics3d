@@ -245,6 +245,7 @@ namespace vulkan
 
 
    CLASS_DECL_GPU_VULKAN void defaultPipelineConfigInfo2(pipeline_configuration &configInfo);
+   CLASS_DECL_GPU_VULKAN VkPipelineStageFlagBits to_vk_pipeline_stage(::gpu::enum_pipeline_stage epipelinestage);
 
 
 } // namespace vulkan

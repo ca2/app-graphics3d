@@ -1,4 +1,4 @@
-#include "../framework.h"
+#include "../platform.h"
 #include "renderer.h"
 #include "offscreen_render_pass.h"
 #include "swap_chain_render_pass.h"

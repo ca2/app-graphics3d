@@ -23,7 +23,7 @@ namespace draw2d_nanovg
 
 //      plusplus::PenAlignment m_egl2dalign;
 
-      //::plusplus::Pen *  m_ppen;
+      //::plusplus::Pen *  m_pdraw2dpen;
 
       pen();
       /*virtual void construct(int nPenStyle, double nWidth, color32_t crColor);

@@ -1,7 +1,7 @@
 // From github:/tristancalderbank/OpenGL-PBR-Renderer/mesh.h by
 // camilo on 2025-09-26 18:28 <3ThomasBorregaardSorensen!!
 // From gpu_directx11 by camilo on 2025-10-16 16:44 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "mesh.h"
 #include "bred/gltf/vertex.h"
 #include "gpu_directx12/context.h"
@@ -444,8 +444,8 @@ namespace gpu_directx12
          // Assume:
          // ID3D11Device*           m_pd3dDevice;
          // ID3D11DeviceContext*    m_pImmediateContext;
-         // std::vector<::gpu::gltf::vertex> m_vertexa;
-         // std::vector<unsigned int> m_indexa;
+         // ::array<::gpu::gltf::vertex> m_vertexa;
+         // ::array<unsigned int> m_indexa;
 
          //      ::cast<::gpu_directx11::context> pgpucontext = m_pgpucontext;
 

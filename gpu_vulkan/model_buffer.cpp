@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-11 01:08 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
@@ -12,6 +12,7 @@
 #include "acme/prototype/geometry2d/matrix.h"
 #include "acme/prototype/prototype/call.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
 #include "bred/graphics3d/types.h"
 
@@ -790,7 +791,7 @@ namespace gpu_vulkan
             }
 
             vkCmdDrawIndexed(
-               pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->index_count(), 1, 0, 0, 0);
+               pcommandbuffer->m_vkcommandbuffer, (uint32_t) m_pmodeldatabase2->index_count(), 1, 0, 0, 0);
 
          }
          else
@@ -799,7 +800,9 @@ namespace gpu_vulkan
 
             auto prendertarget = m_pgpucontext->m_pgpurenderer->render_target();
 
-            ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
+            auto pgputexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+            ::cast < texture > ptexture = pgputexturesite->gpu_texture();
 
             //if (ptexture && ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
             //{
@@ -809,7 +812,7 @@ namespace gpu_vulkan
             //}
 
             vkCmdDraw(
-               pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->vertex_count(), 1, 0, 0);
+               pcommandbuffer->m_vkcommandbuffer, (uint32_t)m_pmodeldatabase2->vertex_count(), 1, 0, 0);
          }
 
       }

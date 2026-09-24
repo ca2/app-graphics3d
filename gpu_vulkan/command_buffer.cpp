@@ -1,8 +1,9 @@
 // Created by camilo on 2025-06-16 04:42 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "window_attachment.h"
 #include "frame.h"
 #include "layer.h"
 #include "model_buffer.h"
@@ -12,6 +13,7 @@
 #include "texture.h"
 #include "fence.h"
 #include "semaphore.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace gpu_vulkan
@@ -25,6 +27,10 @@ namespace gpu_vulkan
       m_vkcommandbuffer = VK_NULL_HANDLE;
       m_vkcommandbufferlevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       m_vkcommandpool = VK_NULL_HANDLE;
+      m_vkviewport = {};
+      m_vkrect2dScissor = {};
+      m_bViewportSet = false;
+      m_bScissorSet = false;
 
 
    }
@@ -65,13 +71,15 @@ namespace gpu_vulkan
          m_vkcommandpool = pcontext->getPresentCommandPool();
 
       }
-      else if (m_ecommandbuffer == ::gpu::e_command_buffer_graphics)
+      else if (m_ecommandbuffer == ::gpu::e_command_buffer_graphics
+         || m_ecommandbuffer == ::gpu::e_command_buffer_graphics_no_layer)
       {
          
          m_vkcommandpool = pcontext->getGraphicsCommandPool();
 
       }
-      else if (m_ecommandbuffer == ::gpu::e_command_buffer_transfer)
+      else if (m_ecommandbuffer == ::gpu::e_command_buffer_transfer
+         || m_ecommandbuffer == ::gpu::e_command_buffer_copy)
       {
 
          m_vkcommandpool = pcontext->getTransferCommandPool();
@@ -115,6 +123,8 @@ namespace gpu_vulkan
       }
 
       m_estate = ::gpu::command_buffer::e_state_recording;
+      m_bViewportSet = false;
+      m_bScissorSet = false;
 
    }
 
@@ -150,7 +160,9 @@ namespace gpu_vulkan
 
          }
 
-         ::cast < layer > playerPrevious = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_previous_layer(player);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurendertarget);
+
+         ::cast < layer > playerPrevious = pgpuwindowattachment->get_previous_layer(player);
 
 
          ::comparable_array< VkSemaphore > vksemaphoreaWait;
@@ -319,16 +331,17 @@ namespace gpu_vulkan
       ::comparable_array<VkSemaphore> vksemaphoreaWait;
       ::array_base<VkPipelineStageFlags> vkpipelinestageflagsaWait;
       ::comparable_array<VkSemaphore> vksemaphoreaSignal;
-      for (auto & pgpusemaphore : m_semaphoreaWait)
+      for(::collection::index i = 0; i < m_semaphoreaWait.get_count(); i++)
       {
-         ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+         ::cast < ::gpu_vulkan::semaphore > psemaphore = m_semaphoreaWait[i];
+         auto epipelinestage = m_epipelinestageaWait.atø(i);
          if (psemaphore)
          {
             auto vksemaphore = psemaphore->m_vksemaphore;
             if (vksemaphore != VK_NULL_HANDLE)
             {
                vksemaphoreaWait.add(vksemaphore);
-               vkpipelinestageflagsaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+               vkpipelinestageflagsaWait.add(::vulkan::to_vk_pipeline_stage(epipelinestage));
             }
          }
       }
@@ -553,6 +566,12 @@ namespace gpu_vulkan
       //}
 
       //::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
+         if (submitInfo.pWaitSemaphores && submitInfo.pWaitDstStageMask)
+         {
+            informationf("submit wait semaphore=%p commandBuffer=%p waitStage=0x%08x",
+                         (void *)submitInfo.pWaitSemaphores[0], (void *)m_vkcommandbuffer,
+                         submitInfo.pWaitDstStageMask[0]);
+         }
 
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
       auto vkresultQueueSubmit = pqueue->submit(1, &submitInfo, vkfence, m_strName, m_strAnnotation);
@@ -675,10 +694,42 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::set_viewport(const ::i32_rectangle& rectangle)
+   void command_buffer::clear(::gpu::texture * pgputexture, const ::color::color & color)
    {
 
-      VkViewport viewport =
+
+      VkClearColorValue clearColor = { .float32 = { 
+         color.f32_red() * color.f32_opacity(),
+         color.f32_green() * color.f32_opacity(),
+         color.f32_blue() * color.f32_opacity(),
+         color.f32_opacity()} };
+
+      VkImageSubresourceRange range = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1,
+      };
+
+      ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
+
+      vkCmdClearColorImage(
+         m_vkcommandbuffer,
+         ptexture->m_vkimage,
+         ptexture->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
+         &clearColor,
+         1, // rangeCount
+         &range
+      );
+
+   }
+
+
+   void command_buffer::set_viewport(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
+   {
+
+      m_vkviewport =
       {
          (float)rectangle.left,
          (float)rectangle.top,
@@ -687,15 +738,17 @@ namespace gpu_vulkan
          0.0f, 1.0f
       };
 
-      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &viewport);
+      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &m_vkviewport);
+
+      m_bViewportSet = true;
 
    }
 
 
-   void command_buffer::set_scissor(const ::i32_rectangle& rectangle)
+   void command_buffer::set_scissor(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
    {
 
-      VkRect2D rect2d =
+      m_vkrect2dScissor =
       {
 
          {
@@ -709,7 +762,9 @@ namespace gpu_vulkan
 
       };
 
-      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &rect2d);
+      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &m_vkrect2dScissor);
+
+      m_bScissorSet = true;
 
    }
 
@@ -733,6 +788,17 @@ namespace gpu_vulkan
    void command_buffer::draw_vertexes(int iVertexCount)
    {
 
+      if (::gpu::trace_flags().m_bVulkanPipelineTrace)
+      {
+
+         information(
+            "VULKAN_PIPELINE_TRACE vkCmdDraw command_buffer_object={} vk_command_buffer={} vertex_count={}",
+            (::uptr)this,
+            (::uptr)m_vkcommandbuffer,
+            iVertexCount);
+
+      }
+
       vkCmdDraw(m_vkcommandbuffer, iVertexCount, 1, 0, 0);
 
    }
@@ -746,17 +812,20 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::begin_render(::gpu::shader *pgpushader, ::gpu::texture *pgputextureTarget)
+   void command_buffer::begin_render(::gpu::shader *pgpushader, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputextureTarget;
+      auto ptextureTarget = pgputexturesiteTarget->gpu_texture();
 
-      ptextureTarget->_set_state(this,
+      //ptextureTarget->_set_state(this,
 
-                                       {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+         //                              {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+            //                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+              //                          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
-      ::gpu::command_buffer::begin_render(pgpushader, pgputextureTarget);
+      ptextureTarget->set_state(this, ::gpu::e_texture_state_color_attachment);
+
+      ::gpu::command_buffer::begin_render(pgpushader, pgputexturesiteTarget);
 
    }
 
@@ -766,7 +835,7 @@ namespace gpu_vulkan
 
       ::gpu::command_buffer::end_render();
 
-      m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->end_render(this);
+      
 
    }
 

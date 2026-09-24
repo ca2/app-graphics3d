@@ -1,10 +1,11 @@
-#include "framework.h"
+#include "platform.h"
 #include "application.h"
 #include "main_frame.h"
 #include "document.h"
 #include "impact.h"
 #include "main_scene.h"
 #include "pane_impact.h"
+//#include "statistics_impact.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/filesystem/filesystem/file_system_options.h"
@@ -19,6 +20,8 @@
 #include "berg/user/user/user.h"
 #include "berg/user/user/single_document_template.h"
 #include "bred/graphics3d/asset_manager.h"
+#include "bred/graphics3d/graphics3d.h"
+#include "bred/user/user/gpu_statistics_impact.h"
 
 
 __IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_continuum);
@@ -32,7 +35,19 @@ namespace app_graphics3d_continuum
    application::application()
    {
 
+      m_gpu.m_bMultisample = true;
+      m_gpu.m_iSampleCount = 4;
+
+      m_pimpact = nullptr;
+      m_pimpactSwitcher = nullptr;
+      m_pimpactSkybox = nullptr;
+      //m_pstatisticsimpact = nullptr;
+      
       m_pmainscene = nullptr;
+      m_pmainsceneSwitcher = nullptr;
+      m_pmainsceneSkybox = nullptr;
+
+
       m_bAbsoluteMousePosition = false;
       m_ppaneimpact = nullptr;
       m_bGpu = true;
@@ -70,10 +85,21 @@ namespace app_graphics3d_continuum
    void application::init_instance()
    {
 
+      auto pcontext = m_papplication;
+
+      auto psession = pcontext->m_psession;
+
+      auto puser = psession->m_puser;
+
+      puser->will_use_impact_hint("font_selection_impact");
+      puser->will_use_impact_hint("color_selection_impact");
 
       factory()->add_factory_item <::app_graphics3d_continuum::document >();
       factory()->add_factory_item <::app_graphics3d_continuum::main_frame >();
       factory()->add_factory_item <::app_graphics3d_continuum::impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::skybox_impact >();
+      factory()->add_factory_item <::user::gpu_statistics_impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::switcher_impact >();
       factory()->add_factory_item <::app_graphics3d_continuum::pane_impact >();
 
       ::core::application::init_instance();
@@ -97,6 +123,27 @@ namespace app_graphics3d_continuum
             ::type<document>(),
             ::type<main_frame>(),
             ::type<impact>()));
+
+      add_impact_system(
+   "switcher_impact", __initialize_new::user::single_document_template(
+      "impact",
+      ::type<document>(),
+      ::type<main_frame>(),
+      ::type<switcher_impact>()));
+
+      add_impact_system(
+"skybox_impact", __initialize_new::user::single_document_template(
+   "impact",
+   ::type<document>(),
+   ::type<main_frame>(),
+   ::type<skybox_impact>()));
+
+      add_impact_system(
+"statistics_impact", __initialize_new::user::single_document_template(
+   "impact",
+   ::type<document>(),
+   ::type<main_frame>(),
+   ::type<::user::gpu_statistics_impact>()));
 
 #if defined(APPLE_IOS)
 
@@ -205,9 +252,9 @@ namespace app_graphics3d_continuum
 
       auto pstillTitle = create_label<::user::still>(pparent, "graphics3d continuum Options");
 
-      defer_constructø(pstillTitle->m_pfont);
+      defer_constructø(pstillTitle->m_pwritetextfont);
 
-      pstillTitle->m_pfont->create_font(e_font_sans_ui, 24_pt);
+      pstillTitle->m_pwritetextfont->create_font(e_font_sans_ui, 24_pt, ::e_font_weight_bold);
 
       auto playoutLine = create_line_layout(pparent, e_orientation_horizontal);
 
@@ -315,9 +362,16 @@ namespace app_graphics3d_continuum
 
                m_strSkybox = strSkybox;
 
-               m_pmainscene->m_strSkybox = strSkybox;
+               if (m_pmainsceneSkybox)
+               {
 
-               m_pmainscene->m_pskyboxCurrent2 = m_pmainscene->m_mapSkybox[strSkybox];
+                  m_pmainsceneSkybox->m_strSkybox = strSkybox;
+
+                  auto pgraphics3d = graphics3d();
+
+                  m_pmainsceneSkybox->m_pskyboxCurrent2 = pgraphics3d->m_mapSkybox[strSkybox];
+
+               }
 
             };
 

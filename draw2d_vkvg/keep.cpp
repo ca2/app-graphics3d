@@ -1,17 +1,17 @@
 // From draw2d_cairo/keep.cpp by
 // camilo on 2025-07-14 09:57 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "keep.h"
 #include "draw2d.h"
 #include "acme/parallelization/synchronous_lock.h"
 
 
-vkvg_keep::vkvg_keep(VkvgContext pgraphics, bool bSave)
+vkvg_keep::vkvg_keep(VkvgContext pdraw2dgraphics, bool bSave)
 {
 
    m_bSave = false;
 
-   if (pgraphics == nullptr)
+   if (pdraw2dgraphics == nullptr)
    {
 
       m_pdc = nullptr;
@@ -20,7 +20,7 @@ vkvg_keep::vkvg_keep(VkvgContext pgraphics, bool bSave)
 
    }
 
-   m_pdc = pgraphics;
+   m_pdc = pdraw2dgraphics;
 
    if (bSave)
    {

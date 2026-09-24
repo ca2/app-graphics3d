@@ -1,0 +1,179 @@
+#include "platform.h"
+//#include "context.h"
+#include "engine_instance.h"
+#include "bred/graphics3d/input.h"
+#include "bred/graphics3d/scene_base.h"
+#include "mesh.h"
+//#include "shader.h"
+#include <iostream>
+#include "camera.h"
+#include "bred/gpu/bred_approach.h"
+#include "bred/gpu/context_lock.h"
+#include "bred/gpu/shader.h"
+#include "aura/platform/application.h"
+#include "gpu_opengl/context.h"
+#ifdef WINDOWS_DESKTOP
+#include "gpu_opengl/device_win32.h"
+#endif
+#include "gpu_opengl/frame_buffer.h"
+#include "gpu_opengl/lock.h"
+#include "system/basic_render_system.h"
+#include "system/point_light_system.h"
+#include "bred/user/user/graphics3d.h"
+
+//
+//
+//
+
+
+#pragma comment( lib, "glu32" )
+#pragma comment( lib, "opengl32" )
+
+
+namespace graphics3d_opengl
+{
+
+
+   engine_instance::engine_instance()
+      : m_Running(true)
+   {
+
+      m_bInitRenderData = true;
+
+   }
+
+
+   void engine_instance::on_initialize_particle()
+   {
+
+      ::graphics3d::engine_instance::on_initialize_particle();
+
+   }
+
+   
+   engine_instance::~engine_instance()
+   {
+
+
+   }
+
+
+   void engine_instance::initialize_graphics3d_engine_instance(::user::graphics3d* pimpact)
+   {
+
+      //m_fYScale = -1.0f;
+
+      ::graphics3d::engine_instance::initialize_graphics3d_engine_instance(pimpact);
+
+   }
+
+
+   void engine_instance::on_render_layer()
+   {
+
+      //auto pcontext = gpu_context();
+
+      ::graphics3d::engine_instance::on_render_layer();
+
+   }
+
+
+   void engine_instance::defer_start(::user::graphics3d* pusergraphics3d, const ::i32_rectangle& rectanglePlacement)
+   {
+
+      ::graphics3d::engine_instance::defer_start(pusergraphics3d, rectanglePlacement);
+
+   }
+
+
+   void engine_instance::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
+   {
+
+      ::graphics3d::engine_instance::defer_update_engine(rectanglePlacement);
+
+   }
+
+
+   void engine_instance::on_begin_frame()
+   {
+
+      auto pcontext = gpu_context();
+
+      ::gpu::context_lock contextlock(pcontext);
+
+      //glPushMatrix();
+      //::opengl::check_error("");
+      //glPushAttrib(GL_ALL_ATTRIB_BITS);
+      //::opengl::check_error("");
+
+   }
+
+
+   void engine_instance::on_end_frame()
+   {
+
+      auto pcontext = gpu_context();
+
+      ::gpu::context_lock contextlock(pcontext);
+
+      //glPopAttrib();
+      //::opengl::check_error("");
+      //glPopMatrix();
+      //::opengl::check_error("");
+
+   }
+
+
+   void engine_instance::do_draw_layer()
+   {
+
+      ::graphics3d::engine_instance::do_draw_layer();
+
+   }
+
+
+   void engine_instance::on_mouse_move(float x, float y)
+   {
+
+
+   }
+
+
+   void engine_instance::on_layout(const ::i32_rectangle& rectanglePlacement)
+   {
+
+      ::graphics3d::engine_instance::on_layout(rectanglePlacement);
+
+   }
+
+   
+   void engine_instance::Render(renderer* prenderer, ::graphics3d::camera* pcamera)
+   {
+
+
+   }
+
+
+   floating_matrix4 engine_instance::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
+   {
+      float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
+
+      floating_matrix4 M(0.0f); // initialize all elements to 0
+
+      M[0][0] = f / aspect;
+      M[1][1] = f;
+
+      M[2][2] = (zFar + zNear) / (zNear - zFar);
+      M[2][3] = -1.0f;
+
+      M[3][2] = (2.0f * zFar * zNear) / (zNear - zFar);
+
+      return M;
+   }
+
+
+
+} // namespace graphics3d_opengl
+
+
+

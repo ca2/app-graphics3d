@@ -28,6 +28,8 @@ namespace gpu_vulkan
 
       void wait_gpu_fence() override;
 
+      bool has_finished();
+
 
    };
 

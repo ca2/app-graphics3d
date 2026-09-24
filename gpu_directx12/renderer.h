@@ -70,7 +70,7 @@ namespace gpu_directx12
 
          void sample(texture * ptexture);
 
-         void send_sample();
+         void send_sample2();
 
       };
 
@@ -135,7 +135,6 @@ namespace gpu_directx12
 
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
 
-      ::comptr<ID3D12DescriptorHeap> m_pheapCbv;
       // ::comptr<ID3D12Resource> m_presourceGlobalUBO;
       // void* m_pGlobalUBO;
       //int m_iPushPropertiesAddress = 0;
@@ -200,8 +199,8 @@ namespace gpu_directx12
       void on_end_layer(::gpu::layer * pgpulayer);
 
       void sample();
-      void sample_to_cpu_buffer() override;
-      void gpu_blend(::draw2d::graphics * pgraphics);
+      void sample_to_cpu_buffer21() override;
+      void gpu_blend(::draw2d::graphics * pdraw2dgraphics);
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();
       void swap_chain();
@@ -281,7 +280,7 @@ namespace gpu_directx12
       //virtual void on_begin_render1(::gpu::layer * pgpulayer);
       void on_end_render(::gpu::layer * pgpulayer) override;
       //void endFrame() override;
-      void endDraw(::gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+      void endDraw(::gpu::graphics * pdraw2dgraphics, ::user::interaction * puserinteraction) override;
       //void on_begin_frame() override;
       void on_begin_draw() override;
       void _on_begin_render(::gpu::layer* pgpulayer) override;

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "_draw2d_opengl.h"
 #include "object.h"
 
@@ -55,7 +55,7 @@ namespace draw2d_opengl
 
    bool object::delete_object()
    {
-      //if (get_os_data() == nullptr)
+      //if (nok())
         // return false;
       //return ::DeleteObject(detach());
       return false;

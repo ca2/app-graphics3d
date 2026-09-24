@@ -1,7 +1,8 @@
 
 // Created by camilo on 2025-06-12 21:08 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
+#include "window_attachment.h"
 #include "layer.h"
 #include "render_target.h"
 #include "renderer.h"
@@ -94,7 +95,9 @@ namespace gpu_vulkan
 
       auto prendertarget = m_pgpurenderer->render_target();
 
-      auto iFrameIndex = prendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer);
+
+      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       if (iFrameIndex < 0)
       {

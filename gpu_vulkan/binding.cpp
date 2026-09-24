@@ -1,13 +1,15 @@
 // Created by camilo on 2025-12-11 08:28 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "block.h"
 #include "command_buffer.h"
+#include "window_attachment.h"
 #include "descriptors.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "acme/prototype/prototype/address_object.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace gpu_vulkan
@@ -135,8 +137,10 @@ namespace gpu_vulkan
 
          construct_newø(m_pvkdescriptorseta);
 
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+
          auto iFrameCount =
-            pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+            pgpuwindowattachment->get_frame_count();
 
          m_pvkdescriptorseta->set_size(iFrameCount);
 
@@ -162,10 +166,10 @@ namespace gpu_vulkan
 
                auto &bindingslot = this->element_at(iSlot);
 
-               if (bindingslot.m_ptexture)
+               if (bindingslot.m_ptexturesite && bindingslot.m_ptexturesite->gpu_texture())
                {
 
-                  ::cast<::gpu_vulkan::texture> ptexture = bindingslot.m_ptexture;
+                  ::cast<::gpu_vulkan::texture> ptexture = bindingslot.m_ptexturesite->gpu_texture();
 
                   auto &vkdescriptorimageinfo = *vkdescriptorimageinfoa.add_new().m_p;
 
@@ -193,7 +197,7 @@ namespace gpu_vulkan
 
                auto &bindingslot = this->element_at(iSlot);
 
-               if (bindingslot.m_ptexture)
+               if (bindingslot.m_ptexturesite && bindingslot.m_ptexturesite->gpu_texture())
                {
 
                   auto &vkdescriptorimageinfo = *vkdescriptorimageinfoa.element_at(iImageInfo++).m_p;
@@ -366,23 +370,25 @@ namespace gpu_vulkan
 
          auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucontext);
+
          int iFrameCount =
-            pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+            pgpuwindowattachment->get_frame_count();
 
          pdescriptorpoolbuilder->initialize_builder(pgpucontext);
 
          ::collection::count iMaxSets = iFrameCount * m_pbindingset->size() * 2;
-         pdescriptorpoolbuilder->setMaxSets(iMaxSets);
+         pdescriptorpoolbuilder->setMaxSets((uint32_t) iMaxSets);
 
          ::collection::count iUniformBuffer = iFrameCount * m_pbindingset->uniform_buffer_count() * 2;
          if (iUniformBuffer > 0)
          {
-            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iUniformBuffer);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, (uint32_t)iUniformBuffer);
          }
          ::collection::count iImageSampler = iFrameCount * m_pbindingset->image_sampler_count() * 2;
          if (iImageSampler > 0)
          {
-            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iImageSampler);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, (uint32_t)iImageSampler);
          }
 
          auto pdescriptorpool = pdescriptorpoolbuilder->build();

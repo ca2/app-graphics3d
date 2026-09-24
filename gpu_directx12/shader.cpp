@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
@@ -8,6 +8,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
+#include "window_attachment.h"
 #include "input_layout.h"
 #include "offscreen_render_target_view.h"
 #include "renderer.h"
@@ -15,11 +16,12 @@
 #include "texture.h"
 #include "bred/gpu/binding.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
 #include "acme/operating_system/windows_common/com/hresult_exception.h"
 #include <d3dcompiler.h>
 
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 //#include "bred/user/user/graphics3d.h"
@@ -284,7 +286,7 @@ namespace gpu_directx12
                   if (pbindingslotset->m_pbindingset->first()->is_global_ubo())
                   {
 
-                     // auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
+                     // auto pscene = pgpucontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
                      // auto pblockGlobalUbo1 = pscene->global_ubo1(pgpucontext);
                      ////    auto globalSetLayout =
@@ -318,12 +320,12 @@ namespace gpu_directx12
 
                   rootParameters.add_new().InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-                  pbindingset->m_iXYZ_Index = rootParameters.get_upper_bound();
+                  pbindingset->m_iXYZ_Index = (::i32) rootParameters.get_upper_bound();
 
                   rootParameters.add_new().InitAsDescriptorTable(1, &samplerRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
 
-                  pbindingset->m_iXYZ_IndexSampler = rootParameters.get_upper_bound();
+                  pbindingset->m_iXYZ_IndexSampler =(::i32) rootParameters.get_upper_bound();
 
                   //               CD3DX12_ROOT_SIGNATURE_DESC rsDesc(_countof(params), params, 0, nullptr,
                   //                                                D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -610,36 +612,38 @@ namespace gpu_directx12
 
          if (m_pbindingslotseta)
          {
-            int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
-            for (int iFrame = 0; iFrame < iFrameCount; iFrame++)
-            {
-               // auto &pheap = pbindingset->m_heapa1.ø(iFrame);
-               auto &pheap = m_heapa1.atø(iFrame);
-               if (!pheap)
-               {
+
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+            int iFrameCount = pgpuwindowattachment->get_frame_count();
+            //for (int iFrame = 0; iFrame < iFrameCount; iFrame++)
+            //{
+            //   // auto &pheap = pbindingset->m_heapa1.ø(iFrame);
+            //   auto &pheap = m_heapa1.atø(iFrame);
+            //   if (!pheap)
+            //   {
 
 
-                  D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-                  srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-                  srvHeapDesc.NumDescriptors = m_iHeapCount;
-                  srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+            //      D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+            //      srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+            //      srvHeapDesc.NumDescriptors = m_iHeapCount;
+            //      srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-                  pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, __interface_of(pheap));
-               }
+            //      pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, __interface_of(pheap));
+            //   }
 
-               // auto &pheapSampler = pbindingset->m_heapaSampler1.ø(iFrame);
-               auto &pheapSampler = m_heapaSampler1.atø(iFrame);
-               if (!pheapSampler)
-               {
+            //   // auto &pheapSampler = pbindingset->m_heapaSampler1.ø(iFrame);
+            //   auto &pheapSampler = m_heapaSampler1.atø(iFrame);
+            //   if (!pheapSampler)
+            //   {
 
-                  D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-                  srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-                  srvHeapDesc.NumDescriptors = m_iHeapSamplerCount;
-                  srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+            //      D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+            //      srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+            //      srvHeapDesc.NumDescriptors = m_iHeapSamplerCount;
+            //      srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-                  pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, __interface_of(pheapSampler));
-               }
-            }
+            //      pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, __interface_of(pheapSampler));
+            //   }
+            //}
          //UINT inc = pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
          //int iFrameCount = pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count();
@@ -956,9 +960,9 @@ namespace gpu_directx12
    //}
 
 
-   void shader::_defer_set_current_pipeline(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * pgputexture)
+   void shader::_defer_set_current_pipeline(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * pgputexturesite)
    {
-      ::cast<::gpu_directx12::texture> ptexture = pgputexture;
+      ::cast<::gpu_directx12::texture> ptexture = pgputexturesite->gpu_texture();
       if (m_ppipelinestate &&
          m_dxgiformatRenderTargetView == ptexture->m_resourcedesc.Format &&
          m_bPipelineBlendEnabled == m_bEnableBlend)
@@ -1216,14 +1220,7 @@ namespace gpu_directx12
          pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
 
 
-         UINT descriptorSize = pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-         D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-         cbvDesc.BufferLocation = m_resourceaPushProperties[m_iPush/256]->GetGPUVirtualAddress();
-         cbvDesc.SizeInBytes = constantBufferSize;
-         int iDescriptor = 1; // 1 - second descriptor, first descriptor (0) is the global ubo
-         CD3DX12_CPU_DESCRIPTOR_HANDLE objectCBHandle(prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart(), iDescriptor, descriptorSize);
-         pgpudevice->m_pd3d12device->CreateConstantBufferView(&cbvDesc, objectCBHandle);
+         // Push properties also use a root CBV, not a heap descriptor.
 
          m_iPushMax += iNumberOfObjects;
 
@@ -1240,16 +1237,16 @@ namespace gpu_directx12
    //}
 
 
-   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget)
    {
-      _defer_set_current_pipeline(pgpucommandbuffer, pgputextureTarget);
+      
+      _defer_set_current_pipeline(pgpucommandbuffer, pgputexturesiteTarget);
 
       _bind(pgpucommandbuffer);
 
+      ::cast < ::gpu_directx12::texture > ptextureDst = pgputexturesiteTarget->gpu_texture();
 
-      ::cast < ::gpu_directx12::texture > ptextureDst = pgputextureTarget;
-
-      if (!ptextureDst->m_pheapRenderTargetView)
+      if (!ptextureDst->m_handleRenderTargetView)
       {
 
          ptextureDst->create_render_target();
@@ -1275,7 +1272,7 @@ namespace gpu_directx12
 
       D3D12_CPU_DESCRIPTOR_HANDLE depth[1]{};
       D3D12_CPU_DESCRIPTOR_HANDLE * dpth=nullptr;
-      if (ptextureDst->m_pheapDepthStencilView
+      if (ptextureDst->m_handleDepthStencilView
          && !m_bDisableDepthTest)
       {
          depth[0] = ptextureDst->m_handleDepthStencilView;
@@ -1296,10 +1293,10 @@ namespace gpu_directx12
 
 
       void shader::defer_bind_frame_buffer_layer(::gpu::command_buffer *pgpucommandbuffer,
-                                              ::gpu::texture *pgputextureTarget)
+                                              ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      ::cast<texture> ptexture = pgputextureTarget;
+      ::cast<texture> ptexture = pgputexturesiteTarget->gpu_texture();
 
       if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
@@ -1315,7 +1312,7 @@ namespace gpu_directx12
 
             D3D12_CPU_DESCRIPTOR_HANDLE depth[1]{};
             D3D12_CPU_DESCRIPTOR_HANDLE *dpth = nullptr;
-            if (ptexture->m_pheapDepthStencilView && !m_bDisableDepthTest)
+            if (ptexture->m_handleDepthStencilView && !m_bDisableDepthTest)
             {
                depth[0] = ptexture->m_handleDepthStencilView;
                dpth = depth;
@@ -1329,281 +1326,24 @@ namespace gpu_directx12
       }
    }
 
-      void shader::on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+      void shader::on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      defer_bind_frame_buffer_layer(pgpucommandbuffer, pgputextureTarget);
+      defer_bind_frame_buffer_layer(pgpucommandbuffer, pgputexturesiteTarget);
+
    }
 
-   void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureSource, int iSlot)
+
+   void shader::bind_source(::gpu::command_buffer * commands, ::gpu::texture_site * source, int iSlot)
    {
-
-      int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
-
-      if (ptextureSource == m_pgputextureBound && 
-         iFrameIndex == m_iFrameBound &&
-         pgpucommandbuffer->m_iSerial == m_iCommandBufferSerialSourceBound)
-      {
-
-         return;
-
-      }
-
-      ::cast < ::gpu_directx12::texture > ptextureSrc = ptextureSource;
-
-      if (!ptextureSrc->m_pheapShaderResourceView)
-      {
-
-         ptextureSrc->create_shader_resource();
-
-      }
-
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
-
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-
-
-      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-      if (ptextureSrc->m_iTextureSerial == 0xd)
-      {
-
-         warning("ptextureSrc->m_iTextureSerial == 0xd");
-
-      }
-
-      ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
-
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
-//      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
-//      {
-//
-////         pcommandlist->SetGraphicsRootConstantBufferView(0, your_cbv_gpu_address);
-//         pcommandlist->SetGraphicsRootDescriptorTable(1,
-//            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-//         pcommandlist->SetGraphicsRootDescriptorTable(2,
-//            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
-//      }
-//      else if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
-//      {
-//
-//         UINT RootParameterIndex;
-//
-//         if (m_iPushConstants < 0)
-//         {
-//
-//            RootParameterIndex = 1;
-//
-//         }
-//         else
-//         {
-//
-//            RootParameterIndex = m_iPushConstants;
-//
-//         }
-//
-//         pcommandlist->SetGraphicsRootDescriptorTable(RootParameterIndex,
-//            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-//         pcommandlist->SetGraphicsRootDescriptorTable(RootParameterIndex,
-//            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
-//
-//      }
-//      else
-//      {
-//
-//      }
-      //if (m_bindingCubeSampler.is_set())
-      //{
-      //   pcommandlist->SetGraphicsRootDescriptorTable(
-      //      m_bindingCubeSampler.m_uBinding,
-      //      ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-      //   pcommandlist->SetGraphicsRootDescriptorTable(
-      //      m_bindingCubeSampler.m_uBinding,
-      //      ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
-
-      //}
-      //else if (m_bindingSampler.is_set())
-      //{
-
-      //   pcommandlist->SetGraphicsRootDescriptorTable(
-      //      m_bindingSampler.m_uBinding,
-      //      ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-      //   pcommandlist->SetGraphicsRootDescriptorTable(
-      //      m_bindingSampler.m_uBinding,
-      //      ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
-
-      //}
-
-      
-      //::cast<renderer> prenderer = m_pgpurenderer;
-
-//      ::cast<::gpu_directxvulkan::shader> pshader = prenderer->m_pgpucontext->m_pshaderBound;
-
-      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
-      //::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-      unsigned int uSet = 0;
-
-      auto pbindingslot = get_first_image_sampler_binding_slot();
-
-      uSet = pbindingslot->m_iSet;
-
-      pbindingslot->m_ptexture = ptextureSrc;
-
-      // if (m_bindingSampler.is_set())
-      //    uSet = m_bindingSampler.m_uSet;
-      // else if (m_bindingCubeSampler.is_set())
-      //    uSet = m_bindingCubeSampler.m_uSet;
-
-      //auto vkdescriptorset = ptexture->_001DescriptorSet(this, pgpucommandbuffer);
-
-      //if ((((::uptr)vkdescriptorset) & 0xffff) == 0x357)
-      //{
-
-      //   // vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
-      //}
-
-      //// Bind pipeline and descriptor sets
-      ////      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      ////    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
-      //vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
-      //                        VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
-      //                        pshader->m_ppipelineCurrent->_pipeline_layout(), // Layout used when pipeline was created
-      //                        uSet, // First set (set = 0)
-      //                        1, // Descriptor set count
-      //                        &vkdescriptorset, // Pointer to descriptor set
-      //                        0, // Dynamic offset count
-      //                        NULL // Dynamic offsets
-      //);
-
-
-      ::cast<::gpu_directx12::binding_set> pbindingset = binding_set(uSet);
-      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
-      if (pbindingset->m_iXYZ_Index >= 0)
-      {
-
-
-         //auto &pheap = pbindingset->m_heapa1[iFrame];
-         auto &pheap = m_heapa1[iFrameIndex];
-
-         // pbindingset->m_pheap1 Should had been created at create_root_signature()
-         ASSERT(pheap);
-
-         D3D12_CPU_DESCRIPTOR_HANDLE h = pheap->GetCPUDescriptorHandleForHeapStart();
-         UINT inc = pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-         auto h2 = ptextureSrc->m_handleShaderResourceView;
-         auto h1 = h;
-         //auto iHeapIndex = pbindingset->m_iHeapIndex++;
-         auto iHeapIndex = m_iHeapIndex++;
-         auto iHeapIndex1 = iHeapIndex % m_iHeapCount;
-         auto base = iHeapIndex1 * inc;
-         h1.ptr += base;
-         pgpudevice->m_pd3d12device->CopyDescriptorsSimple(1, h1, h2, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-         auto hGpu = pheap->GetGPUDescriptorHandleForHeapStart();
-         hGpu.ptr += base;
-
-         pcommandlist->SetGraphicsRootDescriptorTable(
-            pbindingset->m_iXYZ_Index,
-            hGpu); // t0
-      }
-
-      if (pbindingset->m_iXYZ_IndexSampler >= 0)
-      {
-         //auto &pheapSampler = pbindingset->m_heapaSampler1[iFrame];
-         auto &pheapSampler = m_heapaSampler1[iFrameIndex];
-         // pbindingset->m_pheapSampler1 Should had been created at create_root_signature()
-         ASSERT(pheapSampler);
-         //{
-         //   D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-         //   srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-         //   srvHeapDesc.NumDescriptors = 1;
-         //   srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-
-         //   pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&pbindingset->m_pheapSampler1));
-            UINT inc = pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-            D3D12_CPU_DESCRIPTOR_HANDLE h = pheapSampler->GetCPUDescriptorHandleForHeapStart();
-            auto h2 = ptextureSrc->m_handleSampler;
-            auto h1 = h;
-            //auto iHeapIndex = pbindingset->m_iHeapSamplerIndex++;
-            auto iHeapIndex = m_iHeapSamplerIndex++;
-            auto iHeapIndex1 = iHeapIndex % m_iHeapSamplerCount;
-            auto base = iHeapIndex1 * inc;
-            h1.ptr += base;
-            pgpudevice->m_pd3d12device->CopyDescriptorsSimple(1, h1, h2, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-
-         //}
-            auto hGpu = pheapSampler->GetGPUDescriptorHandleForHeapStart();
-            hGpu.ptr += base;
-
-         pcommandlist->SetGraphicsRootDescriptorTable(
-            pbindingset->m_iXYZ_IndexSampler,
-            hGpu); // t0
-      }
-
-      //if (pbindingset->m_iXYZ_Index >= 0 || pbindingset->m_iXYZ_IndexSampler >= 0)
-      //{
-
-      //   //::array<ID3D12DescriptorHeap *> heapa;
-
-      //   //for (int i = 0; i < binding_slot_set_array()->size(); i++)
-      //   //{
-      //   //   auto pbindingslotset = binding_slot_set_array()->element_at(i);
-
-      //   //   if (pbindingslotset->m_pbindingset->first()->is_image_sampler())
-      //   //   {
-      //   //      // heapa.add(ptextureDst->m_pheapRenderTargetView);
-      //   //      ::cast<::gpu_directx12::binding_set> pbindingset = pbindingslotset->m_pbindingset;
-      //   //   
-      //   //      if (pbindingset->m_iXYZ_Index >= 0)
-      //   //      {
-      //   //         heapa.add(pbindingset->m_pheap1);
-      //   //      }
-      //   //      if (pbindingset->m_iXYZ_IndexSampler)
-      //   //      {
-      //   //         heapa.add(pbindingset->m_pheapSampler1);
-      //   //      }
-      //   //   }
-      //   //}
-
-
-      //   //pcommandlist->SetDescriptorHeaps((UINT)heapa.size(), heapa.data());
-
-
-      //   if (pbindingset->m_iXYZ_IndexSampler >= 0)
-      //   {
-      //      pcommandlist->SetGraphicsRootDescriptorTable(
-      //         pbindingset->m_iXYZ_IndexSampler,
-      //         pbindingset->m_pheapSampler1->GetGPUDescriptorHandleForHeapStart()); // t0
-      //   }
-
-      //}
-
-      //if (m_iShaderResourceViewDescriptorTableRootParameterIndex>=0)
-      //{
-      //      pcommandlist->SetGraphicsRootDescriptorTable(
-      //         m_iShaderResourceViewDescriptorTableRootParameterIndex,
-      //         ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-
-
-      //}
-      //if (m_iSamplerDescriptorTableRootParameterIndex>=0)
-      //{
-      //   pcommandlist->SetGraphicsRootDescriptorTable(
-      //      m_iSamplerDescriptorTableRootParameterIndex,
-      //      ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // t0
-
-
-      //}
-
-      m_pgputextureBound = ptextureSource;
-
-      m_iFrameBound = iFrameIndex;
-
-      m_iCommandBufferSerialSourceBound = pgpucommandbuffer->m_iSerial;
-
+      auto slots = get_first_image_sampler_binding_slot_set();
+      if (!commands || !source || !source->gpu_texture() || !slots ||
+          iSlot < 0 || iSlot >= slots->size())
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 source texture binding");
+      slots->element_at(iSlot).m_ptexturesite = source;
+      // Root tables belong to the command-list recording/root signature, not a
+      // swap-chain frame. Rebind for offscreen lists and after pipeline changes.
+      bind_slot_set(commands, slots->element_at(iSlot).m_iSet, slots);
    }
 
 
@@ -1634,14 +1374,18 @@ namespace gpu_directx12
 
       m_iCommandBufferSerialPipelineBound = pgpucommandbuffer->m_iSerial;
 
-      auto iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
+      //auto iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
+
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pcontext);
+
+      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       if (has_global_ubo())
       {
 
 
-         auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
+         auto pscene = pcontext->m_pgraphics3dengineinstance->m_pimmersionlayer->m_pscene;
 
          auto pgpublockGlobalUbo1 = pscene->global_ubo1(pcontext);
 
@@ -1659,6 +1403,8 @@ namespace gpu_directx12
          m_iPush = 0;
 
          m_iHeapIndex = 0;
+
+         m_iHeapSamplerIndex = 0;
 
       }
 
@@ -1678,13 +1424,13 @@ namespace gpu_directx12
       if (m_pbindingslotseta)
       {
 
-         ::array<ID3D12DescriptorHeap *> heapa;
+ /*        ::array<ID3D12DescriptorHeap *> heapa;
 
          auto &pheap = m_heapa1[iFrameIndex];
          heapa.add(pheap);
 
          auto &pheapSampler = m_heapaSampler1[iFrameIndex];
-         heapa.add(pheapSampler);
+         heapa.add(pheapSampler);*/
 
          //for (int i = 0; i < binding_slot_set_array()->size(); i++)
          //{
@@ -1710,12 +1456,13 @@ namespace gpu_directx12
          //   }
          //}
 
-         if (heapa.has_element())
+     /*    if (heapa.has_element())
          {
             pcommandlist->SetDescriptorHeaps((UINT)heapa.size(), heapa.data());
-         }
+         }*/
       }
 
+      pcommandbuffer->_defer_set_device_descriptor_heaps();
 
    }
 
@@ -1793,147 +1540,45 @@ namespace gpu_directx12
    }
 
 
-    void shader::bind_slot_set(::gpu::command_buffer *pgpucommandbuffer, int iSet,
-                              ::gpu::binding_slot_set *pgpubindingslotset)
+   void shader::bind_slot_set(::gpu::command_buffer * pgpucommandbuffer, int iSet,
+                              ::gpu::binding_slot_set * slots)
    {
+      ::cast<command_buffer> commands = pgpucommandbuffer;
+      ::cast<device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_directx12::binding_set> set = binding_set(iSet);
+      if (!commands || !commands->m_pcommandlist ||
+          commands->m_estate != ::gpu::command_buffer::e_state_recording ||
+          !pdevice || !set || set->is_empty() || !slots)
+         throw ::exception(error_wrong_state, "Invalid DirectX 12 descriptor-table binding");
+      if (set->first()->is_global_ubo())
+         return; // Bound separately as a root CBV.
+      if (!set->first()->is_image_sampler() || slots->size() != set->size() ||
+          set->m_iXYZ_Index < 0 || set->m_iXYZ_IndexSampler < 0)
+         throw ::exception(error_bad_argument, "DirectX 12 image binding does not match its root signature");
 
-      //::cast<::gpu_directx12::binding_slot_set> pbindingslotset = pgpubindingslotset;
-
-      //::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-      //::cast<renderer> prenderer = m_pgpurenderer;
-
-      //::cast<::gpu_directx12::shader> pshader = prenderer->m_pgpucontext->m_pshaderBound;
-
-      // auto &vkdescriptorseta = pbindingslotset->descriptor_set(pgpucommandbuffer);
-
-      int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
-
-      // auto vkpipelinelayout = pshader->m_ppipelineCurrent->_pipeline_layout();
-
-      // VkDescriptorSet vkdescriptorset = vkdescriptorseta[iFrame];
-
-      // VkDescriptorSet vkdescriptorsetaBind[1];
-
-      // vkdescriptorsetaBind[0] = vkdescriptorset;
-
-      // vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
-      //                         VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
-      //                         vkpipelinelayout, // Layout used when pipeline was created
-      //                         iSet, // First set (set = 0)
-      //                         1, // Descriptor set count
-      //                         vkdescriptorsetaBind, // Pointer to descriptor set
-      //                         0, // Dynamic offset count
-      //                         NULL // Dynamic offsets
-      //);
-
-
-      ::cast<::gpu_directx12::command_buffer> pcommandbuffer = pgpucommandbuffer;
-      ::cast<::gpu_directx12::device> pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-
-      ::cast<::gpu_directx12::context> pcontext = m_pgpurenderer->m_pgpucontext;
-      ::cast<::gpu_directx12::binding_set> pbindingset = binding_set(iSet);
-      // if (pgpubindingslotset->m_pbindingset->has_s)
-          
-      //UINT inc = pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-      if (pbindingset->first()->is_image_sampler())
+      ::array<texture *> textures;
+      for (int i = 0; i < slots->size(); ++i)
       {
-
-
-         //auto &pheap = pbindingset->m_heapa1[iFrame];
-         auto &pheap = m_heapa1[iFrameIndex];
-         // pbindingset->m_pheap1 Should had been created at create_root_signature()
-         ASSERT(pheap);
-         {
-
-            // D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-            // srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-            // srvHeapDesc.NumDescriptors = pbindingset->size();
-            // srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-            int base1 = -1;
-            // pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&pbindingset->m_pheap1));
-            //auto &pheap = pbindingset->m_heapa[iFrame];
-            D3D12_CPU_DESCRIPTOR_HANDLE h = pheap->GetCPUDescriptorHandleForHeapStart();
-            for (int i = 0; i < pgpubindingslotset->size(); i++)
-            {
-               auto &bindingslot = pgpubindingslotset->element_at(i);
-               if (bindingslot.m_pbinding->is_image_sampler())
-               {
-                  ::cast<::gpu_directx12::texture> ptexture = bindingslot.m_ptexture;
-                  if (!ptexture->m_pheapShaderResourceView)
-                  {
-
-                     ptexture->create_shader_resource();
-                  }
-                  ptexture->set_state(pgpucommandbuffer, ::gpu::e_texture_state_shader_read);
-                  UINT inc =
-                     pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-                  auto h2 = ptexture->m_handleShaderResourceView;
-                  auto h1 = h;
-                  //auto iHeapIndex = pbindingset->m_iHeapIndex++;
-                  auto iHeapIndex = m_iHeapIndex++;
-                  auto iHeapIndex1 = iHeapIndex % m_iHeapCount;
-                  auto base = iHeapIndex1 * inc;
-                  h1.ptr += base;
-                  if (base1 < 0)
-                  {
-
-                     base1 = base;
-
-                  }
-                  pgpudevice->m_pd3d12device->CopyDescriptorsSimple(1, h1, h2, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-               }
-
-               
-            }
-            auto hGpu = pheap->GetGPUDescriptorHandleForHeapStart();
-            hGpu.ptr += base1;
-
-            pcommandbuffer->m_pcommandlist->SetGraphicsRootDescriptorTable(
-               pbindingset->m_iXYZ_Index,
-               hGpu); // t0
-         }
-
-         //auto &pheapSampler = pbindingset->m_heapaSampler1[iFrame];
-         auto &pheapSampler = m_heapaSampler1[iFrameIndex];
-         ASSERT(pheapSampler);
-         {
-
-            //   D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-            //   srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-            //   srvHeapDesc.NumDescriptors = 1;
-            //   srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-
-            //   pgpudevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&pbindingset->m_pheapSampler1));
-
-            //auto &pheapSampler = pbindingset->m_heapaSampler[iFrame];
-            auto &bindingslot = pgpubindingslotset->element_at(0);
-            ::cast<::gpu_directx12::texture> ptexture = bindingslot.m_ptexture;
-            // if (!ptexture->m_pheapSampler)
-            //{
-
-            //   ptexture->create_sm();
-            //}
-            auto inc = pgpudevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-            D3D12_CPU_DESCRIPTOR_HANDLE h = pheapSampler->GetCPUDescriptorHandleForHeapStart();
-            auto h2 = ptexture->m_handleSampler;
-            auto h1 = h;
-            //auto iHeapIndex = pbindingset->m_iHeapSamplerIndex++;
-            auto iHeapIndex = m_iHeapSamplerIndex++;
-            auto iHeapIndex1 = iHeapIndex % m_iHeapSamplerCount;
-            auto base = iHeapIndex1 * inc;
-            h1.ptr += base;
-            pgpudevice->m_pd3d12device->CopyDescriptorsSimple(1, h1, h2, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-            auto hGpu = pheapSampler->GetGPUDescriptorHandleForHeapStart();
-            hGpu.ptr += base;
-            pcommandbuffer->m_pcommandlist->SetGraphicsRootDescriptorTable(
-               pbindingset->m_iXYZ_IndexSampler,
-                             hGpu                                              ); // t0
-         }
-
+         auto & slot = slots->element_at(i);
+         if (!slot.m_pbinding || !slot.m_pbinding->is_image_sampler() || !slot.m_ptexturesite)
+            throw ::exception(error_bad_argument, "DirectX 12 image binding has no texture");
+         ::cast<texture> texture = slot.m_ptexturesite->gpu_texture();
+         if (!texture || !texture->m_pgpucontext || texture->m_pgpucontext->m_pgpudevice != pdevice)
+            throw ::exception(error_bad_argument, "DirectX 12 image binding uses a different device");
+         textures.add(texture);
       }
-
-
+      auto table = pdevice->_texture_table(textures);
+      commands->_defer_set_device_descriptor_heaps();
+      for (auto texture : textures)
+      {
+         commands->m_comptraHold.add(comptr<IUnknown>(texture->m_pd3d12resourceTexture->m_presource));
+         texture->set_state(commands, ::gpu::e_texture_state_shader_read);
+      }
+      commands->m_pcommandlist->SetGraphicsRootDescriptorTable(set->m_iXYZ_Index, table.m_gpuhandle);
+      // The existing root signature exposes one shared linear/clamp sampler
+      // per image set. All current texture samplers use this configuration.
+      commands->m_pcommandlist->SetGraphicsRootDescriptorTable(
+         set->m_iXYZ_IndexSampler, pdevice->_linear_clamp_sampler().m_gpuhandle);
    }
 
          

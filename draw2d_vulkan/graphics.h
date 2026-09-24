@@ -39,7 +39,12 @@ namespace draw2d_vulkan
       long long decrement_reference_count() override;
 #endif
 
-      void on_gpu_context_placement_change(const ::i32_rectangle& rectanglePlacement);
+      void on_gpu_context_placement_change(
+         const ::i32_point & pointInput,
+         const ::i32_point & pointOutput,
+         const ::i32_size & size,
+         ::acme::windowing::window * pacmewindowingwindow, 
+         ::draw2d::graphics * pdraw2dgraphics) override;
 
       void on_set_gpu_context() override;
 
@@ -77,12 +82,13 @@ namespace draw2d_vulkan
          const char* lpszOutput, const void* lpInitData);
       bool CreateIC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName,
          const char* lpszOutput, const void* lpInitData);
-      void create_memory_graphics(const ::i32_size& size = {}) override;
+      //void create_memory_graphics(const ::i32_size& size = {}) override;
+      void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
       //void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
-      void create_compatible_graphics(::draw2d::graphics* pgraphics) override;
+      //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;
 
-      virtual bool vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement);
+      virtual bool vulkan_create_offscreen_buffer(const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size);
       virtual bool vulkan_delete_offscreen_buffer();
 
       //virtual bool vulkan_defer_create_window_context(::windowing::window * pwindow);
@@ -112,6 +118,8 @@ namespace draw2d_vulkan
    public:
 
       ::draw2d_vulkan::draw2d* draw2d_vulkan();
+
+      void set_target_image(::image::image * pimage) override;
 
 
       virtual ::draw2d::object* SelectStockObject(int nIndex);
@@ -262,11 +270,11 @@ namespace draw2d_vulkan
       //virtual void _fill_quad(const ::f64_point points[4], const ::color::color & color);
       //virtual void _fill_rectangle_2025_05_29(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush);
 
-      void gpu_layer_on_before_end_render() override;
+      //svoid gpu_layer_on_before_end_render() override;
       // Simple Drawing Functions
       void fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush) override;
       void frame_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush) override;
-      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * ppen);
+      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * pdraw2dpen);
       void invert_rectangle(const ::f64_rectangle& i32_rectangle) override;
       //void draw_icon(double x, double y, ::image::icon * picon) override;
       //void draw_icon(const ::i32_point & point, ::image::icon * picon);
@@ -317,7 +325,7 @@ namespace draw2d_vulkan
       void rectangle(const ::f64_rectangle& rectangle) override;
       //virtual bool drw(int x1, int y1, int x2, int y2);
       void draw_rectangle(const ::f64_rectangle& rectangle) override;
-      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* ppen) override;
+      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* pdraw2dpen) override;
       //virtual bool FillRectangle(int x1, int y1, int x2, int y2);
       void fill_rectangle(const ::f64_rectangle& rectangle);
       //void round_rectangle(double x1, double y1, double x2, double y2, double x3, double y3) override;
@@ -491,18 +499,18 @@ namespace draw2d_vulkan
       float GetMiterLimit() override;
       void SetMiterLimit(float fMiterLimit) override;
 
-      void draw(::draw2d::path* ppath);
-      void draw(::draw2d::path* ppath, ::draw2d::pen* ppen);
-      void fill(::draw2d::path* ppath);
-      void fill(::draw2d::path* ppath, ::draw2d::brush* pbrush);
+      void draw(::draw2d::path* pdraw2dpath);
+      void draw(::draw2d::path* pdraw2dpath, ::draw2d::pen* pdraw2dpen);
+      void fill(::draw2d::path* pdraw2dpath);
+      void fill(::draw2d::path* pdraw2dpath, ::draw2d::brush* pdraw2dbrush);
 
 
-      bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool fill(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill1(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill2(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
 
 
-      bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
+      bool _set(::draw2d::brush* pdraw2dbrush, double x = 0.0, double y = 0.0);
       //float GetMiterLimit() const;
       //bool SetMiterLimit(float fMiterLimit);
       //int GetPath(::i32_point * lpPoints, LPBYTE lpTypes,::collection::count nCount) const;
@@ -564,11 +572,11 @@ namespace draw2d_vulkan
       void flush() override;
       void sync_flush() override;
 
-      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * ppen);
-      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * ppen);
+      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * pdraw2dpen);
+      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * pdraw2dpen);
 
 
-      void line(double x1, double y1, double x2, double y2, ::draw2d::pen* ppen) override;
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen* pdraw2dpen) override;
 
 
       //virtual void enum_fonts(::write_text::font_enumeration_item_array& itema) override;
@@ -576,13 +584,13 @@ namespace draw2d_vulkan
       //void prefer_mapped_image_on_mix() override;
 
       virtual void set(::draw2d::region* pregion) override;
-      virtual void set(::draw2d::pen* ppen) override;
-      virtual void set(::write_text::font* pfont) override;
-      virtual void set(::draw2d::brush* pbrush) override;
-      virtual void set(::draw2d::bitmap* pbitmap) override;
+      virtual void set(::draw2d::pen* pdraw2dpen) override;
+      virtual void set(::write_text::font* pwritetextfont) override;
+      virtual void set(::draw2d::brush* pdraw2dbrush) override;
+      virtual void set(::draw2d::bitmap* pdraw2dbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
+      //void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 
@@ -591,7 +599,7 @@ namespace draw2d_vulkan
 
       //void start_layer(::e_graphics egraphics) override;
       //void end_layer(::e_graphics egraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
       // void on_end_draw() override;
       //void on_end_draw() override;

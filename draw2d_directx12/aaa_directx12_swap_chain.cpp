@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-10 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 //#include "directx12_swap_chain.h"
 //#include "graphics.h"
 //#include "directx12/directx12.h"
@@ -79,10 +79,10 @@
 //   //}
 //
 //
-//   void directx12_swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
+//   void directx12_swap_chain::endDraw(::draw2d_gpu::graphics* pdraw2dgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
 //   {
 //
-//      ::draw2d_directx12::swap_chain::endDraw(pgraphics, puserinteraction, prendererSrc);
+//      ::draw2d_directx12::swap_chain::endDraw(pdraw2dgraphics, puserinteraction, prendererSrc);
 //
 //   }
 //

@@ -1,5 +1,5 @@
 // Created by camilo on 2025-04-24 21:26 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "render_system.h"
 //#include "gpu_directx11/command_buffer.h"
 #include "gpu_directx11/context.h"
@@ -8,8 +8,9 @@
 //#include "gpu_directx11/render_target.h"
 #include "gpu_directx11/texture.h"
 //#include "gpu_directx11/vk_init.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace graphics3d_directx11
@@ -25,7 +26,7 @@ namespace graphics3d_directx11
    //::gpu_directx11::render_pass *render_system::render_pass2()
    //{
 
-   // ::cast<::gpu_directx11::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
+   // ::cast<::gpu_directx11::renderer> prenderer = m_pgraphics3dengineinstance->gpu_context()->m_pgpurenderer;
 
    // return prenderer->render_pass2();
 
@@ -34,7 +35,7 @@ namespace graphics3d_directx11
 
    //   //         constructø(m_pgpurenderpass);
 
-   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
+   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pgraphics3dengineinstance->gpu_context());
 
    //   //   m_pgpurenderpass->m_bLoadClearOp = false;
    //   //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
@@ -52,7 +53,7 @@ namespace graphics3d_directx11
    void render_system::render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
       
-      ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+      ::cast<::gpu_directx11::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       
       ::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
       
@@ -64,7 +65,9 @@ namespace graphics3d_directx11
 
       //auto vkrenderpass = prenderpass->m_vkrenderpass;
 
-      ::cast<::gpu_directx11::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+      ::cast<::gpu_directx11::texture> ptexture = ptexturesite->gpu_texture();
 
       //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       //{
@@ -75,8 +78,8 @@ namespace graphics3d_directx11
 
       //VkRenderPassBeginInfo renderPassBeginInfo = vkinit::renderPassBeginInfo();
       //renderPassBeginInfo.renderPass = vkrenderpass;
-      //renderPassBeginInfo.renderArea.extent.width = pgpucontext->m_rectangle.width();
-      //renderPassBeginInfo.renderArea.extent.height = pgpucontext->m_rectangle.height();
+      //renderPassBeginInfo.renderArea.extent.width = pgpucontext->width();
+      //renderPassBeginInfo.renderArea.extent.height = pgpucontext->height();
       //renderPassBeginInfo.clearValueCount = 0;
       ////renderPassBeginInfo.pClearValues = clearValues;
       //renderPassBeginInfo.pClearValues = nullptr;
@@ -89,8 +92,8 @@ namespace graphics3d_directx11
 
       //   pgpulayer->m_bRenderTargetFramebufferInitialized = true;
 
-      //   auto width = pcontext->m_rectangle.width();
-      //   auto height = pcontext->m_rectangle.height();
+      //   auto width = pcontext->width();
+      //   auto height = pcontext->height();
 
       //   VkViewport vp = {0, 0, (float)width, (float)height, 0.0f, 1.0f};
       //   VkRect2D sc = {{0, 0}, {width, height}};

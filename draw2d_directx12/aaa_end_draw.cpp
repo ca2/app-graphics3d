@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-04 23:11 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "graphics.h"
 #include "directx12/directx12.h"
 #include "end_draw.h"
@@ -146,7 +146,7 @@ namespace draw2d_directx12
       //if (!puserinteraction)
       //{
 
-      //   puserinteraction = dynamic_cast <::user::interaction*>(m_papplication->m_pacmeuserinteractionMain.m_p);
+      //   puserinteraction = dynamic_cast <::user::interaction*>(m_pacmeuserinteractionMain.m_p);
 
       //}
 

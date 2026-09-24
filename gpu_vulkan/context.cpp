@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "block.h"
 #include "context.h"
@@ -6,12 +6,14 @@
 #include "command_buffer.h"
 #include "debug.h"
 #include "device.h"
+#include "window_attachment.h"
 #include "gltf/model.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
 #include "render_target.h"
 #include "renderer.h"
+#include "semaphore.h"
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
@@ -24,10 +26,10 @@
 #include "aura/windowing/window.h"
 #include "bred/gpu/compositor.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 
 //
 //   // Optional — depends on your conventions
@@ -82,7 +84,7 @@ namespace gpu_vulkan
       // m_vkqueuePresent = nullptr;
       // m_vkqueueGraphics = nullptr;
 
-      m_vkcommandpoolGraphics = VK_NULL_HANDLE;
+      //m_vkcommandpoolGraphics = VK_NULL_HANDLE;
       //m_vkcommandpoolTransfer = VK_NULL_HANDLE;
       //m_vkcommandpoolPresent = VK_NULL_HANDLE;
 
@@ -798,16 +800,16 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_context_win32(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                       ::acme::windowing::window *pwindow, const ::i32_size &size)
-   {
+   //void context::_create_context_win32(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
+   //                                    ::acme::windowing::window *pwindow, const ::i32_size &size)
+   //{
 
-      if (!pgpudevice)
-      {
+   //   if (!pgpudevice)
+   //   {
 
-         throw ::exception(error_failed);
-      }
-   }
+   //      throw ::exception(error_failed);
+   //   }
+   //}
 
 
    void context::layout_push_constants(::gpu::properties & properties, bool bGlobalUbo)
@@ -950,56 +952,97 @@ namespace gpu_vulkan
    }
 
 
-   void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                   ::acme::windowing::window *pwindow, const ::i32_size &size)
+   VkCommandPool context::getGraphicsCommandPool() {
+      auto & pool = m_vkcommandpoolGraphics[::current_task_index()];
+      if (!pool)
+      {
+         ::cast<::gpu_vulkan::device> pdevice = m_pgpudevice;
+         auto graphicsFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
+         pool = createCommandPool(graphicsFamilyIndex);
+      }
+      return pool;
+
+   }
+   VkCommandPool context::getTransferCommandPool() { auto & pool = m_vkcommandpoolTransfer[::current_task_index()];
+   
    {
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpudevice;
+      auto graphicsFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
+      pool = createCommandPool(graphicsFamilyIndex, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
+   }
+   return pool;
+   
+   }
+   VkCommandPool context::getPresentCommandPool() { auto & pool = m_vkcommandpoolPresent[::current_task_index()];
+   
+   {
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpudevice;
+      auto presentFamilyIndex = pdevice->m_queuefamilyindexes.presentFamily;
+      pool = createCommandPool(presentFamilyIndex);
+   }
+   return pool;
+   }
+
+
+   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
+   //void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
+     //                              ::acme::windowing::window *pwindow, const ::i32_size &size)
+   {
+
+      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, pdraw2dgraphics, pointInput, pointOutput, size, sizeRaw);
 
       // m_itaskGpu = ::current_itask();
       m_pgpudevice = pgpudevice;
 
+      m_eoutput = eoutput;
+
+      m_escene = escene;
+
+      m_pacmeuserinteractionAffinity = pacmewindowingwindow->m_pacmeuserinteraction;
+
       ::cast<::gpu_vulkan::device> pdevice = pgpudevice;
 
-      auto graphicsFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
+      //auto graphicsFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
 
       // Create a default command pool for graphics command buffers
-      m_vkcommandpoolGraphics = createCommandPool(graphicsFamilyIndex);
+      //m_vkcommandpoolGraphics = createCommandPool(graphicsFamilyIndex);
 
-      auto transferFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
+      //auto transferFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
 
-      if (transferFamilyIndex >= 0)
-      {
+      //if (transferFamilyIndex >= 0)
+      //{
 
-         m_vkcommandpoolTransfer = createCommandPool(transferFamilyIndex, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
+      //   m_vkcommandpoolTransfer = createCommandPool(transferFamilyIndex, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
 
-      }
-      else
-      {
+      //}
+      //else
+      //{
 
-         m_vkcommandpoolTransfer = VK_NULL_HANDLE;
+      //   m_vkcommandpoolTransfer = VK_NULL_HANDLE;
 
-      }
+      //}
 
-      auto presentFamilyIndex = pdevice->m_queuefamilyindexes.presentFamily;
+      //auto presentFamilyIndex = pdevice->m_queuefamilyindexes.presentFamily;
 
-      if (presentFamilyIndex >= 0)
-      {
+      //if (presentFamilyIndex >= 0)
+      //{
 
-         m_vkcommandpoolPresent = createCommandPool(presentFamilyIndex);
+      //   m_vkcommandpoolPresent = createCommandPool(presentFamilyIndex);
 
-      }
-      else
-      {
+      //}
+      //else
+      //{
 
-         m_vkcommandpoolPresent = VK_NULL_HANDLE;
+      //   m_vkcommandpoolPresent = VK_NULL_HANDLE;
 
-      }
+      //}
 
-      _create_context_win32(pgpudevice, eoutput, pwindow, size);
+      //_create_context_win32(pgpudevice, eoutput, pwindow, size);
 
    }
 
 
-   void context::endSingleTimeCommands(::gpu::command_buffer *pgpucommandbuffer)
+   void context::_endSingleTimeCommands(::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
@@ -1497,236 +1540,238 @@ namespace gpu_vulkan
    //}
 
 
-   void context::_create_window_context(::acme::windowing::window *pwindowParam)
-   {
+   //void context::_create_window_context(::acme::windowing::window *pwindowParam)
+   //{
 
-      // m_itaskGpu = ::current_itask();
+   //   // m_itaskGpu = ::current_itask();
 
-      //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
+   //   //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
 
-      //   if (!m_hdc || !m_hrc)
-      //   {
+   //   //   if (!m_hdc || !m_hrc)
+   //   //   {
 
-      //      auto psystem = system();
+   //   //      auto psystem = system();
 
-      //      auto pgpu = application()->get_gpu();
+   //   //      auto pgpu = application()->get_gpu();
 
-      //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
+   //   //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
 
-      //      //if (!pvulkan->m_atomClass)
-      //      //{
+   //   //      //if (!pvulkan->m_atomClass)
+   //   //      //{
 
-      //      //   informationf("MS GDI - RegisterClass failed");
+   //   //      //   informationf("MS GDI - RegisterClass failed");
 
-      //      //   informationf("last-error code: %d\n", GetLastError());
+   //   //      //   informationf("last-error code: %d\n", GetLastError());
 
-      //      //   throw ::exception(error_failed);
+   //   //      //   throw ::exception(error_failed);
 
-      //      //}
+   //   //      //}
 
-      //      if (!m_hwnd)
-      //      {
+   //   //      if (!m_hwnd)
+   //   //      {
 
-      //         auto hwnd = pwindow->m_hwnd;
+   //   //         auto hwnd = pwindow->m_hwnd;
 
 
-      //         m_hwnd = hwnd;
+   //   //         m_hwnd = hwnd;
 
 
-      //         //// create WGL context, make current
+   //   //         //// create WGL context, make current
 
-      //         //PIXELFORMATDESCRIPTOR pixformat;
+   //   //         //PIXELFORMATDESCRIPTOR pixformat;
 
-      //         //int chosenformat;
+   //   //         //int chosenformat;
 
-      //         HDC hdc = GetDC(m_hwnd);
+   //   //         HDC hdc = GetDC(m_hwnd);
 
-      //         //if (!hdc)
-      //         //{
+   //   //         //if (!hdc)
+   //   //         //{
 
-      //         //   informationf("MS GDI - GetDC failed");
+   //   //         //   informationf("MS GDI - GetDC failed");
 
-      //         //   informationf("last-error code: %d\n", GetLastError());
+   //   //         //   informationf("last-error code: %d\n", GetLastError());
 
-      //         //   throw ::exception(error_failed);
+   //   //         //   throw ::exception(error_failed);
 
-      //         //}
+   //   //         //}
 
-      //         //zero(pixformat);
-      //         //pixformat.nSize = sizeof(pixformat);
-      //         //pixformat.nVersion = 1;
-      //         //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
-      //         //pixformat.iPixelType = PFD_TYPE_RGBA;
-      //         //pixformat.cColorBits = 32;
-      //         //pixformat.cRedShift = 16;
-      //         //pixformat.cGreenShift = 8;
-      //         //pixformat.cBlueShift = 0;
-      //         //pixformat.cAlphaShift = 24;
-      //         //pixformat.cAlphaBits = 8;
-      //         //pixformat.cDepthBits = 24;
-      //         //pixformat.cStencilBits = 8;
+   //   //         //zero(pixformat);
+   //   //         //pixformat.nSize = sizeof(pixformat);
+   //   //         //pixformat.nVersion = 1;
+   //   //         //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
+   //   //         //pixformat.iPixelType = PFD_TYPE_RGBA;
+   //   //         //pixformat.cColorBits = 32;
+   //   //         //pixformat.cRedShift = 16;
+   //   //         //pixformat.cGreenShift = 8;
+   //   //         //pixformat.cBlueShift = 0;
+   //   //         //pixformat.cAlphaShift = 24;
+   //   //         //pixformat.cAlphaBits = 8;
+   //   //         //pixformat.cDepthBits = 24;
+   //   //         //pixformat.cStencilBits = 8;
 
-      //         //chosenformat = ChoosePixelFormat(hdc, &pixformat);
+   //   //         //chosenformat = ChoosePixelFormat(hdc, &pixformat);
 
-      //         //if (chosenformat == 0)
-      //         //{
+   //   //         //if (chosenformat == 0)
+   //   //         //{
 
-      //         //   informationf("MS GDI - ChoosePixelFormat failed");
+   //   //         //   informationf("MS GDI - ChoosePixelFormat failed");
 
-      //         //   informationf("last-error code: %d\n", GetLastError());
+   //   //         //   informationf("last-error code: %d\n", GetLastError());
 
-      //         //   ReleaseDC(m_hwnd, hdc);
+   //   //         //   ReleaseDC(m_hwnd, hdc);
 
-      //         //   throw ::exception(error_failed);
+   //   //         //   throw ::exception(error_failed);
 
-      //         //}
+   //   //         //}
 
-      //         //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+   //   //         //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
 
-      //         //if (!spfok)
-      //         //{
+   //   //         //if (!spfok)
+   //   //         //{
 
-      //         //   informationf("MS GDI - SetPixelFormat failed");
+   //   //         //   informationf("MS GDI - SetPixelFormat failed");
 
-      //         //   informationf("last-error code: %d\n", GetLastError());
+   //   //         //   informationf("last-error code: %d\n", GetLastError());
 
-      //         //   ReleaseDC(m_hwnd, hdc);
+   //   //         //   ReleaseDC(m_hwnd, hdc);
 
-      //         //   throw ::exception(error_failed);
+   //   //         //   throw ::exception(error_failed);
 
-      //         //}
+   //   //         //}
 
-      ////         auto hglrc = wglCreateContext(hdc);
+   //   ////         auto hglrc = wglCreateContext(hdc);
 
-      ////         pwindow->m_hglrcProto = hglrc;
+   //   ////         pwindow->m_hglrcProto = hglrc;
 
-      //////         int context_attribs[] = {
-      //////WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
-      //////WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-      //////0, 0
-      //////         };
-      //////         auto hglrc = wglCreateContextAttribsARB(hdc, NULL, context_attribs);
-      //////         if (!hglrc) {
-      //////            //ReleaseDC(hWnd, hDC);
-      //////            //DestroyWindow(hWnd);
+   //   //////         int context_attribs[] = {
+   //   //////WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
+   //   //////WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+   //   //////0, 0
+   //   //////         };
+   //   //////         auto hglrc = wglCreateContextAttribsARB(hdc, NULL, context_attribs);
+   //   //////         if (!hglrc) {
+   //   //////            //ReleaseDC(hWnd, hDC);
+   //   //////            //DestroyWindow(hWnd);
 
-      //////            throw ::exception(error_failed);
-      //////         }
-      //////         //ReleaseDC(hWnd, hDC);
+   //   //////            throw ::exception(error_failed);
+   //   //////         }
+   //   //////         //ReleaseDC(hWnd, hDC);
 
-      ////         if (!pwindow->m_hglrcProto)
-      ////         {
+   //   ////         if (!pwindow->m_hglrcProto)
+   //   ////         {
 
-      ////            informationf("MS WGL - wglCreateContext failed");
+   //   ////            informationf("MS WGL - wglCreateContext failed");
 
-      ////            informationf("last-error code: %d\n", GetLastError());
+   //   ////            informationf("last-error code: %d\n", GetLastError());
 
-      ////            ReleaseDC(m_hwnd, hdc);
+   //   ////            ReleaseDC(m_hwnd, hdc);
 
-      ////            throw ::exception(error_failed);
+   //   ////            throw ::exception(error_failed);
 
-      ////         }
+   //   ////         }
 
-      ////         bool bMakeCurrentOk = wglMakeCurrent(hdc, pwindow->m_hglrcProto);
+   //   ////         bool bMakeCurrentOk = wglMakeCurrent(hdc, pwindow->m_hglrcProto);
 
-      ////         if (!bMakeCurrentOk)
-      ////         {
+   //   ////         if (!bMakeCurrentOk)
+   //   ////         {
 
-      ////            informationf("MS WGL - wglMakeCurrent failed");
+   //   ////            informationf("MS WGL - wglMakeCurrent failed");
 
-      ////            informationf("last-error code: %d\n", GetLastError());
+   //   ////            informationf("last-error code: %d\n", GetLastError());
 
-      ////            ReleaseDC(m_hwnd, hdc);
+   //   ////            ReleaseDC(m_hwnd, hdc);
 
-      ////            throw ::exception(error_failed);
+   //   ////            throw ::exception(error_failed);
 
-      ////         }
+   //   ////         }
 
 
-      ////         pvulkan->defer_init_gpu_library();
+   //   ////         pvulkan->defer_init_gpu_library();
 
-      //         //auto pszVersion = (const char *)glGetString(GL_VERSION);
-      //         ////::e_status estatus =
+   //   //         //auto pszVersion = (const char *)glGetString(GL_VERSION);
+   //   //         ////::e_status estatus =
 
-      //         //::string strVersion(pszVersion);
+   //   //         //::string strVersion(pszVersion);
 
-      //         //if (strVersion.case_insensitive_contains("mesa"))
-      //         //{
+   //   //         //if (strVersion.case_insensitive_contains("mesa"))
+   //   //         //{
 
-      //         //   m_bMesa = true;
+   //   //         //   m_bMesa = true;
 
-      //         //}
+   //   //         //}
 
-      //         ////if (!estatus)
-      //         ////{
+   //   //         ////if (!estatus)
+   //   //         ////{
 
-      //         ////   ReleaseDC(window, hdc);
+   //   //         ////   ReleaseDC(window, hdc);
 
-      //         ////   return estatus;
+   //   //         ////   return estatus;
 
-      //         ////}
+   //   //         ////}
 
-      //         m_hwnd = m_hwnd;
-      //         m_hdc = hdc;
-      //         m_hrc = pwindow->m_hglrcProto;
+   //   //         m_hwnd = m_hwnd;
+   //   //         m_hdc = hdc;
+   //   //         m_hrc = pwindow->m_hglrcProto;
 
-      //      }
+   //   //      }
 
-      //   }
+   //   //   }
 
-      //   RECT rectClient;
+   //   //   RECT rectClient;
 
-      //   ::GetClientRect(m_hwnd, &rectClient);
+   //   //   ::GetClientRect(m_hwnd, &rectClient);
 
-      //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
-      // rectClient.bottom - rectClient.top };
-      //
-      //   if (m_size != sizeNew)
-      //   {
-      //      m_size = sizeNew;
+   //   //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
+   //   // rectClient.bottom - rectClient.top };
+   //   //
+   //   //   if (m_size != sizeNew)
+   //   //   {
+   //   //      m_size = sizeNew;
 
 
-      //      //HDC pdcDIB;                      // контекст устройства в памяти
-      //      //HBITMAP hbmpDIB;                 // и его текущий битмапvoid *pBitsDIB(NULL);            // содержимое
-      //      битмапаint cxDIB(200); int cyDIB(300);  // его размеры (например для окна 200х300)
-      //      //auto &BIH=pwindow->m_bitmapinfoheaderProto;            // и заголовок// …// создаем DIB section//
-      //      создаем структуру BITMAPINFOHEADER, описывающую наш DIBint iSize = sizeof(BITMAPINFOHEADER);  // размер
-      //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
+   //   //      //HDC pdcDIB;                      // контекст устройства в памяти
+   //   //      //HBITMAP hbmpDIB;                 // и его текущий битмапvoid *pBitsDIB(NULL);            // содержимое
+   //   //      битмапаint cxDIB(200); int cyDIB(300);  // его размеры (например для окна 200х300)
+   //   //      //auto &BIH=pwindow->m_bitmapinfoheaderProto;            // и заголовок// …// создаем DIB section//
+   //   //      создаем структуру BITMAPINFOHEADER, описывающую наш DIBint iSize = sizeof(BITMAPINFOHEADER);  // размер
+   //   //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
 
-      //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
-      //      //BIH.biWidth = m_size.cx;       // геометрия
-      //      //BIH.biHeight = m_size.cy;      // битмапа
-      //      //BIH.biPlanes = 1;          // один план
-      //      //BIH.biBitCount = 32;       // 24 bits per pixel
-      //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
-      //      ////pdcDIB = create_compatible_graphics(NULL);
-      //      ////void * pBits = nullptr;
-      //      //// создаем DIB-секцию
-      //      //pwindow->m_hbitmapProto = CreateDIBSection(
-      //      //  m_hdc,                  // контекст устройства
-      //      //  (BITMAPINFO *)&BIH,       // информация о битмапе
-      //      //  DIB_RGB_COLORS,          // параметры цвета
-      //      //  &pwindow->m_pbitsProto,               // местоположение буфера (память выделяет система)
-      //      //  NULL,                    // не привязываемся к отображаемым в память файлам
-      //      //  0);
+   //   //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
+   //   //      //BIH.biWidth = m_size.cx;       // геометрия
+   //   //      //BIH.biHeight = m_size.cy;      // битмапа
+   //   //      //BIH.biPlanes = 1;          // один план
+   //   //      //BIH.biBitCount = 32;       // 24 bits per pixel
+   //   //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
+   //   //      ////pdcDIB = create_compatible_graphics(NULL);
+   //   //      ////void * pBits = nullptr;
+   //   //      //// создаем DIB-секцию
+   //   //      //pwindow->m_hbitmapProto = CreateDIBSection(
+   //   //      //  m_hdc,                  // контекст устройства
+   //   //      //  (BITMAPINFO *)&BIH,       // информация о битмапе
+   //   //      //  DIB_RGB_COLORS,          // параметры цвета
+   //   //      //  &pwindow->m_pbitsProto,               // местоположение буфера (память выделяет система)
+   //   //      //  NULL,                    // не привязываемся к отображаемым в память файлам
+   //   //      //  0);
 
-      //      //// выберем новый битмап (DIB section) для контекста устройства в памяти
-      //      //SelectObject(m_hdc, pwindow->m_hbitmapProto);
-      //      //pwindow->m_hdcProto = m_hdc;
-      //   }
+   //   //      //// выберем новый битмап (DIB section) для контекста устройства в памяти
+   //   //      //SelectObject(m_hdc, pwindow->m_hbitmapProto);
+   //   //      //pwindow->m_hdcProto = m_hdc;
+   //   //   }
 
-      //   m_itaskGpu = ::current_itask();
+   //   //   m_itaskGpu = ::current_itask();
 
-      //   m_estatus = ::success;
+   //   //   m_estatus = ::success;
 
-      //   set_ok_flag();
-   }
+   //   //   set_ok_flag();
+   //}
 
 
    void context::_create_cpu_buffer(const ::i32_size &size)
    {
+      
+      //throw todo;
 
-      _create_offscreen_window(size);
+      //_create_offscreen_window2(size);
 
       //_create_window_buffer();
 
@@ -1734,33 +1779,36 @@ namespace gpu_vulkan
    }
 
 
-   void context::defer_create_window_context(::acme::windowing::window *pacmewindowingwindow)
-   {
+   //void context::defer_create_window_context(::acme::windowing::window *pacmewindowingwindow)
+   //{
 
-      // if (m_hrc)
-      //{
+   //   // if (m_hrc)
+   //   //{
 
-      //   return;
+   //   //   return;
 
-      //}
+   //   //}
 
-      ::cast<::windowing::window> pwindow = pacmewindowingwindow;
+   //   ::cast<::windowing::window> pwindow = pacmewindowingwindow;
 
-      create_window_context(m_pgpudevice, pwindow);
+   //   create_window_context(m_pgpudevice, pwindow);
 
-   }
+   //}
 
 
-   void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
+   //void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
 
 
    void context::resize_cpu_buffer(const ::i32_size &sizeParam)
    {
 
+      //throw todo;
+
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          return;
+
       }
 
       auto size(sizeParam);
@@ -1904,6 +1952,106 @@ namespace gpu_vulkan
    }
 
 
+
+   ::memory context::circle_shader_vert()
+   {
+      unsigned int pvertexshader[] = {
+#include "shader/_001Circle.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+   }
+
+
+   ::memory context::circle_shader_frag()
+   {
+
+
+      unsigned int pfragmentshader[] = {
+#include "shader/_001Circle.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
+
+   }
+
+
+
+   ::memory context::_001BlendVertexShaderMemory()
+   {
+
+      unsigned int pvertexshader[] = {
+    #include "shader/_001Blend.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+
+   }
+
+
+   ::memory context::_001BlendFragmentShaderMemory()
+   {
+
+      unsigned int pfragmentshader[] = {
+#include "shader/_001Blend.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
+
+
+   }
+
+
+   ::memory context::_001ImageVertexShaderMemory()
+   {
+      unsigned int pvertexshader[] = {
+    #include "shader/_001Image.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+
+
+   }
+
+
+   ::memory context::_001ImageFragmentShaderMemory()
+   {
+
+      unsigned int pfragmentshader[] = {
+ #include "shader/_001Image.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
+
+
+   }
+
+
+   ::memory context::merge_layer_vertex_shader()
+   {
+
+
+      unsigned int pua_merge_layer_vertex_shader[] = {
+#include "app-graphics3d/gpu_vulkan/shader/merge_layer.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pua_merge_layer_vertex_shader);
+
+   }
+
+
+   ::memory context::merge_layer_fragment_shader()
+   {
+
+      unsigned int pua_merge_layer_fragment_shader[] = {
+#include "app-graphics3d/gpu_vulkan/shader/merge_layer.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pua_merge_layer_fragment_shader);
+
+   }
+
+
    string context::get_shader_version_text() { return "#version 330 core"; }
 
 
@@ -1929,15 +2077,17 @@ namespace gpu_vulkan
    }
 
 
-   void context::begin_render(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture)
+   void context::begin_render(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *ptexturesite)
    {
 
       auto pgpurendertarget = m_pgpurenderer->render_target();
 
-      if (::is_null(ptexture))
+      if (::is_null(ptexturesite))
       {
 
-         ptexture = pgpurendertarget->current_texture(::gpu::current_layer());
+         ptexturesite = pgpurendertarget->current_texture(::gpu::current_layer(), true);
+
+         // ptexturesite = ptexturesite->gpu_texture();
 
       }
 
@@ -1950,7 +2100,7 @@ namespace gpu_vulkan
       //else
       {
 
-         _001BeginRenderPass(pgpucommandbuffer, ptexture);
+         _001BeginRenderPass(pgpucommandbuffer, ptexturesite);
 
       }
 
@@ -2505,99 +2655,110 @@ namespace gpu_vulkan
    //}
 
 
-   ::pointer<buffer> context::create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
+   ::pointer<buffer> context::_create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
                                             VkMemoryPropertyFlags properties)
    {
 
-
-      if (size <= 0)
-      {
-
-         throw ::exception(error_failed, "size must be greater than zero!");
-
-      }
-
-      VkBufferCreateInfo bufferInfo{};
-      bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-      bufferInfo.size = size;
-      bufferInfo.usage = usage;
-      bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
       auto pbuffer = create_newø<buffer>();
 
-      pbuffer->m_pgpucontext = this;
-
-      pbuffer->m_size = size;
-
-      if (vkCreateBuffer(this->logicalDevice(), &bufferInfo, nullptr, &pbuffer->m_vkbuffer) != VK_SUCCESS)
+      pbuffer->_create_buffer(this, size, usage, properties);
+      ::cast < ::gpu_vulkan::buffer > pbufferStagingVulkan = pbuffer;
+      if ((::u64)pbufferStagingVulkan->m_vkbuffer == 0xca00000000ca)
       {
-
-         throw ::exception(error_failed, "failed to create vertex buffer!");
+         informationf("Buffer 0xca00000000ca");
       }
 
-            if (((::uptr)pbuffer->m_vkbuffer & 0xffff) == 0x019b)
-      {
-
-         information("~buffer (m_vkbuffer & 0xffff) == 0x019b");
-      }
-
-
-
-      VkMemoryRequirements memRequirements;
-      vkGetBufferMemoryRequirements(this->logicalDevice(), pbuffer->m_vkbuffer, &memRequirements);
-
-      VkMemoryAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-      allocInfo.allocationSize = memRequirements.size;
-      allocInfo.memoryTypeIndex =
-         m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
-
-      const auto & memoryProperties =
-         m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevicememoryproperties;
-
-      pbuffer->m_vkdevicesizeAllocation = memRequirements.size;
-      pbuffer->m_vkdevicesizeAlignment = memRequirements.alignment;
-      pbuffer->m_uMemoryTypeBits = memRequirements.memoryTypeBits;
-      pbuffer->m_uMemoryTypeIndex = allocInfo.memoryTypeIndex;
-      pbuffer->m_vkmemorypropertyflagsRequested = properties;
-      pbuffer->m_vkmemorypropertyflagsSelected =
-         memoryProperties.memoryTypes[allocInfo.memoryTypeIndex].propertyFlags;
-
-      if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &pbuffer->m_vkdevicememory) != VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
-      }
-
-      auto vkbuffer = pbuffer->m_vkbuffer;
-
-      auto vkdevicememory = pbuffer->m_vkdevicememory;
-
-      auto vkresultBind = vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
-
-      if (vkresultBind != VK_SUCCESS)
-      {
-
-         information(
-            "gpu_vulkan buffer memory bind failed: result={} buffer={} memory={} requested_bytes={} "
-            "allocation_bytes={} alignment={} memory_type_bits={} memory_type_index={} "
-            "memory_flags_requested={} memory_flags_selected={}",
-            (int)vkresultBind,
-            (::uptr)vkbuffer,
-            (::uptr)vkdevicememory,
-            (::u64)size,
-            (::u64)pbuffer->m_vkdevicesizeAllocation,
-            (::u64)pbuffer->m_vkdevicesizeAlignment,
-            (::u64)pbuffer->m_uMemoryTypeBits,
-            pbuffer->m_uMemoryTypeIndex,
-            (::u64)pbuffer->m_vkmemorypropertyflagsRequested,
-            (::u64)pbuffer->m_vkmemorypropertyflagsSelected);
-
-         throw ::exception(error_failed, "failed to bind buffer memory!");
-
-      }
 
       return pbuffer;
+
+      //if (size <= 0)
+      //{
+
+      //   throw ::exception(error_failed, "size must be greater than zero!");
+
+      //}
+
+      //VkBufferCreateInfo bufferInfo{};
+      //bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+      //bufferInfo.size = size;
+      //bufferInfo.usage = usage;
+      //bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      //auto pbuffer = create_newø<buffer>();
+
+      //pbuffer->m_pgpucontext = this;
+
+      //pbuffer->m_size = size;
+
+      //if (vkCreateBuffer(this->logicalDevice(), &bufferInfo, nullptr, &pbuffer->m_vkbuffer) != VK_SUCCESS)
+      //{
+
+      //   throw ::exception(error_failed, "failed to create vertex buffer!");
+      //}
+
+      //      if (((::uptr)pbuffer->m_vkbuffer & 0xffff) == 0x019b)
+      //{
+
+      //   information("~buffer (m_vkbuffer & 0xffff) == 0x019b");
+      //}
+
+
+
+      //VkMemoryRequirements memRequirements;
+      //vkGetBufferMemoryRequirements(this->logicalDevice(), pbuffer->m_vkbuffer, &memRequirements);
+
+      //VkMemoryAllocateInfo allocInfo{};
+      //allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      //allocInfo.allocationSize = memRequirements.size;
+      //allocInfo.memoryTypeIndex =
+      //   m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+      //const auto & memoryProperties =
+      //   m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevicememoryproperties;
+
+      //pbuffer->m_vkdevicesizeAllocation = memRequirements.size;
+      //pbuffer->m_vkdevicesizeAlignment = memRequirements.alignment;
+      //pbuffer->m_uMemoryTypeBits = memRequirements.memoryTypeBits;
+      //pbuffer->m_uMemoryTypeIndex = allocInfo.memoryTypeIndex;
+      //pbuffer->m_vkmemorypropertyflagsRequested = properties;
+      //pbuffer->m_vkmemorypropertyflagsSelected =
+      //   memoryProperties.memoryTypes[allocInfo.memoryTypeIndex].propertyFlags;
+
+      //if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &pbuffer->m_vkdevicememory) != VK_SUCCESS)
+      //{
+
+      //   throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
+      //}
+
+      //auto vkbuffer = pbuffer->m_vkbuffer;
+
+      //auto vkdevicememory = pbuffer->m_vkdevicememory;
+
+      //auto vkresultBind = vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
+
+      //if (vkresultBind != VK_SUCCESS)
+      //{
+
+      //   information(
+      //      "gpu_vulkan buffer memory bind failed: result={} buffer={} memory={} requested_bytes={} "
+      //      "allocation_bytes={} alignment={} memory_type_bits={} memory_type_index={} "
+      //      "memory_flags_requested={} memory_flags_selected={}",
+      //      (int)vkresultBind,
+      //      (::uptr)vkbuffer,
+      //      (::uptr)vkdevicememory,
+      //      (::u64)size,
+      //      (::u64)pbuffer->m_vkdevicesizeAllocation,
+      //      (::u64)pbuffer->m_vkdevicesizeAlignment,
+      //      (::u64)pbuffer->m_uMemoryTypeBits,
+      //      pbuffer->m_uMemoryTypeIndex,
+      //      (::u64)pbuffer->m_vkmemorypropertyflagsRequested,
+      //      (::u64)pbuffer->m_vkmemorypropertyflagsSelected);
+
+      //   throw ::exception(error_failed, "failed to bind buffer memory!");
+
+      //}
+
+      //return pbuffer;
    }
 
 
@@ -2618,11 +2779,11 @@ namespace gpu_vulkan
    //}
 
 
-   ::pointer<::gpu::command_buffer> context::beginSingleTimeCommands(::gpu::queue *pqueue,
+   ::pointer<::gpu::command_buffer> context::_beginSingleTimeCommands(::gpu::queue *pqueue,
                                                                      ::gpu::enum_command_buffer ecommandbuffer)
    {
 
-      return ::gpu::context::beginSingleTimeCommands(pqueue, ecommandbuffer);
+      return ::gpu::context::_beginSingleTimeCommands(pqueue, ecommandbuffer);
 
       //::pointer < command_buffer > pcommandbuffer;
 
@@ -2658,7 +2819,9 @@ namespace gpu_vulkan
    void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
    {
 
-      ::pointer<command_buffer> pcommandbuffer = beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+      auto pgpucommandbuffer = beginSingleTimeCommands();
+
+      ::pointer < command_buffer > pcommandbuffer = pgpucommandbuffer.operator gpu::command_buffer * ();
 
       VkBufferCopy copyRegion{};
       copyRegion.srcOffset = 0; // Optional
@@ -2667,18 +2830,16 @@ namespace gpu_vulkan
 
       vkCmdCopyBuffer(pcommandbuffer->m_vkcommandbuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-      endSingleTimeCommands(pcommandbuffer);
+      pgpucommandbuffer.commit();
    }
 
 
    void context::copyBufferToImage(::gpu::command_buffer *pgpucommandbuffer, ::gpu_vulkan::texture *ptexture,
-                                   ::gpu_vulkan::buffer *pbuffer, const ::i32_rectangle &rectangleSubImage)
+                                   ::gpu_vulkan::buffer *pbuffer, const ::i32_rectangle &rectangleSubImage, ::i32 iScan)
    // VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
    {
 
       // auto pcommandbuffer = beginSingleTimeCommands();
-
-      information("copyBufferToImage");
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
@@ -2712,7 +2873,7 @@ namespace gpu_vulkan
             memset(&region, 0, sizeof(region));
 
             region.bufferOffset = layerarea * face;
-            region.bufferRowLength = 0;
+            region.bufferRowLength = iScan / 4;
             region.bufferImageHeight = 0;
             region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             region.imageSubresource.mipLevel = 0;
@@ -2732,7 +2893,7 @@ namespace gpu_vulkan
          memset(&region, 0, sizeof(region));
 
          region.bufferOffset = 0;
-         region.bufferRowLength = 0;
+         region.bufferRowLength = iScan / 4;
          region.bufferImageHeight = 0;
 
          region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -2752,6 +2913,8 @@ namespace gpu_vulkan
             region.imageExtent = {(uint32_t)rectangleSubImage.width(), (uint32_t)rectangleSubImage.height(), 1};
          }
       }
+      
+      informationf("copyBufferToImage %p", pbuffer->m_vkbuffer);
 
       vkCmdCopyBufferToImage(pcommandbuffer->m_vkcommandbuffer, pbuffer->m_vkbuffer, ptexture->m_vkimage,
                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, iRegionCount, regions);
@@ -2859,6 +3022,8 @@ namespace gpu_vulkan
    {
 
 
+      {
+
       auto pgpucommandbuffer = beginSingleTimeCommands(nullptr);
 
       VkImageMemoryBarrier barrier{};
@@ -2917,12 +3082,18 @@ namespace gpu_vulkan
       {
          throw ::exception(error_bad_argument, "unsupported layout transition!");
       }
-      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      //auto pcommandbuffer = pgpucommandbuffer;
+
+      ::pointer < command_buffer > pcommandbuffer = pgpucommandbuffer.operator gpu::command_buffer * ();
 
       vkCmdPipelineBarrier(pcommandbuffer->m_vkcommandbuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr,
                            1, &barrier);
 
-      endSingleTimeCommands(pcommandbuffer);
+      pgpucommandbuffer.commit();
+
+   }
+      //endSingleTimeCommands(pcommandbuffer);
    }
 
    bool context::hasStencilComponent(VkFormat format)
@@ -2958,6 +3129,12 @@ namespace gpu_vulkan
       {
 
          ::information() << "image 0xe300000000e3";
+
+      }
+      else if ((::iptr)image == 0x450000000045)
+      {
+
+         ::information() << "image 0x450000000045";
 
       }
 
@@ -3017,7 +3194,7 @@ namespace gpu_vulkan
    //::gpu_vulkan::descriptor_pool *context::get_global_pool(int iFrameCount, ::gpu::command_buffer *pgpucommandbuffer)
    //{
 
-   //   auto pengine = m_pengine;
+   //   auto pengine = m_pgraphics3dengineinstance;
 
    //   ::cast<::gpu_vulkan::binding_set> pbindingset = pengine->global_ubo1_binding_set();
 
@@ -3131,7 +3308,7 @@ namespace gpu_vulkan
    // //void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
    // {
    //
-   //    //::cast<::gpu_vulkan::binding_set> pbindingset = m_pengine->global_ubo1_binding_set();
+   //    //::cast<::gpu_vulkan::binding_set> pbindingset = m_pgraphics3dengineinstance->global_ubo1_binding_set();
    //
    //    m_penginm_pblock
    //
@@ -3242,8 +3419,12 @@ namespace gpu_vulkan
 
    int g_iMergeLayersSerial = -1;
 
-   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *pgpulayera)
+   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site *ptexturesiteTarget, ::pointer_array<::gpu::layer> *pgpulayera)
    {
+
+      gpu::context::merge_layers(pgpucommandbuffer, ptexturesiteTarget, pgpulayera);
+
+      return;
 
       g_iMergeLayersSerial++;
 
@@ -3253,7 +3434,11 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = pgpurendertarget;
 
-      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+      ::cast<::gpu_vulkan::texture> ptexture = ptexturesite->gpu_texture();
+
+      informationf("merge_layers target vkimage=%p", ptexture->m_vkimage);
 
       // ::cast<swap_chain> pswapchain = m_pgpuswapchain;
       //
@@ -3287,11 +3472,11 @@ namespace gpu_vulkan
       {
 
          unsigned int full_screen_triangle_vertex_shader[] = {
-#include "shader/blend2.vert.spv.inl"
+#include "shader/merge_layer.vert.spv.inl"
          };
 
          unsigned int full_screen_triangle_fragment_shader[] = {
-#include "shader/blend2.frag.spv.inl"
+#include "shader/merge_layer.frag.spv.inl"
          };
 
          constructø(m_pshaderBlend3);
@@ -3303,15 +3488,25 @@ namespace gpu_vulkan
          // m_pshaderBlend3->m_pgpurenderer = this;
          //m_pshaderBlend3->m_bindingSampler.set();
          //
-         auto pbindingSampler = m_pshaderBlend3->binding();
+         //auto pbindingSampler = m_pshaderBlend3->binding();
 
-         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+         //pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          // Image Blend descriptors
          // if (!m_psetdescriptorlayoutImageBlend)
 
          // m_pshaderBlend3->m_bClearColor = true;
          // m_pshaderBlend3->m_colorClear = ::color::transparent;
-
+         auto pbindingSampler = m_pshaderBlend3->binding();
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_iTextureUnit = 0;
+         //m_pshaderBlend3->m_bT
+         //m_pshaderBlend3->m_pgpurenderer = this;
+         //m_pshaderBlend3->m_setbindingSampler = 0;
+         // Image Blend descriptors
+         //if (!m_psetdescriptorlayoutImageBlend)
+         m_pshaderBlend3->m_propertiesPushShared.set_properties(
+::gpu_properties<::gpu::quad>());
+         layout_push_constants(m_pshaderBlend3->m_propertiesPushShared, false);
          m_pshaderBlend3->m_bClearColor = false;
          // m_pshaderBlend3->m_colorClear = ::color::transparent;
 
@@ -3331,21 +3526,22 @@ namespace gpu_vulkan
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-      ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+      ::cast<::gpu_vulkan::texture> ptextureDst = ptexturesiteTarget->gpu_texture();
 
       ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                VK_PIPELINE_STAGE_TRANSFER_BIT});
 
-      pcommandbuffer->set_viewport(m_rectangle.size());
+      pcommandbuffer->set_viewport(this->size());
 
-      pcommandbuffer->set_scissor(m_rectangle.size());
+      pcommandbuffer->set_scissor(this->size());
 
       ::pointer_array<::gpu::texture> textureaSrc;
 
       {
 
-         // 2. Clear
-         VkClearColorValue clearColor = {.float32 = {0.5f, 0.5f, 0.0f, 0.5f}};
+         // Debug clear used while diagnosing missing fills:
+         // VkClearColorValue clearColor = {.float32 = {0.5f, 0.5f, 0.0f, 0.5f}};
+         VkClearColorValue clearColor = {.float32 = {0.0f, 0.0f, 0.0f, 0.0f}};
          VkImageSubresourceRange range = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -3361,17 +3557,28 @@ namespace gpu_vulkan
 
       auto gpulayera = *pgpulayera;
 
+      ::pointer_array<::gpu::texture_site> textureaLayerSnapshot;
+
+      for (auto pgpulayer : gpulayera)
+      {
+
+         textureaLayerSnapshot.add(pgpulayer->texture(false));
+
+      }
+
       {
 
          ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
          ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
          // float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
          // pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
-         auto scopedstate = ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         auto scopedstate = ptextureDst->_scoped_state(pcommandbuffer, {
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
                                                                         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+                                                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+             });
 
-         int iH = ptextureDst->m_pgpucontext->m_rectangle.height();
+         int iH = ptextureDst->m_pgpucontext->height();
 
          // if (!ptextureDst->m_handleRenderTargetView.ptr)
          //{
@@ -3406,7 +3613,7 @@ namespace gpu_vulkan
 
          information("merge_layers : going to set source textures state to shader read only optimal");
 
-         for (auto pgpulayer: gpulayera)
+         for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
          {
 
             //// if (iLayer == 2)
@@ -3435,7 +3642,14 @@ namespace gpu_vulkan
 
             {
 
-               ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+               ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot->gpu_texture();
+
+               if (!ptextureSrc)
+               {
+
+                  continue;
+
+               }
 
                ptextureSrc->_set_state(
                pcommandbuffer,
@@ -3455,25 +3669,66 @@ namespace gpu_vulkan
 
             int iLayer = 0;
 
-            pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
+            pcommandbuffer->begin_render(m_pshaderBlend3, ptexturesiteTarget);
 
-            for (auto pgpulayer: gpulayera)
+            for (auto & ptexturesiteSrc : textureaLayerSnapshot)
             {
 
                // if (iLayer == 2)
                {
 
-                  ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+                  ::cast<::gpu_vulkan::texture> ptextureSrc = ptexturesiteSrc->gpu_texture();
+
+                  if (!ptextureSrc)
+                  {
+
+                     iLayer++;
+
+                     continue;
+
+                  }
+
+                  informationf("merge_layers source%d vkimage=%p", iLayer, ptextureSrc->m_vkimage);
 
                   textureaSrc.add(ptextureSrc.m_p);
 
-                  pcommandbuffer->set_source(ptextureSrc);
+                  pcommandbuffer->set_source(ptexturesiteSrc);
 
-                  auto r = ptextureSrc->rectangle();
+                  //auto r = ptextureLayerSnapshot->output_placement();
+                  auto rectangleSourceOutput = ptexturesiteSrc->output_placement();
 
-                  pcommandbuffer->set_viewport(r);
+                  ::f32_rectangle rectangleOutput = rectangleSourceOutput;
 
-                  pcommandbuffer->set_scissor(r);
+                  ::f32_size sizeSrc = ptexturesiteSrc->size();
+
+                  ::f32_size sizeSrcRaw = ptexturesiteSrc->raw_size();
+
+
+                  auto u0 = 0.0f;
+                  auto v0 = 0.0f;
+
+                  auto u1 = sizeSrc.cx / sizeSrcRaw.cx;
+                  auto v1 = sizeSrc.cy / sizeSrcRaw.cy;
+
+
+                  ::floating_sequence4 quad
+                  {
+                     u0,
+                     v0,
+                     u1,
+                     v1
+                  };
+
+
+                  m_pshaderBlend3->set_sequence4("quad", quad);
+
+
+                  m_pshaderBlend3->push_properties(pgpucommandbuffer);
+
+
+                  pcommandbuffer->set_viewport(rectangleSourceOutput, sizeSrcRaw);
+
+                  pcommandbuffer->set_scissor(rectangleSourceOutput, sizeSrcRaw);
 
                   pcommandbuffer->draw_vertexes(3);
 
@@ -3489,13 +3744,20 @@ namespace gpu_vulkan
 
       }
 
-      for (auto pgpulayer: gpulayera)
+      for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
       {
 
          // if (iLayer == 2)
          {
 
-            ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+            ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
+
+            if (!ptextureSrc)
+            {
+
+               continue;
+
+            }
 
             ptextureSrc->_set_state(
                pcommandbuffer,
@@ -3518,7 +3780,7 @@ namespace gpu_vulkan
       //
       //    //auto pgpufence = pcommandbuffer->insert_gpu_fence();
       //
-      //    pcommandbuffer->submitCommandBuffers(ptextureTarget, textureaSrc, {}, {}, {});
+      //    pcommandbuffer->submitCommandBuffers(ptexturesiteTarget->gpu_texture(), textureaSrc, {}, {}, {});
       //
       //    //pgpufence->wait_gpu_fence();
       //
@@ -3644,53 +3906,58 @@ void context::on_end_layer(::gpu::layer *player)
    }
 }
 
-
-void context::draw2d_on_end_draw(::gpu::graphics *pgpugraphics) 
-{
-   
-   auto pgpuswapchain = m_pgpudevice->m_pgpucontextMain->get_swap_chain();
-
-   pgpuswapchain->swap_buffers(); 
-
-}
+//
+//void context::draw2d_on_end_draw(::gpu::graphics *pgpugraphics)
+//{
+//
+//}
+//
 
 
-
-void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence)
+void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * ptexturesiteTarget, ::gpu::texture_site * ptexturesiteSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
 {
 
-//      throw todo;
+   //      throw todo;
 
    auto pgpurendertarget = m_pgpurenderer->render_target();
 
-   int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-   int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+   int iFrameCount = pgpuwindowattachment->get_frame_count();
 
-   ::pointer<command_buffer> pcommandbuffer;
+   int iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
-   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-   if (bIsFrameInProgress)
+   //bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+
+   //if (bIsFrameInProgress)
+   //{
+
+   //   pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+   //}
+   //else
+   //{
+
+   //   pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+   //}
+
+   if (pgpusemaphoreReady)
    {
 
-      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      pgpucommandbuffer->m_semaphoreaSignal.add_unique(*pgpusemaphoreReady);
+
    }
-   else
-   {
-
-      pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
-   }
 
    {
 
-      ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+      ::cast<::gpu_vulkan::texture> ptextureDst = ptexturesiteTarget->gpu_texture();
 
-      ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
+      ::cast<::gpu_vulkan::texture> ptextureSrc = ptexturesiteSource->gpu_texture();
 
-      auto scopedstateDst =
-         ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                                      VK_PIPELINE_STAGE_TRANSFER_BIT});
+      //auto scopedstateDst =
+         ptextureDst->_set_state(pcommandbuffer, { VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT });
 
       auto vkimageSrc = ptextureSrc->m_vkimage;
 
@@ -3700,9 +3967,9 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
          ::information() << "image 0xe300000000e3";
       }
 
-      auto scopedstateSrc =
-         ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                                      VK_PIPELINE_STAGE_TRANSFER_BIT});
+      //auto scopedstateSrc =
+         ptextureSrc->_set_state(pcommandbuffer, { VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT });
 
       auto srcImage = ptextureSrc->m_vkimage;
 
@@ -3717,7 +3984,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
                .baseArrayLayer = 0,
                .layerCount = 1,
             },
-         .srcOffset = {0, 0, 0},
+         .srcOffset = {ptexturesiteSource->output_left(), ptexturesiteSource->output_top(), 0},
          .dstSubresource =
             {
                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -3725,48 +3992,167 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
                .baseArrayLayer = 0,
                .layerCount = 1,
             },
-         .dstOffset = {0, 0, 0},
-         .extent = {(uint32_t)m_rectangle.width(), (uint32_t)m_rectangle.height(), 1},
+         .dstOffset = {ptexturesiteTarget->input_left(), ptexturesiteTarget->input_top(), 0},
+         .extent = {(uint32_t)minimum(ptextureDst->width(),ptextureSrc->width()), 
+         (uint32_t)minimum(ptextureDst->height(),ptextureSrc->height()), 1},
       };
 
       vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,
                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
    }
 
-   if (!m_pgpurenderer->isFrameInProgress())
-   {
+   //if (!m_pgpurenderer->isFrameInProgress())
+   //{
 
-      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
-      {
+   //   if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+   //   {
 
-         throw ::exception(error_failed);
-      }
+   //      throw ::exception(error_failed);
+   //   }
 
-      if (::is_set(pgpufence))
-      {
+   //   if (::is_set(pgpufence))
+   //   {
 
-         *pgpufence = pcommandbuffer->insert_gpu_fence(true);
+   //      *pgpufence = pcommandbuffer->insert_gpu_fence(true);
 
-      }
+   //   }
 
-      //VkFence fence = VK_NULL_HANDLE;
-      //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+   //   //VkFence fence = VK_NULL_HANDLE;
+   //   //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
 
-      pcommandbuffer->submit_command_buffer(nullptr);
+   //   pcommandbuffer->submit_command_buffer(nullptr);
 
-      // if (fence)
-      // {
-      //
-      //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-      // }
+   //   // if (fence)
+   //   // {
+   //   //
+   //   //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+   //   // }
 
-      ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+   //   ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
 
-      pqueue->wait_idle();
+   //   pqueue->wait_idle();
 
-   }
+   //}
 
 }
+
+
+//void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site *ptexturesiteTarget, ::gpu::texture_site *ptexturesiteSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
+//{
+//
+////      throw todo;
+//
+//   auto pgpurendertarget = m_pgpurenderer->render_target();
+//
+//   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+//
+//   int iFrameCount = pgpuwindowattachment->get_frame_count();
+//
+//   int iFrameIndex = pgpuwindowattachment->get_frame_index3();
+//
+//   ::pointer<command_buffer> pcommandbuffer;
+//
+//   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+//
+//   if (bIsFrameInProgress)
+//   {
+//
+//      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+//   }
+//   else
+//   {
+//
+//      pcommandbuffer = this->_beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+//   }
+//
+//
+//   copy(pcommandbuffer, ptexturesiteTarget, ptexturesiteSource, pgpufence, pgpusemaphoreReady);
+//
+//   //{
+//
+//   //   ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+//
+//   //   ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
+//
+//   //   auto scopedstateDst =
+//   //      ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+//   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
+//
+//   //   auto vkimageSrc = ptextureSrc->m_vkimage;
+//
+//   //   if ((::iptr)vkimageSrc == 0xe300000000e3)
+//   //   {
+//
+//   //      ::information() << "image 0xe300000000e3";
+//   //   }
+//
+//   //   auto scopedstateSrc =
+//   //      ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+//   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
+//
+//   //   auto srcImage = ptextureSrc->m_vkimage;
+//
+//   //   auto dstImage = ptextureDst->m_vkimage;
+//
+//   //   // Copy region
+//   //   VkImageCopy copyRegion = {
+//   //      .srcSubresource =
+//   //         {
+//   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//   //            .mipLevel = 0,
+//   //            .baseArrayLayer = 0,
+//   //            .layerCount = 1,
+//   //         },
+//   //      .srcOffset = {0, 0, 0},
+//   //      .dstSubresource =
+//   //         {
+//   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//   //            .mipLevel = 0,
+//   //            .baseArrayLayer = 0,
+//   //            .layerCount = 1,
+//   //         },
+//   //      .dstOffset = {0, 0, 0},
+//   //      .extent = {(uint32_t)this->width(), (uint32_t)this->height(), 1},
+//   //   };
+//
+//   //   vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,
+//   //                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+//   //}
+//
+//   if (!m_pgpurenderer->isFrameInProgress())
+//   {
+//
+//      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+//      {
+//
+//         throw ::exception(error_failed);
+//      }
+//
+//      if (::is_set(pgpufence))
+//      {
+//
+//         *pgpufence = pcommandbuffer->insert_gpu_fence(true);
+//
+//      }
+//
+//      //VkFence fence = VK_NULL_HANDLE;
+//      //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+//
+//      pcommandbuffer->submit_command_buffer(nullptr);
+//
+//      // if (fence)
+//      // {
+//      //
+//      //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+//      // }
+//
+//      ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+//
+//      pqueue->wait_idle();
+//
+//   }
+//
+//}
 
 
 VkFormat context::findDepthFormat()
@@ -5102,7 +5488,7 @@ VkFormat context::findDepthFormat()
 
 
 
-void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * pgputexture)
+void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * pgputexturesite)
 {
 
    
@@ -5138,18 +5524,21 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
       //renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
       // if (prenderer->m_pgpulayer)
       //{
-         ::cast<::gpu_vulkan::texture> ptexture;
+
+      ::cast<::gpu_vulkan::texture> ptexture;
+
+
          
-         if (pgputexture) 
+         if (pgputexturesite && pgputexturesite->gpu_texture()) 
          {
             
-            ptexture = pgputexture; 
+            ptexture = pgputexturesite->gpu_texture(); 
          
          }
          else
          {
             
-            ptexture = prendertarget->current_texture(::gpu::current_layer());
+            ptexture = prendertarget->current_texture(::gpu::current_layer(), true)->gpu_texture();
 
          }
 
@@ -5165,7 +5554,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
          auto & layer = ptexture->current_layer(prenderpass);
 
-         renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
+         renderPassBeginInfo.framebuffer = layer.m_vkframebufferLayer;
       //}
       // else
       //{
@@ -5825,7 +6214,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_scene_gltf() 
 //{
 //
-//   auto pengine = m_pengine;
+//   auto pengine = m_pgraphics3dengineinstance;
 //
 //   ::cast < ::gpu_vulkan::binding_set > pbindingset = pengine->scene_gltf_pbr_binding_set();
 //
@@ -5941,7 +6330,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 }
 
 
-void context::on_cube_map_face_image(::image::image * pimage)
+void context::on_cube_map_face_pixmap(::pixmap * ppixmap)
 {
 
    //pimage->rotate(180_degrees);
@@ -6109,7 +6498,7 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
 
    auto ptextureNew = createø<::gpu::texture>();
 
-   ptextureNew->initialize_texture_from_file_path(this, path, bSrgb);
+   ptextureNew->create_texture_from_file_path(this, path, bSrgb);
    
    if (ptextureNew->is_ok())
    {
@@ -6144,114 +6533,122 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
 }
 
 
-::pointer<::gpu::texture> context::create_empty_texture()
+::pointer<::gpu::texture_site> context::create_empty_texture()
 {
 
-      //void gltf::Model::createEmptyTexture(VkQueue transferQueue)
+   //void gltf::Model::createEmptyTexture(VkQueue transferQueue)
 //   {
 
-      auto pgputextureEmpty = createø< ::gpu::texture>();
+   auto pgputexturesiteEmpty = create_newø< ::gpu::texture_site>();
 
-      ::cast<::gpu_vulkan::texture> ptextureEmpty = pgputextureEmpty;
-      
+   auto pgputextureEmpty = createø< ::gpu::texture>();
+   pgputexturesiteEmpty->m_pgputextureSite
+      = pgputextureEmpty;
 
-      // Define the static member here (outside any class/function)
-
-      ptextureEmpty->m_pgpucontext = this;
-      ptextureEmpty->m_textureattributes.m_rectangleTarget.set_width(1);
-      ptextureEmpty->m_textureattributes.m_rectangleTarget.set_height(1);
-      ptextureEmpty->m_textureattributes.m_iLayerCount = 1;
-      ptextureEmpty->m_textureattributes.m_iMipCount = 1;
-
-      ::cast<::gpu_vulkan::context> pcontext = this;
-      ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
-      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+   ::cast<::gpu_vulkan::texture> ptextureEmpty = pgputextureEmpty;
 
 
-      size_t bufferSize = ptextureEmpty->m_textureattributes.m_rectangleTarget.area() * 4;
-      //::memory memory;
-      //memory.set_size(bufferSize);
-      //memory.zeroe();
-      //unsigned char *buffer = new unsigned char[bufferSize];
-      //memset(buffer, 0, bufferSize);
-      VkBuffer stagingBuffer;
-      VkDeviceMemory stagingMemory;
-      VkBufferCreateInfo bufferCreateInfo = vkinit::bufferCreateInfo();
-      bufferCreateInfo.size = bufferSize;
-      // This buffer is used as a transfer source for the buffer copy
-      bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-      bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      VkCheckResult(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+   // Define the static member here (outside any class/function)
 
-      VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
-      VkMemoryRequirements memReqs;
-      vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
-      memAllocInfo.allocationSize = memReqs.size;
-      memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
-         memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
-      VkCheckResult(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+   ptextureEmpty->m_pgpucontext = this;
+   ptextureEmpty->m_textureattributes.m_size.cx = 1;
+   ptextureEmpty->m_textureattributes.m_size.cy = 1;
+   ptextureEmpty->m_textureattributes.m_iLayerCount = 1;
+   ptextureEmpty->m_textureattributes.m_iMipCount = 1;
 
-      // Copy texture data into staging buffer
-      uint8_t *data;
-      VkCheckResult(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
-      ::zero(data, bufferSize);
-      vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+   ::cast<::gpu_vulkan::context> pcontext = this;
+   ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
+   auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-      VkBufferImageCopy bufferCopyRegion = {};
-      bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-      bufferCopyRegion.imageSubresource.layerCount = 1;
-      bufferCopyRegion.imageExtent.width = ptextureEmpty->width();
-      bufferCopyRegion.imageExtent.height = ptextureEmpty->height();
-      bufferCopyRegion.imageExtent.depth = 1;
 
-      // Create optimal tiled target image
-      VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
-      imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-      imageCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-      imageCreateInfo.mipLevels = 1;
-      imageCreateInfo.arrayLayers = 1;
-      imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-      imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      imageCreateInfo.extent.width = ptextureEmpty->width();
-      imageCreateInfo.extent.height = ptextureEmpty->height();
-      imageCreateInfo.extent.depth = 1;
-      imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-      VkCheckResult(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &ptextureEmpty->m_vkimage));
+   size_t bufferSize = ptextureEmpty->m_textureattributes.m_size.area() * 4;
+   //::memory memory;
+   //memory.set_size(bufferSize);
+   //memory.zeroe();
+   //unsigned char *buffer = new unsigned char[bufferSize];
+   //memset(buffer, 0, bufferSize);
+   VkBuffer stagingBuffer;
+   VkDeviceMemory stagingMemory;
+   VkBufferCreateInfo bufferCreateInfo = vkinit::bufferCreateInfo();
+   bufferCreateInfo.size = bufferSize;
+   // This buffer is used as a transfer source for the buffer copy
+   bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+   bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+   VkCheckResult(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
 
-      vkGetImageMemoryRequirements(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, &memReqs);
-      memAllocInfo.allocationSize = memReqs.size;
-      memAllocInfo.memoryTypeIndex =
-         pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-      VkCheckResult(
-         vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &ptextureEmpty->m_vkdevicememory));
-      VkCheckResult(
-         vkBindImageMemory(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, ptextureEmpty->m_vkdevicememory, 0));
+   VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
+   VkMemoryRequirements memReqs;
+   vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
+   memAllocInfo.allocationSize = memReqs.size;
+   memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
+      memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+   VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+   VkCheckResult(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
 
-      VkImageSubresourceRange subresourceRange{};
-      subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-      subresourceRange.baseMipLevel = 0;
-      subresourceRange.levelCount = 1;
-      subresourceRange.layerCount = 1;
+   // Copy texture data into staging buffer
+   uint8_t * data;
+   VkCheckResult(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+   ::zero(data, bufferSize);
+   vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
-      // VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer =
-      // pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+   VkBufferImageCopy bufferCopyRegion = {};
+   bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   bufferCopyRegion.imageSubresource.layerCount = 1;
+   bufferCopyRegion.imageExtent.width = ptextureEmpty->width();
+   bufferCopyRegion.imageExtent.height = ptextureEmpty->height();
+   bufferCopyRegion.imageExtent.depth = 1;
 
-      auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+   // Create optimal tiled target image
+   VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
+   imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+   imageCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+   imageCreateInfo.mipLevels = 1;
+   imageCreateInfo.arrayLayers = 1;
+   imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+   imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+   imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+   imageCreateInfo.extent.width = ptextureEmpty->width();
+   imageCreateInfo.extent.height = ptextureEmpty->height();
+   imageCreateInfo.extent.depth = 1;
+   imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+   VkCheckResult(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &ptextureEmpty->m_vkimage));
 
-      ::cast<command_buffer> pcommandbufferCopy = pgpucommandbufferCopy;
+   vkGetImageMemoryRequirements(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, &memReqs);
+   memAllocInfo.allocationSize = memReqs.size;
+   memAllocInfo.memoryTypeIndex =
+      pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+   VkCheckResult(
+      vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &ptextureEmpty->m_vkdevicememory));
+   VkCheckResult(
+      vkBindImageMemory(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, ptextureEmpty->m_vkdevicememory, 0));
 
-      vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, ptextureEmpty->m_vkimage, VK_IMAGE_LAYOUT_UNDEFINED,
-                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-      vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, ptextureEmpty->m_vkimage,
-                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
-      vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, ptextureEmpty->m_vkimage,
-                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                             subresourceRange);
-      // pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue);
-      pcontext->endSingleTimeCommands(pcommandbufferCopy);
+   VkImageSubresourceRange subresourceRange{};
+   subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   subresourceRange.baseMipLevel = 0;
+   subresourceRange.levelCount = 1;
+   subresourceRange.layerCount = 1;
+
+   // VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer =
+   // pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+   {
+   auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+
+   ::pointer < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy.operator gpu::command_buffer * ();
+
+   vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, ptextureEmpty->m_vkimage, VK_IMAGE_LAYOUT_UNDEFINED,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
+   vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, ptextureEmpty->m_vkimage,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+   vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, ptextureEmpty->m_vkimage,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                          subresourceRange);
+   // pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue);
+   pgpucommandbufferCopy.commit();
+
+}
       ptextureEmpty->mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
       // Clean up staging resources
@@ -6283,7 +6680,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
    //   ptextureEmpty->m_descriptor3.imageView = ptextureEmpty->m_vkimageview;
    //   ptextureEmpty->m_descriptor3.sampler = ptextureEmpty->m_vksampler3;
    //}
-      return ::transfer(pgputextureEmpty);
+      return ::transfer(pgputexturesiteEmpty);
 
 }
 
@@ -6307,7 +6704,7 @@ return (::block)p_rgba_from_b_g_vert_memory;
           return (::block)p_rgba_from_b_g_frag_memory;
     }
 
-::pointer<::gpu::texture> context::rgba_from_b_g(::gpu::texture * pgputextureMetallic,
+::pointer<::gpu::texture_site> context::rgba_from_b_g(::gpu::texture * pgputextureMetallic,
                                         ::gpu::texture * pgputextureRoughness)
 {
 

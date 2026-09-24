@@ -1,7 +1,7 @@
 // From render_pass now render target to just gpu_vulkan/render_pass by
 // camilo on 2025-07-22 13:54 <3ThomasBorregaardSørensen!!
 // From vk_swapchain by camilo on 2025-05-09 02:01 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "bred/gpu/layer.h"
 #include "physical_device.h"

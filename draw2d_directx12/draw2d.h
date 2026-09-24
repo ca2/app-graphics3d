@@ -20,6 +20,10 @@ namespace draw2d_directx12
 
       virtual void initialize(::particle * pparticle) override;
 
+
+      bool write_text_supports_raster_fonts() override;
+      bool write_text_supports_legacy_gdi_fonts() override;
+   
       virtual string write_text_get_default_implementation_name() override;
 
       bool lock_device() override;

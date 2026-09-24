@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "pen.h"
 #include "graphics.h"
 #include "direct2d_directx12/direct2d_directx12.h"

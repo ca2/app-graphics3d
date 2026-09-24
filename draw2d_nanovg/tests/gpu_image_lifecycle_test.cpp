@@ -1,0 +1,140 @@
+#include <cassert>
+#include <fstream>
+#include <iterator>
+#include <string>
+
+
+namespace
+{
+
+
+   std::string read_file(const char * pszPath)
+   {
+
+      std::ifstream stream(pszPath, std::ios::binary);
+
+      return {
+         std::istreambuf_iterator<char>(stream),
+         std::istreambuf_iterator<char>()};
+
+   }
+
+
+   std::string section(
+      const std::string & source,
+      const std::string & beginMarker,
+      const std::string & endMarker)
+   {
+
+      const auto begin = source.find(beginMarker);
+      const auto end = source.find(endMarker, begin);
+
+      assert(begin != std::string::npos);
+      assert(end != std::string::npos);
+      assert(begin < end);
+
+      return source.substr(begin, end - begin);
+
+   }
+
+
+} // namespace
+
+
+int main()
+{
+
+   const auto header = read_file("draw2d_nanovg/image.h");
+   const auto imageSource = read_file("draw2d_nanovg/image.cpp");
+   const auto graphicsSource = read_file("draw2d_nanovg/graphics.cpp");
+   const auto gpuImageSource = read_file("../app/bred/gpu/image.cpp");
+
+   assert(header.find("virtual public ::gpu::image") != std::string::npos);
+   assert(header.find("void map(") == std::string::npos);
+   assert(header.find("void unmap(") == std::string::npos);
+
+   const auto create = section(
+      imageSource,
+      "void image::create(const ::i32_size& size",
+      "bool image::host(");
+   const auto createGraphics = create.find("create_memory_graphics(size);");
+   const auto initializeGpuImage = create.find("initialize_gpu_image(");
+   assert(createGraphics == std::string::npos);
+   assert(initializeGpuImage != std::string::npos);
+   assert(create.find("create_bitmap") == std::string::npos);
+   assert(create.find("::pixmap::initialize") == std::string::npos);
+
+   const auto getGpuTexture = section(
+      gpuImageSource,
+      "::gpu::texture * image::gpu_texture() const",
+      "void image::initialize_gpu_image(");
+   const auto requireTexture = getGpuTexture.find("if (!m_pgputexture)");
+   const auto createTexture = getGpuTexture.find("create_gpu_texture();");
+   const auto returnTexture = getGpuTexture.find("return m_pgputexture;");
+   assert(requireTexture != std::string::npos);
+   assert(createTexture != std::string::npos);
+   assert(returnTexture != std::string::npos);
+   assert(requireTexture < createTexture);
+   assert(createTexture < returnTexture);
+
+   const auto destroy = section(
+      imageSource,
+      "void image::destroy()",
+      "bool image::from(");
+   assert(destroy.find("::gpu::image::destroy();") != std::string::npos);
+
+   const auto target = section(
+      graphicsSource,
+      "::gpu::texture* graphics::current_target_texture(",
+      "bool graphics::is_gpu_oriented()");
+   const auto imageCast = target.find("dynamic_cast < ::gpu::image * >");
+   const auto imageTexture = target.find("gpu_texture()", imageCast);
+   const auto fallback = target.find(
+      "::gpu::graphics::current_target_texture(pgpulayer)", imageTexture);
+   assert(imageCast != std::string::npos);
+   assert(imageTexture != std::string::npos);
+   assert(fallback != std::string::npos);
+   assert(imageCast < imageTexture);
+   assert(imageTexture < fallback);
+
+   const auto onEndLayer = section(
+      graphicsSource,
+      "void graphics::on_end_layer(",
+      "void graphics::start_layer(");
+   const auto resolveTarget = onEndLayer.find(
+      "current_target_texture(pgpulayer)");
+   const auto requireTarget = onEndLayer.find(
+      "if (!pgputextureTarget)", resolveTarget);
+   const auto bindTarget = onEndLayer.find(
+      "pgputextureTarget->bind_render_target();", requireTarget);
+   const auto endFrame = onEndLayer.find(
+      "nvgEndFrame(m_pdc);", bindTarget);
+   const auto diagnoseRender = onEndLayer.find(
+      "diagnose_rendered_gpu_image(", endFrame);
+   const auto imageFence = onEndLayer.find(
+      "defer_fence();", endFrame);
+   assert(resolveTarget != std::string::npos);
+   assert(requireTarget != std::string::npos);
+   assert(bindTarget != std::string::npos);
+   assert(endFrame != std::string::npos);
+   assert(diagnoseRender != std::string::npos);
+   assert(imageFence != std::string::npos);
+   assert(resolveTarget < requireTarget);
+   assert(requireTarget < bindTarget);
+   assert(bindTarget < endFrame);
+   assert(endFrame < diagnoseRender);
+   assert(endFrame < imageFence);
+
+   const auto publicEndLayer = section(
+      graphicsSource,
+      "void graphics::end_layer(bool bClosingLayer)",
+      "void graphics::on_present()");
+   assert(publicEndLayer.find("nvgEndFrame(m_pdc);") == std::string::npos);
+   assert(publicEndLayer.find("diagnose_rendered_gpu_image(") ==
+      std::string::npos);
+   assert(publicEndLayer.find(
+      "::gpu::graphics::end_layer(bClosingLayer);") != std::string::npos);
+
+   return 0;
+
+}

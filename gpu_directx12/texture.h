@@ -79,6 +79,13 @@ namespace gpu_directx12
 
          void update_pixels(const ::i32_rectangle& rectangle, const void* data);
 
+         void update_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data);
+
+         void _fill_new_damage(damage & damageNew, const ::i32_rectangle & rectangle, const void * data);
+         
+
+           
+
       };
 
       class static_upload_buffer : virtual public ::particle
@@ -132,9 +139,9 @@ namespace gpu_directx12
          }
 
 
-      }new_texture;
+      } new_texture;
 
-            struct layer
+      struct layer
       {
          /// @brief [0] -> color, [1] -> depth
          //VkImageView m_vkimageviewaAttachment[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
@@ -170,12 +177,14 @@ namespace gpu_directx12
                ::pointer<texture> m_ptexture;
 
                ::comptr<ID3D12PipelineState> m_ppipelinestateMipMap;
-               ::comptr<ID3D12DescriptorHeap> m_pheapMipMap;
-               D3D12_CPU_DESCRIPTOR_HANDLE m_cpuBase;
-               D3D12_GPU_DESCRIPTOR_HANDLE m_gpuBase;
+               //::comptr<ID3D12DescriptorHeap> m_pheapMipMap;
+               //D3D12_CPU_DESCRIPTOR_HANDLE m_cpuBase;
+               //D3D12_GPU_DESCRIPTOR_HANDLE m_gpuBase;
 
-               ::array_base< D3D12_GPU_DESCRIPTOR_HANDLE> m_handleaShaderResourceView;
-               ::array_base<D3D12_GPU_DESCRIPTOR_HANDLE> m_handleaUnorderedAccessView;
+               cpu_gpu_handle m_handleBase;
+
+               ::array_base < gpu_handle> m_handleaShaderResourceView;
+               ::array_base < gpu_handle> m_handleaUnorderedAccessView;
                int m_iMipCount;
                int m_iLayerCount;
                mip_map_generator();
@@ -206,44 +215,46 @@ namespace gpu_directx12
       };
 
 
-      mip_layer_array m_miplayera;
+      mip_layer_array                     m_miplayera;
 
-      ::pointer<d3d12_resource> m_pd3d12resourceTexture;
-      ::pointer<mip_map_generator> m_pmipmapgenerator;
-      ::pointer<static_upload_buffer> m_pstaticuploadbuffer;
-      D3D12_RESOURCE_DESC              m_resourcedesc;
-      ::comptr<ID3D12Resource>         m_presourceDepthStencilView;
-      ::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
-      //D3D12_RESOURCE_STATES            m_estate;
-      int m_iRenderTargetViewHandleCount = -1;
-      int m_iRenderTargetViewHandle= -1;
-      UINT m_uRenderTargetViewIncrement = 0;
+      ::pointer<d3d12_resource>           m_pd3d12resourceTexture;
+      ::pointer<mip_map_generator>        m_pmipmapgenerator;
+      ::pointer<static_upload_buffer>     m_pstaticuploadbuffer;
+      D3D12_RESOURCE_DESC                 m_resourcedesc;
+      ::comptr<ID3D12Resource>            m_presourceDepthStencilView;
+      //::comptr<ID3D12DescriptorHeap>    m_pheapRenderTargetView;
+      cpu_handle                          m_handleRenderTargetView;
+      //D3D12_RESOURCE_STATES             m_estate;
+      int                                 m_iRenderTargetViewHandleCount = -1;
+      int                                 m_iRenderTargetViewHandle = -1;
+      UINT                                m_uRenderTargetViewIncrement = 0;
       
-      ::comptr<ID3D12DescriptorHeap>   m_pheapShaderResourceView;
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleShaderResourceView;
-      ::comptr<ID3D12DescriptorHeap>   m_pheapDepthStencilView;
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleDepthStencilView;
-      ::comptr<ID3D12DescriptorHeap>   m_pheapSampler;
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleSampler;
-      //UINT m_rtvDescriptorSize;
-      //bool m_bRenderTarget;
-      //bool m_bShaderResource;
+      //::comptr<ID3D12DescriptorHeap>    m_pheapShaderResourceView;
+      cpu_gpu_handle                      m_handleShaderResourceView;
+      ::comptr<ID3D12Resource>             m_presourceShaderResourceView;
+      //::comptr<ID3D12DescriptorHeap>    m_pheapDepthStencilView;
+      cpu_handle                          m_handleDepthStencilView;
+      //::comptr<ID3D12DescriptorHeap>    m_pheapSampler;
+      cpu_gpu_handle                      m_handleSampler;
+      //UINT                              m_rtvDescriptorSize;
+      //bool                              m_bRenderTarget;
+      //bool                              m_bShaderResource;
 
-      //state_t m_state;
+      //state_t                           m_state;
 
-      //DXGI_FORMAT m_dxgiformat;
+      //DXGI_FORMAT                       m_dxgiformat;
 
       class d3d11 :
          virtual public ::particle
       {
       public:
 
-         ID3D11Resource* m_d3d11wrappedresources[1];
+         ID3D11Resource* m_d3d11resourceaWrapped[1];
 
          //::comptr<ID3D12Resource> d3d12Resource;
-         ::comptr<ID3D11Resource> wrappedResource;
-         ::comptr<IDXGISurface> dxgiSurface;
-         ::comptr<ID2D1Bitmap1> d2dBitmap;
+         ::comptr<ID3D11Resource> m_pd3d11resourceWrapped;
+         ::comptr<IDXGISurface> m_pdxgisurface;
+         ::comptr<ID2D1Bitmap1> m_pd2dbitmap;
          HANDLE sharedHandle = NULL;
 
          d3d11() {}
@@ -260,10 +271,14 @@ namespace gpu_directx12
       ~texture() override;
 
       void _create_texture(const ::gpu::texture_data & data);
+      void _upload_initial_texture_data(const ::gpu::texture_data & data);
       //void initialize_image_texture(::gpu::renderer* prenderer, const ::i32_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
       D3D12_CPU_DESCRIPTOR_HANDLE _allocate_render_target_view_handle();
 
       class d3d11* d3d11();
+
+
+      virtual IDXGISurface * _dxgi_surface();
 
       //void blend(::gpu::texture* ptexture) override;
 
@@ -271,21 +286,27 @@ namespace gpu_directx12
       void create_render_target();
 
       void create_shader_resource();
+      D3D12_SHADER_RESOURCE_VIEW_DESC shader_resource_view_description() const;
 
       void create_depth_resources();
 
       virtual void _initialize_gpu_texture(::gpu::context * pgpucontext, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
 
 
-      void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
-
+      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data) override;
+      using ::gpu::texture::write_pixels;
+      void write_pixels(bool bSync, const void * pData, const ::i32_size & size,
+         ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point) override;
+      void _write_pixels(bool bSync, const void * pData, const ::i32_size & size,
+         ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bShaderRead);
+      //void set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data) override;
       virtual upload_buffer * _get_upload_buffer();
 
       virtual static_upload_buffer *_get_static_upload_buffer(int iResourceCount = -1);
 
-      void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
+      void create_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
 
-
+      void read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput) override;
       void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 

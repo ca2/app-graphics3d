@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "_vulkan.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"
@@ -84,12 +84,12 @@ namespace draw2d_vulkan
    }
 
 
-   bool draw2d::graphics_context_supports_single_buffer_mode()
-   {
+   //bool draw2d::graphics_context_supports_single_buffer_mode()
+   //{
 
-      return true;
+   //   return true;
 
-   }
+   //}
 
 
    bool draw2d::graphics_context_does_full_redraw()
@@ -98,6 +98,25 @@ namespace draw2d_vulkan
       return true;
 
    }
+
+
+
+   bool draw2d::write_text_supports_raster_fonts()
+   {
+
+      return false;
+
+   }
+
+
+
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      return false;
+
+   }
+
 
 
    //void draw2d::defer_initialize_glad()
@@ -145,40 +164,40 @@ namespace draw2d_vulkan
    //draw2d::private_font * draw2d::get_file_private_font(::platform::context * pcontext, const ::file::path & path)
    //{
 
-   //   auto & pfont = m_mapPrivateFont[path];
+   //   auto & pwritetextfont = m_mapPrivateFont[path];
 
-   //   if (::is_set(pfont))
+   //   if (::is_set(pwritetextfont))
    //   {
 
-   //      return pfont;
+   //      return pwritetextfont;
 
    //   }
 
-   //   construct_newø(pfont);
+   //   construct_newø(pwritetextfont);
 
-   //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
+   //   pwritetextfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
    //   auto pmemory = system()->draw2d()->write_text()->get_file_memory(pcontext, path);
 
    //   if (pmemory->has_data())
    //   {
 
-   //      pfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
+   //      pwritetextfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
 
-   //      auto & fontCollection = *pfont->m_pcollection;
+   //      auto & fontCollection = *pwritetextfont->m_pcollection;
 
    //      auto iFamilyCount = fontCollection.GetFamilyCount();
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
-   //      fontCollection.GetFamilies(iFamilyCount, pfont->m_familya.data(), &pfont->m_iFamilyCount);
+   //      fontCollection.GetFamilies(iFamilyCount, pwritetextfont->m_familya.data(), &pwritetextfont->m_iFamilyCount);
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
    //      for (int iFamily = 0; iFamily < iFamilyCount; iFamily++)
    //      {
 
-   //         if (pfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
+   //         if (pwritetextfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
    //         {
 
    //            warningf("font family nok");
@@ -189,7 +208,7 @@ namespace draw2d_vulkan
 
    //   }
 
-   //   return pfont;
+   //   return pwritetextfont;
 
    //}
 

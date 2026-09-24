@@ -138,7 +138,7 @@ namespace gpu_vulkan
 
       //virtual render_pass *render_pass2(::gpu::texture *pgputextureTarget);
 
-      virtual void _defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture);
+      virtual void _defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesite);
 
       virtual void create_descriptor_layout();
 
@@ -159,14 +159,14 @@ namespace gpu_vulkan
 
       void on_initialize_shader() override;
 
-      virtual ::pointer <pipeline> _create_pipeline(::gpu::texture * pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer);
+      virtual ::pointer <pipeline> _create_pipeline(::gpu::texture_site * pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer);
 
       //void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
         //        ::gpu::texture *pgputextureSource) override;
-      void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget) override;
+      void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputextureTarget) override;
       //void bind(::gpu::command_buffer *pgpucommandbuffe) override;
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
-      virtual void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
+      virtual void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget);
       //void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene) override;
 
 
@@ -180,7 +180,7 @@ namespace gpu_vulkan
 
       void bind_block(::gpu::command_buffer *pgpucommandbuffer, ::gpu::block *pgpublock, int iSlot = 0) override;
 
-      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture, int iSlot = 0) override;
+      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *ptexturesite, int iSlot = 0) override;
 
 
    };

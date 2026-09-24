@@ -22,7 +22,7 @@ namespace draw2d_directx12
       ~object() override;
 
 
-      void initialize_draw2d_directx12_object(::draw2d_directx12::graphics* pgraphics);
+      void initialize_draw2d_directx12_object(::draw2d_directx12::graphics* pdraw2dgraphics);
 
 
       int get_object(int nCount, LPVOID lpObject) const;
@@ -44,7 +44,7 @@ namespace draw2d_directx12
       }
 
 
-      void defer_update(::draw2d::graphics* pgraphics, char i) const override;
+      void defer_update(::draw2d::graphics * pdraw2dgraphics) override;
 
 
    };

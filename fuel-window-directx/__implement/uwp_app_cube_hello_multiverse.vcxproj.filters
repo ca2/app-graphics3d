@@ -142,7 +142,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="platform.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -150,7 +150,7 @@
     <ClCompile Include="application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\framework.cpp">
+    <ClCompile Include="..\platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

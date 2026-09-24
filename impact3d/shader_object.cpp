@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 
 #define GLAD_GLAPI_EXPORT
 #include <glad/glad.h>

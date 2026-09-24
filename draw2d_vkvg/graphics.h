@@ -5,6 +5,8 @@
 #include "bred/gpu/graphics.h"
 #include "bred/gpu/renderer.h"
 
+#include <mutex>
+
 
 typedef void FN_VKVG_TEXT(VkvgContext, const char*);
 typedef FN_VKVG_TEXT* PFN_VKVG_TEXT;
@@ -26,18 +28,46 @@ namespace draw2d_vkvg
    class draw2d;
 
 
+   class direct_target :
+      virtual public ::particle
+   {
+   public:
+
+      ::pointer<::gpu_vulkan::texture> m_ptexture;
+      VkImage m_vkimage = VK_NULL_HANDLE;
+      VkFormat m_vkformat = VK_FORMAT_UNDEFINED;
+      ::i32_size m_sizeRaw;
+      VkhImage m_vkhimage = nullptr;
+      VkvgSurface m_vkvgsurface = nullptr;
+      VkvgContext m_vkvgcontext = nullptr;
+      ::u64 m_uFrameSerial = 0;
+
+   };
+
+
+   class saved_vkvg_context
+   {
+   public:
+
+      VkvgContext                         m_vkvgcontext = nullptr;
+      ::pointer<direct_target>              m_pdirecttarget;
+
+   };
+
+
    class CLASS_DECL_DRAW2D_VKVG graphics :
       virtual public ::gpu::graphics
       //,virtual public ::gpu::renderer
    {
    public:
 
-      bool                             m_bBeginDrawEndDrawMode;
-      VkvgDevice                       m_vkvgdevice;
-      VkvgSurface                      m_vkvgsurface;
-      VkvgContext                      m_vkvgcontext;
-      ::pointer < ::gpu::texture >     m_ptextureCurrent;
-      bool                             m_bSetStateExternally;
+      bool                                m_bBeginDrawEndDrawMode;
+      VkvgDevice                          m_vkvgdevice2;
+      VkvgSurface                         m_vkvgsurface;
+      VkvgContext                         m_vkvgcontext;
+      ::pointer < ::gpu::texture_site >   m_ptexturesiteCurrent;
+      bool                                m_bSetStateExternally;
+      bool                                m_bBeginFigure;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -55,6 +85,11 @@ namespace draw2d_vkvg
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
+      ::pointer_array<direct_target>       m_directtargeta;
+      ::pointer<direct_target>             m_pdirecttargetActive;
+      bool                                 m_bVkvgMemoryImage = false;
+      ::u64                                m_uDirectTargetFrameSerial = 0;
+      ::array<saved_vkvg_context>            m_savedvkvgcontexta;
 
    
 
@@ -77,19 +112,36 @@ namespace draw2d_vkvg
       //}
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
+      void absorb_user_interaction_affinity(
+         ::acme::user::interaction * pacmeuserinteractionAffinity);
+      ::acme::windowing::window * require_gpu_window(
+         ::acme::windowing::window * pacmewindowingwindowPreferred = nullptr);
+      VkvgDevice get_vkvg_device();
 
 
-      ::gpu::texture* current_target_texture(::gpu::layer * pgpulayer) override;
+
+      ::gpu::texture_site * current_target_texture(::gpu::layer * pgpulayer) override;
+
+      bool renders_layer_externally(::gpu::layer * pgpulayer) override;
+      void prepare_vkvg_render_target(::gpu::texture * pgputexture, bool bMemoryImage = false);
+      void on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage,
+         const ::i32_size & size, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      void on_release_memory_graphics() override;
+      void maintain_vkvg_direct_target_cache();
+      bool is_vkvg_direct_target_saved(direct_target * pdirecttarget);
+      void clear_saved_vkvg_contexts();
+      void destroy_vkvg_direct_target(direct_target * pdirecttarget);
+      void clear_vkvg_direct_target_cache();
 
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
       void send(const ::procedure & procedure) override;
 
-      //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
+      //void attach(void * pdraw2dgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-      void defer_load_font_by_family_name(const ::scoped_string& scopedstrName);
+      ::string defer_load_font(::write_text::font * pwritetextfont);
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC
@@ -115,6 +167,7 @@ namespace draw2d_vkvg
       ::draw2d::bitmap *  get_current_bitmap() override;
       //::gpu::frame* end_gpu_layer(::gpu::layer * pgpulayer) override;
 
+      void _draw_raw(const ::image::image_drawing & imagedrawing) override;
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
 
       //plusplus::Pen *       vk2d_pen();
@@ -138,13 +191,14 @@ namespace draw2d_vkvg
                     const char * lpszOutput, const void * lpInitData);
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
-      void create_memory_graphics(const ::i32_size & size = {}) override;
+      //void create_memory_graphics(const ::i32_size & size = {}) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
-      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
-
-      virtual bool vulkan_create_offscreen_buffer(const ::i32_rectangle & rectanglePlacement);
-      virtual bool vulkan_delete_offscreen_buffer();
+      //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;
+      void set_target_image(::image::image * pimage) override;
+      //virtual bool vulkan_create_offscreen_buffer(const ::i32_rectangle & rectanglePlacement);
+      //virtual bool vulkan_delete_offscreen_buffer();
 
       virtual bool vulkan_defer_create_window_context(::windowing::window * pwindow);
 
@@ -304,7 +358,7 @@ namespace draw2d_vkvg
       // i32_point GetCurrentPosition() const;
 //      i32_point MoveTo(int x, int y);
       //    i32_point MoveTo(const ::i32_point & point);
-      void line(double x1, double y1, double x2, double y2) override;
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen * pdraw2dpen) override;
       //bool LineTo(int x,int y);
       //  bool LineTo(const ::i32_point & point);
       void polyline(const ::f64_point* ppoints,::collection::count nCount) override;
@@ -335,7 +389,7 @@ namespace draw2d_vkvg
       void fill_rectangle(const ::f64_rectangle& rectangle, const ::color::color& color) override;
       void fill_rectangle(const ::f64_rectangle &  rectangle, ::draw2d::brush* pBrush) override;
       void frame_rectangle(const ::f64_rectangle & rectangle, ::draw2d::brush* pBrush) override;
-      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * ppen);
+      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * pdraw2dpen);
       void invert_rectangle(const ::f64_rectangle & i32_rectangle) override;
       //void draw_icon(double x, double y, ::image::icon * picon) override;
       //void draw_icon(const ::i32_point & point, ::image::icon * picon);
@@ -386,7 +440,7 @@ namespace draw2d_vkvg
       void rectangle(const ::f64_rectangle & rectangle) override;
       //virtual bool drw(int x1, int y1, int x2, int y2);
       void draw_rectangle(const ::f64_rectangle & rectangle) override;
-      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen * ppen) override;
+      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen * pdraw2dpen) override;
       //virtual bool FillRectangle(int x1, int y1, int x2, int y2);
       void fill_rectangle(const ::f64_rectangle & rectangle);
       //void round_rectangle(double x1, double y1, double x2, double y2, double x3, double y3) override;
@@ -459,8 +513,8 @@ namespace draw2d_vkvg
 
       //virtual f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex) override;
       using ::gpu::graphics::get_text_extent;
-      ::f64_size get_text_extent(const ::scoped_string& scopedstr) override;
-      ::f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+      ::f64_size _get_text_extent(const ::scoped_string& scopedstr) override;
+      ::f64_size _get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
 //      virtual f64_size get_text_extent(const ::scoped_string & str) override;
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount, character_count iIndex);
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount);
@@ -570,33 +624,33 @@ namespace draw2d_vkvg
       float GetMiterLimit() override;
       void SetMiterLimit(float fMiterLimit) override;
 
-      void draw(::draw2d::path * ppath);
-      void draw(::draw2d::path * ppath, ::draw2d::pen * ppen);
-      void fill(::draw2d::path * ppath);
-      void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush);
-      //bool draw(::draw2d::pen* ppen);
+      void draw(::draw2d::path * pdraw2dpath);
+      void draw(::draw2d::path * pdraw2dpath, ::draw2d::pen * pdraw2dpen);
+      void fill(::draw2d::path * pdraw2dpath);
+      void fill(::draw2d::path * pdraw2dpath, ::draw2d::brush * pdraw2dbrush);
+      //bool draw(::draw2d::pen* pdraw2dpen);
       
 
-      bool fill_and_draw(::draw2d::brush* pbrush, ::draw2d::pen* ppen);
-      bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool draw(::draw2d::pen* ppen);
+      bool fill_and_draw(::draw2d::brush* pdraw2dbrush, ::draw2d::pen* pdraw2dpen);
+      bool fill(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill1(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill2(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool draw(::draw2d::pen* pdraw2dpen);
       bool fill_and_draw();
       bool fill(double xOrg = 0.0, double yOrg = 0.0);
       bool _fill1(double xOrg = 0.0, double yOrg = 0.0);
       bool _fill2(double xOrg = 0.0, double yOrg = 0.0);
       void draw();
 
-      //bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      //bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      //bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool fill(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool _fill1(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool _fill2(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
 
 
-      bool _set(::write_text::font* pfont);
-      bool _set(::draw2d::pen* ppen);
-      bool _set(::draw2d::path* ppath);
-      bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
+      bool _set(::write_text::font* pwritetextfont);
+      bool _set(::draw2d::pen* pdraw2dpen);
+      bool _set(::draw2d::path* pdraw2dpath);
+      bool _set(::draw2d::brush* pdraw2dbrush, double x = 0.0, double y = 0.0);
       
       bool _set(const ::draw2d::enum_item& eitem) override;
 
@@ -615,14 +669,14 @@ namespace draw2d_vkvg
       bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::region>& pregion);
 
 
-      bool _set(const ::f64_arc& arc, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_line& line, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_lines& lines, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_rectangle& rectangle, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_ellipse& ellipse, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_polygon& polygon, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::f64_arc& arc, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_line& line, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_lines& lines, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_rectangle& rectangle, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_ellipse& ellipse, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_polygon& polygon, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& pdraw2dpath);
 
 
       bool _set(const ::f64_arc& arc);
@@ -692,11 +746,11 @@ namespace draw2d_vkvg
       void flush() override;
       void sync_flush() override;
 
-      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * ppen);
-      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * ppen);
+      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * pdraw2dpen);
+      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * pdraw2dpen);
 
       
-      void draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* ppen);
+      void draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* pdraw2dpen);
 
 
       //virtual void enum_fonts(::write_text::font_enumeration_item_array& itema) override;
@@ -704,13 +758,13 @@ namespace draw2d_vkvg
       //void prefer_mapped_image_on_mix() override;
 
       virtual void set(::draw2d::region* pregion) override;
-      virtual void set(::draw2d::pen* ppen) override;
-      virtual void set(::write_text::font* pfont) override;
-      virtual void set(::draw2d::brush* pbrush) override;
-      virtual void set(::draw2d::bitmap* pbitmap) override;
+      virtual void set(::draw2d::pen* pdraw2dpen) override;
+      virtual void set(::write_text::font* pwritetextfont) override;
+      virtual void set(::draw2d::brush* pdraw2dbrush) override;
+      virtual void set(::draw2d::bitmap* pdraw2dbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
+      //void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 
@@ -723,7 +777,7 @@ namespace draw2d_vkvg
       //void on_end_layer(::gpu::layer *pgpulayer) override;
       //void start_layer(::e_graphics egpugraphics) override;
       //void end_layer(::e_graphics egpugraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
       // void on_begin_draw() override;
       //void on_end_draw() override;

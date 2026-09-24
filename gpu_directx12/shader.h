@@ -22,8 +22,8 @@ namespace gpu_directx12
       ::comptr <ID3D12PipelineState> m_ppipelinestate ;
 
 
-      ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapa1;
-      ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapaSampler1;
+      //::array_base<::comptr<ID3D12DescriptorHeap>> m_heapa1;
+      //::array_base<::comptr<ID3D12DescriptorHeap>> m_heapaSampler1;
       int m_iHeapIndex = 0;
       int m_iHeapCount = 8192;
       int m_iHeapSamplerIndex = 0;
@@ -64,7 +64,7 @@ namespace gpu_directx12
 
 
       void _on_more_push();
-      virtual void _defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture);
+      virtual void _defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesite);
 
       virtual ::comptr < ID3DBlob> create_vertex_shader_blob(const ::block& block);
       virtual ::comptr < ID3DBlob> create_pixel_shader_blob(const ::block& block);
@@ -105,12 +105,12 @@ namespace gpu_directx12
 
       //void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget,
         //        ::gpu::texture *pgputextureSource) override;
-      void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget) override;
-      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureSource, int iSlot) override;
+      void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputextureTarget) override;
+      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteSource, int iSlot) override;
       virtual void _bind(::gpu::command_buffer *pgpucommandbuffer);
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
-      void on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
-      void defer_bind_frame_buffer_layer(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
+      void on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget);
+      void defer_bind_frame_buffer_layer(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget);
 
       void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;
 

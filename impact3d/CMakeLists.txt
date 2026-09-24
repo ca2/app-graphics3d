@@ -10,9 +10,9 @@ list(APPEND library_source
         document.cpp
         document.h
         frame.cpp
-        framework.h
-        framework.cpp
-        framework.h
+        platform.h
+        platform.cpp
+        platform.h
         impact.cpp
         impact.h
         main_frame.cpp
@@ -42,8 +42,8 @@ list(APPEND library_references
 add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE framework.h)
-target_precompile_headers(static_${PROJECT_NAME} PRIVATE framework.h)
+target_precompile_headers(${PROJECT_NAME} PRIVATE platform.h)
+target_precompile_headers(static_${PROJECT_NAME} PRIVATE platform.h)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 

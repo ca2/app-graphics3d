@@ -1,8 +1,9 @@
-#include "framework.h"
+#include "platform.h"
 //#include "GLFW/glfw3.h"  
 #include "mesh.h"
 #include "gpu_opengl/shader.h"
 #include "gpu_opengl/texture.h"
+#include "bred/gpu/texture_site.h"
 //#include <glad/glad.h>
 // #include <vector>
 
@@ -51,10 +52,10 @@ namespace graphics3d_opengl
       unsigned int normalNr = 1;
       unsigned int heightNr = 1;
       unsigned int number;
-      for (unsigned int i = 0; i < m_texturea.size(); i++)
+      for (unsigned int i = 0; i < m_texturesitea.size(); i++)
       {
 
-         ::cast < ::gpu_opengl::texture > ptexture = m_texturea[i];
+         ::cast < ::gpu_opengl::texture > ptexture = m_texturesitea[i]->gpu_texture();
          glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
          // retrieve texture number (the N in diffuse_textureN)
          auto strTextureType = ptexture->texture_type();

@@ -42,6 +42,12 @@ namespace draw2d_opengl
       ::i32_size                          m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
+      bool                                m_bImageTargetStateSaved = false;
+      bool                                m_bScissorTestBeforeImageTarget = false;
+      int                                 m_iDrawFramebufferBeforeImageTarget = 0;
+      int                                 m_iDrawBufferBeforeImageTarget = 0;
+      int                                 m_iViewportBeforeImageTarget[4] = {};
+      int                                 m_iScissorBoxBeforeImageTarget[4] = {};
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
       //::pointer < ::gpu::shader >         m_pgpushaderTextOut;
 
@@ -58,7 +64,7 @@ namespace draw2d_opengl
 
 
 //#define __USES_TRANSFORM(pcontext) \
-//auto iContextHeight = pcontext->m_rectangle.height()
+//auto iContextHeight = pcontext->height()
 
       //plusplus::Graphics & g()
       //{
@@ -79,12 +85,12 @@ namespace draw2d_opengl
       //void start_gpu_layer(::gpu::layer * pgpulayer) override;
       //::gpu::frame * end_gpu_layer(::gpu::layer * pgpulayer) override;
 
-      ::gpu_opengl::context* gpu_context();
+      ::gpu::context* gpu_context() override;
 
-      //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
+      //void attach(void * pdraw2dgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-
+      void set_target_image(::image::image * pimage) override;
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC
@@ -108,7 +114,7 @@ namespace draw2d_opengl
       ::write_text::font *    get_current_font() override;
       ::draw2d::bitmap *  get_current_bitmap() override;
 
-
+      void  _createThickCircle(::array<::floating_sequence2> & vertices, float centerX, float centerY, float radiusPixels, float thicknessPixels, int numSegments);
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
 
       //plusplus::Pen *       gl2d_pen();
@@ -120,9 +126,23 @@ namespace draw2d_opengl
       unsigned int SetLayout(unsigned int dwLayout) override;
 
 
-      void _create_memory_graphics(const ::i32_size & size) override;
+      //void _create_memory_graphics(const ::i32_size & size) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
 
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
 
+      void begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget = nullptr) override;
+      
+      void end_draw() override;
+
+      void on_acquire_memory_graphics(
+         bool bExternalRendering,
+         ::image::image * pimage,
+         const ::i32_size & size,
+         ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+
+      void on_release_memory_graphics() override;
+    
       //HDC get_hdc();
       //void release_hdc(HDC hdc);
 
@@ -135,19 +155,20 @@ namespace draw2d_opengl
                     const char * lpszOutput, const void * lpInitData);
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
-      void create_memory_graphics(const ::i32_size & size = {}) override;
-      void create_window_graphics(::windowing::window * pwindow) override;
-      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
+      //void create_memory_graphics(const ::i32_size & size = {}) override;
+      //void create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      //void create_window_graphics(::windowing::window * pwindow) override;
+      //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;
 
       //void set_hint_window_output() override;
 
       //virtual bool opengl_create_offscreen_buffer(const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::i32_rectangle & rectanglePlacement);
-      virtual bool opengl_create_offscreen_buffer(const ::i32_size& rectanglePlacement);
-      virtual bool opengl_delete_offscreen_buffer();
+      //virtual bool opengl_create_offscreen_buffer(const ::i32_size& rectanglePlacement);
+      //virtual bool opengl_delete_offscreen_buffer();
 
       void create_for_window_draw2d(::user::interaction * puserinteraction, const ::i32_size& size) override;
 
-      virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
+      //virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
 
       void DeleteDC() override;
 
@@ -286,6 +307,14 @@ namespace draw2d_opengl
 
       void text_out(double x, double y, const ::scoped_string & scopedstr) override;
 
+      ::gpu::enum_topology image_draw_topology() const override;
+
+      ::i32 image_draw_vertex_count() const override;
+
+      ::gpu::enum_topology text_draw_topology() const override;
+
+      ::i32 text_draw_vertex_count() const override;
+
       virtual void text_out_2025_06(double x, double y, const ::scoped_string& scopedstr);
       //virtual void text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr);
 
@@ -293,7 +322,7 @@ namespace draw2d_opengl
       // i32_point GetCurrentPosition() const;
 //      i32_point MoveTo(int x, int y);
       //    i32_point MoveTo(const ::i32_point & point);
-      ///void line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen) override;
+      ///void line(double x1, double y1, double x2, double y2, ::draw2d::pen * pdraw2dpen) override;
       //bool LineTo(int x,int y);
       //  bool LineTo(const ::i32_point & point);
       void polyline(const ::f64_point* ppoints,::collection::count nCount) override;
@@ -328,7 +357,7 @@ namespace draw2d_opengl
       void fill_rectangle(const ::f64_rectangle &  rectangle, ::draw2d::brush* pBrush) override;
       virtual void fill_rectangle_2025_06(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush);
       void frame_rectangle(const ::f64_rectangle & rectangle, ::draw2d::brush* pBrush) override;
-      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * ppen);
+      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * pdraw2dpen);
       void invert_rectangle(const ::f64_rectangle & i32_rectangle) override;
       //void draw_icon(double x, double y, ::image::icon * picon) override;
       //void draw_icon(const ::i32_point & point, ::image::icon * picon);
@@ -362,6 +391,7 @@ namespace draw2d_opengl
       //bool FillEllipse(const ::i32_rectangle & i32_rectangle);
 
       //virtual bool DrawEllipse(double x1,double y1,double x2,double y2);
+      virtual void draw_ellipse_1(const ::f64_rectangle & rectangle);
       void draw_ellipse(const ::f64_rectangle & rectangle) override;
       //virtual bool fill_ellipse(double x1,double y1,double x2,double y2);
       void fill_ellipse(const ::f64_rectangle & rectangle) override;
@@ -379,7 +409,7 @@ namespace draw2d_opengl
       void rectangle(const ::f64_rectangle & rectangle) override;
       //virtual bool drw(int x1, int y1, int x2, int y2);
       void draw_rectangle(const ::f64_rectangle & rectangle) override;
-      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen * ppen) override;
+      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen * pdraw2dpen) override;
       //virtual bool FillRectangle(int x1, int y1, int x2, int y2);
       void fill_rectangle(const ::f64_rectangle & rectangle) override;
       //void round_rectangle(double x1, double y1, double x2, double y2, double x3, double y3) override;
@@ -545,10 +575,10 @@ namespace draw2d_opengl
       float GetMiterLimit() override;
       void SetMiterLimit(float fMiterLimit) override;
 
-      void draw(::draw2d::path * ppath) override;
-      void draw(::draw2d::path * ppath, ::draw2d::pen * ppen) override;
-      void fill(::draw2d::path * ppath) override;
-      void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush) override;
+      void draw(::draw2d::path * pdraw2dpath) override;
+      void draw(::draw2d::path * pdraw2dpath, ::draw2d::pen * pdraw2dpen) override;
+      void fill(::draw2d::path * pdraw2dpath) override;
+      void fill(::draw2d::path * pdraw2dpath, ::draw2d::brush * pdraw2dbrush) override;
 
 
       //float GetMiterLimit() const;
@@ -608,11 +638,11 @@ namespace draw2d_opengl
       void flush() override;
       void sync_flush() override;
 
-      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * ppen);
-      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * ppen);
+      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * pdraw2dpen);
+      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * pdraw2dpen);
 
       
-      void line(double x1, double y1, double x2, double y2, ::draw2d::pen* ppen) override;
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen* pdraw2dpen) override;
 
 
       //virtual void enum_fonts(::write_text::font_enumeration_item_array& itema) override;
@@ -620,13 +650,13 @@ namespace draw2d_opengl
       //void prefer_mapped_image_on_mix() override;
 
       virtual void set(::draw2d::region* pregion) override;
-      virtual void set(::draw2d::pen* ppen) override;
-      virtual void set(::write_text::font* pfont) override;
-      virtual void set(::draw2d::brush* pbrush) override;
-      virtual void set(::draw2d::bitmap* pbitmap) override;
+      virtual void set(::draw2d::pen* pdraw2dpen) override;
+      virtual void set(::write_text::font* pwritetextfont) override;
+      virtual void set(::draw2d::brush* pdraw2dbrush) override;
+      virtual void set(::draw2d::bitmap* pdraw2dbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
+      //void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 

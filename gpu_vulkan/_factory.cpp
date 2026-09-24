@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 #include "binding.h"
 #include "block.h"
@@ -7,7 +7,7 @@
 #include "frame.h"
 #include "program.h"
 #include "shader.h"
-#include "cpu_buffer.h"
+#include "buffer.h"
 #include "input_layout.h"
 #include "layer.h"
 #include "model_buffer.h"
@@ -18,6 +18,7 @@
 #include "semaphore.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "viewport_scissor_restore.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/frame_storage.h"
@@ -45,11 +46,15 @@
 __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 {
 
+   pfactory->add_factory_item <
+      ::gpu_vulkan::viewport_scissor_restore,
+      ::gpu::viewport_scissor_restore >();
+
    pfactory->add_factory_item < ::gpu_vulkan::approach, ::gpu::approach >();
    pfactory->add_factory_item < ::gpu_vulkan::context, ::gpu::context >();
    //pfactory->add_factory_item < ::gpu_vulkan::program, ::gpu::program >();
    pfactory->add_factory_item < ::gpu_vulkan::shader, ::gpu::shader >();
-   pfactory->add_factory_item < ::gpu_vulkan::cpu_buffer, ::gpu::cpu_buffer >();
+   pfactory->add_factory_item < ::gpu_vulkan::buffer, ::gpu::buffer >();
    pfactory->add_factory_item < ::gpu_vulkan::renderer, ::gpu::renderer >();
 
    //pfactory->add_factory_item < ::gpu_vulkan::object, ::gpu::object >();
@@ -65,6 +70,8 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_vulkan::memory_buffer, ::gpu::memory_buffer >();
    pfactory->add_factory_item < ::gpu_vulkan::model_buffer, ::gpu::model_buffer > ();
+
+   pfactory->add_factory_item<::gpu_vulkan::texture_synchronization, ::gpu::texture_synchronization>();
 
    //pfactory->add_factory_item < ::gpu_vulkan::frame, ::gpu::frame >();
    pfactory->add_factory_item < ::gpu_vulkan::pipeline>();

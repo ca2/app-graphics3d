@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "pipeline.h"
 #include "renderer.h"
@@ -74,6 +74,20 @@ namespace gpu_vulkan
    
    void pipeline::bind(command_buffer * pcommandbuffer)
    {
+
+
+      if (::gpu::trace_flags().m_bVulkanPipelineTrace)
+      {
+
+         information(
+            "VULKAN_PIPELINE_TRACE vkCmdBindPipeline command_buffer_object={} vk_command_buffer={} "
+            "pipeline_object={} vk_pipeline={}",
+            (::uptr)pcommandbuffer,
+            (::uptr)pcommandbuffer->m_vkcommandbuffer,
+            (::uptr)this,
+            (::uptr)m_vkpipelineGraphics);
+
+      }
 
       vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer,
          VK_PIPELINE_BIND_POINT_GRAPHICS, m_vkpipelineGraphics);

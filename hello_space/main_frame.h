@@ -1,0 +1,46 @@
+#pragma once
+
+
+#include "berg/user/simple/frame_window.h"
+
+
+namespace app_graphics3d_hello_space
+{
+
+
+   class CLASS_DECL_APP_GRAPHICS3D_HELLO_SPACE main_frame :
+      virtual public ::simple_frame_window
+   {
+   public:
+
+
+      bool                       m_bExplicitTranslucency;
+
+
+      main_frame();
+      ~main_frame() override;
+
+
+//      // void assert_ok() const override;
+//      // void dump(dump_context & dumpgpucontext) const override;
+
+
+      ::pointer < ::experience::frame > frame_experience() override;
+
+
+      //bool has_pending_graphical_update() override;
+
+
+      void install_message_routing(::channel * pchannel) override;
+
+
+      DECLARE_MESSAGE_HANDLER(on_message_create);
+
+
+   };
+
+
+} // namespace app_graphics3d_hello_space
+
+
+

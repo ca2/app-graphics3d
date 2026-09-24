@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "skybox_render_system.h"
 #include "bred/gpu/device.h"
 #include "bred/gpu/layer.h"

@@ -1,5 +1,5 @@
 // Created by camilo 2021-06-05 22:57 BRT <3ThomasBS_!!
-#include "framework.h"
+#include "platform.h"
 #include "font_enumeration.h"
 //#include "directx12/directx12.h"
 #include "acme/platform/application.h"
@@ -35,7 +35,7 @@ namespace write_text_directx12
 
       auto papproach = m_papplication->get_gpu_approach();
 
-      auto pdevice = papproach->get_gpu_device(::system()->m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow);
+      auto pdevice = papproach->get_gpu_device(m_papplication->main_acme_user_interaction()->m_pacmewindowingwindow);
 
       //auto pdirectx12 = ::gpu_directx12::from_gpu_device(pdevice);
 

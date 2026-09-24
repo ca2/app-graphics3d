@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "font.h"
 #include "direct2d_directx12/direct2d_directx12.h"
 #include "aura/graphics/draw2d/host.h"

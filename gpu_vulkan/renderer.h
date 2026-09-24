@@ -144,7 +144,7 @@ namespace gpu_vulkan
 //      virtual ::gpu_vulkan::render_pass *render_pass2(::gpu::texture * pgputexture);
 
       void sample();
-      void sample_to_cpu_buffer() override;
+      void sample_to_cpu_buffer21() override;
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();
       //void swap_chain();
@@ -227,16 +227,16 @@ namespace gpu_vulkan
       //void endFrame() override;
       void end_layer(bool bClosingLayer = false) override;
       //void end_frame() override;
-      //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+      //void endDraw(::draw2d_gpu::graphics * pdraw2dgraphics, ::user::interaction * puserinteraction) override;
 
 
       void on_new_frame() override;
 
 
-      void _set_image(::gpu::texture * pgputexture, const ::i32_rectangle& rectangle, bool bYSwap);
+      void _set_image(::gpu::texture_site * pgputexturesite, const ::i32_rectangle& rectangle, bool bYSwap);
 
-      void _blend_image(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle, bool bYSwap);
-      void _on_graphics_end_draw(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle);
+      void _blend_image(::gpu::texture_site* pgputexturesite, const ::i32_rectangle& rectangle, bool bYSwap);
+      void _on_graphics_end_draw(::gpu::texture_site* pgputexturesite, const ::i32_rectangle& rectangle);
 
       void _blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);

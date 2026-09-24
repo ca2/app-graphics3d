@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "point_light_system.h"
 
 // libs
@@ -42,7 +42,7 @@ namespace graphics3d_directx11
 
       
       aaaVkDescriptorSetLayout globalSetLayout
-      m_pshader = m_pengine->create_shader()
+      m_pshader = m_pgraphics3dengineinstance->create_shader()
       {
 
       }

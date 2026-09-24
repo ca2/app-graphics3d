@@ -1,5 +1,5 @@
 // Created by camilo on 2025-04-24 21:26 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "render_system.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
@@ -8,8 +8,9 @@
 #include "app-graphics3d/gpu_vulkan/render_target.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace graphics3d_vulkan
@@ -25,7 +26,7 @@ namespace graphics3d_vulkan
    //::gpu_vulkan::render_pass *render_system::render_pass2()
    //{
 
-   // ::cast<::gpu_vulkan::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
+   // ::cast<::gpu_vulkan::renderer> prenderer = m_pgraphics3dengineinstance->gpu_context()->m_pgpurenderer;
 
    // return prenderer->render_pass2();
 
@@ -34,7 +35,7 @@ namespace graphics3d_vulkan
 
    //   //         constructø(m_pgpurenderpass);
 
-   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
+   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pgraphics3dengineinstance->gpu_context());
 
    //   //   m_pgpurenderpass->m_bLoadClearOp = false;
    //   //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
@@ -52,7 +53,7 @@ namespace graphics3d_vulkan
    void render_system::render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
       
-      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      ::cast<::gpu_vulkan::context> pcontext = m_pgraphics3dengineinstance->gpu_context();
       
       ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
       
@@ -66,7 +67,9 @@ namespace graphics3d_vulkan
 
       
 
-      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+      ::cast<::gpu_vulkan::texture> ptexture = ptexturesite->gpu_texture();
 
       if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
@@ -84,13 +87,15 @@ namespace graphics3d_vulkan
 
       VkRenderPassBeginInfo renderPassBeginInfo = vkinit::renderPassBeginInfo();
       renderPassBeginInfo.renderPass = vkrenderpass;
-      renderPassBeginInfo.renderArea.extent.width = pgpucontext->m_rectangle.width();
-      renderPassBeginInfo.renderArea.extent.height = pgpucontext->m_rectangle.height();
+      renderPassBeginInfo.renderArea.extent.width = pgpucontext->width();
+      renderPassBeginInfo.renderArea.extent.height = pgpucontext->height();
       renderPassBeginInfo.clearValueCount = 0;
       //renderPassBeginInfo.pClearValues = clearValues;
       renderPassBeginInfo.pClearValues = nullptr;
+
       auto & layer = ptexture->current_layer(prenderpass);
-      renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
+
+      renderPassBeginInfo.framebuffer = layer.m_vkframebufferLayer;
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
@@ -99,8 +104,8 @@ namespace graphics3d_vulkan
 
       //   pgpulayer->m_bRenderTargetFramebufferInitialized = true;
 
-      //   auto width = pcontext->m_rectangle.width();
-      //   auto height = pcontext->m_rectangle.height();
+      //   auto width = pcontext->width();
+      //   auto height = pcontext->height();
 
       //   VkViewport vp = {0, 0, (float)width, (float)height, 0.0f, 1.0f};
       //   VkRect2D sc = {{0, 0}, {width, height}};

@@ -1,5 +1,5 @@
 // From bred/gpu/input_layout.cpp by camilo on 2025-06-29 03:54 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "input_layout.h"
 #include "_gpu_vulkan.h"
 
@@ -30,7 +30,7 @@ namespace gpu_vulkan
       auto & bindingDescription = bindingDescriptions.atø(0);
 
       bindingDescription.binding = 0;
-      bindingDescription.stride = this->size(false);
+      bindingDescription.stride = (uint32_t)this->size(false);
       bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
       return bindingDescriptions;

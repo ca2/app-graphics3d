@@ -4,6 +4,7 @@
 
 
 #include "bred/gpu/texture.h"
+#include "bred/gpu/texture_synchronization.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 
 namespace tinygltf
@@ -18,7 +19,7 @@ namespace gpu_vulkan
    class binding_slot_set;
 
    class texture_synchronization :
-      virtual public ::particle
+      virtual public ::gpu::texture_synchronization
    {
    public:
 
@@ -34,10 +35,10 @@ namespace gpu_vulkan
       //VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
       //VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
       //VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
-      ::pointer<::gpu::semaphore> m_pgpusemaphoreAvailable;
-      ::pointer<::gpu::semaphore> m_pgpusemaphoreRenderFinished;
-      ::pointer<::gpu::fence> m_pgpufenceInFlight;
-      ::pointer<::gpu::fence> m_pgpufenceImageInFlight;
+      //::pointer<::gpu::semaphore> m_pgpusemaphoreAvailable;
+      //::pointer<::gpu::semaphore> m_pgpusemaphoreRenderFinished;
+      //::pointer<::gpu::fence> m_pgpufenceInFlight;
+      //::pointer<::gpu::fence> m_pgpufenceImageInFlight;
 
       texture_synchronization();
       ~texture_synchronization();
@@ -47,7 +48,7 @@ namespace gpu_vulkan
 
       //VkFence in_flight_fence();
 
-      ::gpu::fence *in_flight_fence();
+      //::gpu::fence *in_flight_fence();
 
       //virtual texture_synchronization& synchronization(::gpu::render_target * prendertarget);
 
@@ -75,12 +76,14 @@ namespace gpu_vulkan
          ::pointer<::gpu_vulkan::context> m_pcontext;
          ::pointer<buffer> m_pbufferStaging;
          ::i32_rectangle m_rectangle;
-
+         ::i32 m_iScan;
       };
       class _001OnAfterEndFrame : virtual public ::particle
       {
       public:
+         class ::time m_timeStart;
          ::pointer_array<_001OnAfterEndFrameItem> m_itema;
+         ::procedure_array m_procedurea;
       };
       class _001OnNextFrameStart : virtual public ::particle
       {
@@ -160,14 +163,14 @@ namespace gpu_vulkan
       struct layer
       {
          /// @brief [0] -> color, [1] -> depth
-         VkImageView m_vkimageviewaAttachment[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
-         VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
+         VkImageView m_vkimageviewaLayer[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+         VkFramebuffer m_vkframebufferLayer = VK_NULL_HANDLE;
          ::i32_size m_size{-1, -1};
          int m_iLayerCount = -1;
          bool is_empty() const
          {
 
-            return m_vkimageviewaAttachment[0] == VK_NULL_HANDLE || m_vkframebuffer == VK_NULL_HANDLE;
+            return m_vkimageviewaLayer[0] == VK_NULL_HANDLE || m_vkframebufferLayer == VK_NULL_HANDLE;
 
          }
 
@@ -255,6 +258,7 @@ namespace gpu_vulkan
       VkDeviceMemory             m_vkdevicememory;
       state_array_2d             m_state2a;
       state_array_2d             m_state2aExternal;
+      ::pointer < ::gpu::buffer >   m_pgpubufferReadBack;
       //int                        m_iMipCount;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
@@ -264,7 +268,6 @@ namespace gpu_vulkan
       //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
       //VkImageView                m_vkimageviewDepth;
-      ::pointer < texture_synchronization >           m_ptexturesynchronization;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
       map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::descriptor_set_array>> m_mapShaderDescriptorSetArray;
       map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::binding_slot_set>> m_mapBindingSlotSet1;
@@ -280,9 +283,36 @@ namespace gpu_vulkan
       texture();
       ~texture() override;
 
-      void _set_data(const ::gpu::texture_data &data);
-      void _create_texture(const ::gpu::texture_data & texturedata) override;
+      using ::gpu::texture::write_pixels;
+      void write_pixels(bool bSync,
+//         ::gpu::command_buffer * pgpucommandbuffer,
+const void * pData,
+const ::i32_size & size,
+::i32 iScan,
+::i32 iBytesPerPixel,
+const ::i32_point & point) override;
+//      void write_pixels(
+//         ::gpu::command_buffer * pgpucommandbuffer,
+//const void * pData,
+//const ::i32_size & size,
+//::i32 iScan,
+//::i32 iBytesPerPixel,
+//const ::i32_point & point) override;
+//      void write_pixels(
+//          ::gpu::command_buffer * pgpucommandbuffer,
+//const ::pixmap_t * ppixmap,
+//const ::i32_point & point) override;
 
+      void write_pixels(bool bSync,
+          //::gpu::command_buffer * pgpucommandbuffer,
+const ::pixmap_t * ppixmap,
+const ::i32_point & point) override;
+
+
+      void copy_from(::gpu::texture * pgputexture);
+      void _set_data(bool bSync, const ::gpu::texture_data &data);
+      void _create_texture(const ::gpu::texture_data & texturedata) override;
+      ::gpu::buffer * get_read_back_buffer();
       struct texture::layer &current_layer(::gpu_vulkan::render_pass * prenderpass);
       // void initialize_image_texture(::gpu::renderer* prenderer,
       //    const ::i32_rectangle& rectangleTarget,
@@ -293,11 +323,11 @@ namespace gpu_vulkan
       //                                                           const ::i32_rectangle &rectangleTarget, int iMipCount,
       //                                                           bool bRenderTarget, bool bShaderResourceView) override;
 
-      void _set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
+      void _set_image_data(bool bSync, const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat, bool bTopDown);
       
-      void initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_rectangle &rectangleTarget) override;
-      void initialize_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
-      void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
+      void create_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size) override;
+      void create_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
+      void create_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
       //virtual void load_Cubemap(const ::file::path & path);
       //void blend(::gpu::texture* ptexture, const ::i32_rectangle& rectangleTarget) override;
       //void TransitionImageLayout(
@@ -379,13 +409,17 @@ namespace gpu_vulkan
 
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
-      void _LoadCubeMap(const ::pointer_array < ::image::image >& imagea);
+      void _LoadCubeMap(const ::pointer_array < ::pixmap >& pixmapa);
 
 
-      virtual texture_synchronization * synchronization();
+      //;
+      //;
+      //virtual texture_synchronization *synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
-      void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
+      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data) override;
+      //void write_pixels(const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
+      ////void write_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
       virtual VkDeviceMemory AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties);
 
@@ -424,6 +458,11 @@ namespace gpu_vulkan
 
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 
+      void read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer, const ::i32_point & pointOutput) override;
+
+      void read_pixels(::gpu::command_buffer * commands, ::pixmap_t * ppixmap, const ::i32_point & pointOutput) override;
+      void _record_readback(::gpu::command_buffer * commands, ::gpu::buffer * buffer,
+                            const ::i32_point & point, const ::i32_size & size);
 
       static state_t _s_state_from_texture_state(::gpu::enum_texture_state etexturestate);
 

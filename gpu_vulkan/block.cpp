@@ -1,5 +1,5 @@
 // Created by camilo on 2025-12-11 16:03 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "block.h"
 #include "buffer.h"
@@ -8,6 +8,7 @@
 #include "memory_buffer.h"
 #include "render_target.h"
 #include "renderer.h"
+#include "window_attachment.h"
 
 
 namespace gpu_vulkan
@@ -50,13 +51,15 @@ namespace gpu_vulkan
 
       auto prendertarget = pgpucontext->m_pgpurenderer->render_target();
 
-      auto iFrameCount = prendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucontext);
+
+      auto iFrameCount = pgpuwindowattachment->get_frame_count();
       
       m_uboBuffers.set_size(iFrameCount);
       
       ::array_base<VkDescriptorBufferInfo> bufferinfoa;
 
-      int iBufferSize = this->size(false);
+      auto iBufferSize = this->size(false);
       
       for (int i = 0; i < m_uboBuffers.size(); i++)
       {
@@ -116,7 +119,9 @@ namespace gpu_vulkan
 
       auto prendertarget = pgpurenderer->render_target();
 
-      auto iFrameIndex = prendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurenderer);
+
+      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
       {

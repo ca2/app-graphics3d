@@ -22,7 +22,7 @@
 		9AC9427E2F23978B00038E29 /* bitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942582F23978B00038E29 /* bitmap.cpp */; };
 		9AC9427F2F23978B00038E29 /* pen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942732F23978B00038E29 /* pen.cpp */; };
 		9AC942802F23978B00038E29 /* brush.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC9425A2F23978B00038E29 /* brush.cpp */; };
-		9AC942812F23978B00038E29 /* framework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942662F23978B00038E29 /* framework.cpp */; };
+		9AC942812F23978B00038E29 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942662F23978B00038E29 /* platform.cpp */; };
 		9AC942822F23978B00038E29 /* font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942642F23978B00038E29 /* font.cpp */; };
 		9AC942832F23978B00038E29 /* face.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942612F23978B00038E29 /* face.cpp */; };
 		9AC942842F23978B00038E29 /* _.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942532F23978B00038E29 /* _.cpp */; };
@@ -48,7 +48,7 @@
 		9AC9429B2F23978B00038E29 /* bitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942572F23978B00038E29 /* bitmap.h */; };
 		9AC9429C2F23978B00038E29 /* face.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942602F23978B00038E29 /* face.h */; };
 		9AC9429D2F23978B00038E29 /* _draw2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942542F23978B00038E29 /* _draw2d.h */; };
-		9AC9429E2F23978B00038E29 /* framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942652F23978B00038E29 /* framework.h */; };
+		9AC9429E2F23978B00038E29 /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942652F23978B00038E29 /* platform.h */; };
 		9AC9429F2F23978B00038E29 /* line1.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC9426C2F23978B00038E29 /* line1.h */; };
 		9AC942A02F23978B00038E29 /* factory_exchange.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942622F23978B00038E29 /* factory_exchange.h */; };
 		9AC942A12F23978B00038E29 /* region.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AC942742F23978B00038E29 /* region.h */; };
@@ -111,8 +111,8 @@
 		9AC942622F23978B00038E29 /* factory_exchange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = factory_exchange.h; sourceTree = "<group>"; };
 		9AC942632F23978B00038E29 /* font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = font.h; sourceTree = "<group>"; };
 		9AC942642F23978B00038E29 /* font.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = font.cpp; sourceTree = "<group>"; };
-		9AC942652F23978B00038E29 /* framework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
-		9AC942662F23978B00038E29 /* framework.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = framework.cpp; sourceTree = "<group>"; };
+		9AC942652F23978B00038E29 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		9AC942662F23978B00038E29 /* platform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
 		9AC942672F23978B00038E29 /* graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphics.h; sourceTree = "<group>"; };
 		9AC942682F23978B00038E29 /* graphics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graphics.cpp; sourceTree = "<group>"; };
 		9AC942692F23978B00038E29 /* image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = image.h; sourceTree = "<group>"; };
@@ -221,8 +221,8 @@
 				9AC942622F23978B00038E29 /* factory_exchange.h */,
 				9AC942632F23978B00038E29 /* font.h */,
 				9AC942642F23978B00038E29 /* font.cpp */,
-				9AC942652F23978B00038E29 /* framework.h */,
-				9AC942662F23978B00038E29 /* framework.cpp */,
+				9AC942652F23978B00038E29 /* platform.h */,
+				9AC942662F23978B00038E29 /* platform.cpp */,
 				9AC942672F23978B00038E29 /* graphics.h */,
 				9AC942682F23978B00038E29 /* graphics.cpp */,
 				9AC942692F23978B00038E29 /* image.h */,
@@ -272,7 +272,7 @@
 				9AC9429B2F23978B00038E29 /* bitmap.h in Headers */,
 				9AC9429C2F23978B00038E29 /* face.h in Headers */,
 				9AC9429D2F23978B00038E29 /* _draw2d.h in Headers */,
-				9AC9429E2F23978B00038E29 /* framework.h in Headers */,
+				9AC9429E2F23978B00038E29 /* platform.h in Headers */,
 				9AC9429F2F23978B00038E29 /* line1.h in Headers */,
 				9AC942A02F23978B00038E29 /* factory_exchange.h in Headers */,
 				9AC942A12F23978B00038E29 /* region.h in Headers */,
@@ -366,7 +366,7 @@
 				9AC9427E2F23978B00038E29 /* bitmap.cpp in Sources */,
 				9AC9427F2F23978B00038E29 /* pen.cpp in Sources */,
 				9AC942802F23978B00038E29 /* brush.cpp in Sources */,
-				9AC942812F23978B00038E29 /* framework.cpp in Sources */,
+				9AC942812F23978B00038E29 /* platform.cpp in Sources */,
 				9AC942822F23978B00038E29 /* font.cpp in Sources */,
 				9AC942832F23978B00038E29 /* face.cpp in Sources */,
 				9AC942842F23978B00038E29 /* _.cpp in Sources */,
@@ -442,7 +442,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -536,7 +536,7 @@
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;

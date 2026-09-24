@@ -44,7 +44,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="_.h">
@@ -62,7 +62,7 @@
     <ClInclude Include="context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cpu_buffer.h">
+    <ClInclude Include="aaa_cpu_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="object.h">
@@ -120,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="command_buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="viewport_scissor_restore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="layer.h">
@@ -236,9 +239,12 @@
     <ClInclude Include="semaphore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="window_attachment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="framework.cpp">
+    <ClCompile Include="platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="_factory.cpp">
@@ -262,7 +268,7 @@
     <ClCompile Include="context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cpu_buffer.cpp">
+    <ClCompile Include="aaa_aaa_cpu_buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="object.cpp">
@@ -391,6 +397,9 @@
     <ClCompile Include="semaphore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="window_attachment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">
@@ -464,6 +473,30 @@
     <CustomBuild Include="shader\rgba_from_b_g.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\merge_layer.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\merge_layer.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Blend.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Blend.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Circle.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Circle.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Image.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Image.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -524,6 +557,25 @@
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\rgba_from_b_g.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\merge_layer.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\merge_layer.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="_001Blend.vert" />
+    <None Include="shader\_001Blend.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\_001Blend.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\_001Circle.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\_001Circle.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>

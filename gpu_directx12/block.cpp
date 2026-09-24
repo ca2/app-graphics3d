@@ -1,11 +1,12 @@
 // From gpu_directx11/block.cpp by camilo on 2025-12-11 19:04 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 //#include "binding.h"
 #include "block.h"
 //#include "command_buffer.h"
 #include "context.h"
 //#include "render_target.h"
 #include "renderer.h"
+#include "window_attachment.h"
 
 
 namespace gpu_directx12
@@ -44,7 +45,7 @@ namespace gpu_directx12
 
       }
 
-      int iBufferSize = this->size(false);
+      int iBufferSize = (int) this->size(false);
 
       ::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
@@ -69,15 +70,8 @@ namespace gpu_directx12
 
       m_pd3d12resourceBlock->m_presource->SetName(::wstring(m_strBlockName));
 
-      D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-
-      cbvDesc.BufferLocation = m_pd3d12resourceBlock->m_presource->GetGPUVirtualAddress();
-
-      cbvDesc.SizeInBytes = ::directx12::Align256(iBufferSize); // must be 256-byte aligned
-
-      auto handle = prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart();
-
-      pgpudevice->m_pd3d12device->CreateConstantBufferView(&cbvDesc, handle);
+      // This block is bound with SetGraphicsRootConstantBufferView (GPU VA),
+      // not a descriptor table. No separate renderer-local heap is needed.
 
       CD3DX12_RANGE readRange(0, 0);
 
@@ -140,7 +134,9 @@ namespace gpu_directx12
 
       auto pgpurendertarget = pgpurenderer->render_target();
 
-         auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurenderer);
+
+         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
 
          //MyGlobalData globalData = { /* your values */ };

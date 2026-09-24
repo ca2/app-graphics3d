@@ -25,6 +25,7 @@ namespace app_graphics3d_continuum
    class simple_render_system;
    class point_light_system;
 
+   //class statistics_impact;
 
    class GlobalUbo;
 

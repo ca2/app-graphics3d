@@ -1,6 +1,6 @@
 // From ./windows on 2022-03-02 17:13 <3ThomasBorregaardSorensen!!
 // Created by camilo on 2022-01-29 14:17 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 
 #include "animated_wallpaper.h"
 //#include <gdiplus.h>

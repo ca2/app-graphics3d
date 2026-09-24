@@ -1,7 +1,8 @@
 // Created by camilo on 2026-06-11.
-#include "framework.h"
+#include "platform.h"
 #include "semaphore.h"
 #include "device.h"
+#include "queue.h"
 #include "bred/gpu/context.h"
 
 
@@ -41,7 +42,7 @@ namespace gpu_directx12
    }
 
 
-   void semaphore::wait(ID3D12CommandQueue *pcommandqueue)
+   void semaphore::_wait(ID3D12CommandQueue *pcommandqueue)
    {
 
       UINT64 uFenceValue;
@@ -74,7 +75,7 @@ namespace gpu_directx12
    }
 
 
-   void semaphore::signal(ID3D12CommandQueue *pcommandqueue)
+   void semaphore::_signal(ID3D12CommandQueue *pcommandqueue)
    {
 
       UINT64 uFenceValue;
@@ -103,6 +104,42 @@ namespace gpu_directx12
       HRESULT hresult = pcommandqueue->Signal(m_pfence, uFenceValue);
 
       ::defer_throw_hresult(hresult);
+
+   }
+
+
+   void semaphore::wait(::gpu::queue * pgpuqueue)
+   {
+
+      ::cast < ::gpu_directx12::queue > pqueue = pgpuqueue;
+
+
+      _wait(pqueue->m_pd3d12commandqueue);
+
+
+      //::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
+//
+    ///  pgpusemaphore->wait(m_pgpuqueue);
+
+  //    psemaphore->wait(m_pcommandqueue);
+
+   }
+
+
+   void semaphore::signal(::gpu::queue * pgpuqueue)
+   {
+
+      ::cast < ::gpu_directx12::queue > pqueue = pgpuqueue;
+
+
+      _signal(pqueue->m_pd3d12commandqueue);
+
+
+      //::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
+//
+    ///  pgpusemaphore->wait(m_pgpuqueue);
+
+  //    psemaphore->wait(m_pcommandqueue);
 
    }
 

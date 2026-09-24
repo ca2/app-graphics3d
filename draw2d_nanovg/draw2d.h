@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "bred/gpu/draw2d.h"
 #include "gpu_opengl/context.h"
 
@@ -44,24 +44,24 @@ namespace draw2d_nanovg
       //::pointer<::opengl::context>          m_popenglcontext;
 
       ::pointer< ::mutex > m_pmutex;
-
-      struct font_t
-      {
-
-         bool m_bLoaded = false;
-
-      };
-
-      ::string_map < font_t > m_mapFont;
+      bool m_bNanoVGGeometryAntialias = true;
 
       draw2d();
       ~draw2d() override;
 
 
+      ::draw2d::graphics_pointer do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+                                                       const ::i32_size & size) override;
+
+
+
       void initialize(::particle * pparticle) override;
+      int nanovg_create_flags() const;
 
 
-      bool graphics_context_supports_single_buffer_mode() override;
+      bool write_text_supports_raster_fonts() override;
+      bool write_text_supports_legacy_gdi_fonts() override;
+      //bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;
 
       /*void on_create_window(::windowing::window * pwindow) override;*/
@@ -75,7 +75,7 @@ namespace draw2d_nanovg
       virtual int  opengl_init();
 
 
-      virtual void defer_load_font_by_family_name(NVGcontext* pdc, const ::scoped_string& scopedstrName);
+      virtual ::string defer_load_font(NVGcontext * pdc, ::write_text::font * pwritetextfont);
 
 
 

@@ -1,6 +1,13 @@
-#include "framework.h"
+#include "platform.h"
+#include "bitmap.h"
 #include "image.h"
 #include "acme/platform/application.h"
+#include "apex/gpu/approach.h"
+#include "aura/graphics/draw2d/draw2d.h"
+#include "aura/user/user/interaction.h"
+#include "aura/windowing/window_buffer.h"
+#include "bred/gpu/context_lock.h"
+#include "bred/gpu/texture.h"
 
 
 namespace draw2d_nanovg
@@ -19,17 +26,31 @@ namespace draw2d_nanovg
    }
 
 
-   ::draw2d::bitmap_pointer image::get_bitmap() const
+   ::draw2d::bitmap_pointer image::get_bitmap_as_target(::draw2d::graphics * pdraw2dgraphics) const
    {
 
-      return m_pbitmap;
+      return ::image::image::get_bitmap_as_target(pdraw2dgraphics);
+
+      //return m_pdraw2dbitmap;
+
+   }
+
+
+   ::draw2d::bitmap_pointer image::get_bitmap_as_source(::draw2d::graphics * pdraw2dgraphics) const
+   {
+
+      return ::image::image::get_bitmap_as_source(pdraw2dgraphics);
+
+      //return m_pdraw2dbitmap;
 
    }
 
 
    ::draw2d::bitmap_pointer image::detach_bitmap()
    {
-      return m_pbitmap.detach();
+      
+      return m_pdraw2dbitmap.detach();
+
    }
 
 
@@ -50,203 +71,546 @@ namespace draw2d_nanovg
    }
 
 
-
-   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int iGoodStride, bool bPreserve)
+   void image::update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
    {
 
-      if (m_pbitmap.is_set()
-            && m_pbitmap->get_os_data() != nullptr
-            && m_size == size)
-         //return true;
-         return;
+      ::gpu::image::update_as_render_target(sizeRaw, puserinteraction, pdraw2dgraphics, eflagCreate, iGoodStride, bPreserve, bTopDraw2d);
 
-      destroy();
-
-      if (size.is_empty())
-      {
-
-         //return true;
-
-         return;
-
-      }
-
-      //m_bitmapinfo = {};
-
-      int iStride = size.cx * 4;
-
-      //{
-      //   iGoodStride
-      //}
-
-      // m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
-      // m_bitmapinfo.bmiHeader.biWidth         = size.cx;
-      // m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
-      // m_bitmapinfo.bmiHeader.biPlanes        = 1;
-      // m_bitmapinfo.bmiHeader.biBitCount      = 32;
-      // m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
-      // m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
-
-      constructø(m_pbitmap);
-
-      image32_t * pimage32 = nullptr;
-      m_pbitmap->create_bitmap(nullptr, size, (void **)&pimage32, &iStride);
-      //if(!m_pbitmap->create_bitmap(nullptr, size, (void **) & pimage32, &iStride))
+      //if (!puserinteraction)
       //{
 
-        // return false;
+      //   throw ::exception(error_null_pointer, "user::interaction is null");
 
       //}
 
-      if(m_pbitmap->get_os_data() == nullptr)
+      //m_pacmeuserinteractionAffinity = puserinteraction;
+
+      //// if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+
+      //destroy();
+
+      //if (sizeRaw.is_empty())
+      //{
+
+      //   return;
+
+      //}
+
+      //create_as_descriptor(sizeRaw, eflagCreate, iGoodStride);
+
+      //auto pdraw2dbitmap = createø<::draw2d::bitmap>();
+
+      //::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
+
+      //m_pdraw2dbitmap = pgpubitmap;
+
+      ////auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+
+      ////auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+
+      ////_synchronous_lock synchronouslock(pgpudevice->synchronization());
+
+      ////auto pixmap = this->pixmap::map();
+
+      ////auto pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow;
+
+      ////auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+
+      ////_synchronous_lock synchronouslock(pgpudevice->synchronization());
+
+      ////if (!bTopDraw2d)
+      ////{
+
+      ////   auto pgpucontextlease = pgpudevice->acquire_gpu_context(
+      ////      bTopDraw2d ? ::gpu::e_output_draw2d_bitmap : ::gpu::e_output_none, m_size);
+
+      ////   pgpucontextlease->m_pacmeuserinteractionAffinity = m_pacmeuserinteractionAffinity;
+
+      ////   //::pixmap_t pixmap;
+
+      ////   //pixmap.m_pimage32Raw = (::image32_t *)pimage32;
+
+      ////   //pixmap.m_pimage32 = (::image32_t *)pimage32;
+
+      ////   //pixmap.m_size = size;
+
+      ////   //pixmap.m_sizeRaw = size;
+
+      ////   //pixmap.m_iScan = iScan;
+
+      ////   //pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, sizeRaw, pixmap);
+
+      ////   pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, sizeRaw, {});
+
+      ////   m_pdraw2dbitmap = pgpubitmap;
+
+      ////}
+
+      //////auto pdraw2dgraphics = system()->draw2d()->allocate_graphics(m_pacmeuserinteractionAffinity);
+
+      ////if (bTopDraw2d)
+      ////{
+
+      ////   pdraw2dgraphics->create_for_window_draw2d(puserinteraction, sizeRaw);
+
+      ////}
+      ////else
+      ////{
+
+      ////   pdraw2dgraphics->create_for_image(this);
+
+      ////}
+
+
+      ////m_pgraphicsOwned = pdraw2dgraphics;
+
+      ////auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+
+      ////::gpu::context_lock contextlock(pgpucontext);
+
+      ////pixmap_t pixmap;
+
+      ////pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
+
+      ////pgputexture->initialize_gpu_pimage(pgpucontext, size, pixmap);
+
+      //m_eflagElement = eflagCreate;
+
+      //m_estatus = ::success;
+
+      //set_ok_flag();
+
+      ////      m_pgputexture->write_pixels(size, pimage32, iScan);
+
+   }
+
+
+   ::image_pixmap_lease image::_map(::image::enum_map emap, const ::i32_rectangle & rectangle)
+   {
+
+
+      return ::transfer(::gpu::image::_map(emap, rectangle));
+
+      //return;
+//
+//      //if (m_bMapped)
+//      //{
+//
+//      //   //return true;
+//
+//      //   return;
+//
+//      //}
+//
+//      //::cast < ::gpu_opengl::texture > ptexture;
+//
+//      //::cast < ::draw2d_opengl::bitmap > pdraw2dbitmap = m_pdraw2dbitmap;
+//
+//      //if (pdraw2dbitmap)
+//      //{
+//
+//      //   ptexture = pdraw2dbitmap->m_pgputexture;
+//
+//      //}
+//
+//      //if (ptexture)
+//      //{
+//
+//      //   pixmap::_map(rectangle, bApplyTransform);
+//
+//      //   ptexture->read_pixels(nullptr, this, m_point);
+//
+//      //}
+//      //else
+//      //{
+//
+//      //   ::gpu::image::_map(rectangle, bApplyTransform);
+//
+//      //}
+//
+//      //return;
+//
+//
+//      //if (!m_pgraphics)
+//      //{
+//
+//      //   //return false;
+//
+//      //   return;
+//
+//      //}
+//
+//      if (m_size.is_empty())
+//      {
+//
+//         //return false;
+//
+//         return;
+//
+//      }
+//
+//      if (::is_null(m_pimage32Raw))
+//      {
+//
+//         //return false;
+//
+//         return;
+//
+//      }
+//
+//      //m_pgraphics->thread_select();
+//
+//      //int hasAlphaBits = 0;
+//
+//      //glGetIntegerv(GL_ALPHA_BITS, &hasAlphaBits);
+//
+//      glFlush();
+//
+//      //glReadBuffer(GL_BACK);
+//      //glReadBuffer(GL_FRONT);
+//
+//
+//
+//      //::pointer < graphics > pdraw2dgraphics = m_pgraphics;
+//
+//      //int cx = pdraw2dgraphics->m_sizeWindow.cx;
+//
+//      //int cy = pdraw2dgraphics->m_sizeWindow.cy;
+//
+//      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+//
+//      //      ::opengl::resize(pdraw2dgraphics->m_sizeWindow, bYSwap);
+//
+//      glReadBuffer(GL_BACK);
+//
+//      glPixelStorei(GL_PACK_SWAP_BYTES, 0);
+//
+//      glPixelStorei(GL_PACK_ROW_LENGTH, m_iScan / 4);
+//
+//      //glReadPixels(0, 0, cx, cy, GL_BGRA, GL_UNSIGNED_BYTE, m_pimage32Raw);
+//
+//      //glReadPixels(0, 0, m_size.cx, m_size.cy, GL_ARGB, GL_UNSIGNED_BYTE, m_pimage32Raw);
+//
+////      int i1280 = GL_INVALID_ENUM;
+////
+////      int i1281 = GL_INVALID_VALUE;
+////
+////      int iError = glGetError();
+//
+//      m_bMapped = true;
+//
+//      //return true;
+
+   }
+
+
+
+   void image::create_from_data(const ::pixmap_t & pixmap, ::enum_flag eflagCreate, bool bPreserve)
+   {
+
+      // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+
+      ::gpu::image::create_from_data(pixmap, eflagCreate, bPreserve);
+
+//      destroy();
+//
+//      if (size.is_empty())
+//      {
+//
+//         return;
+//
+//      }
+//
+//      create_as_descriptor(size, eflagCreate, iScan);
+//
+//      auto pdraw2dbitmap = createø<::draw2d::bitmap>();
+//
+//      ::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
+//
+//      //auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+//
+//      //auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+//
+//      //_synchronous_lock synchronouslock(pgpudevice->synchronization());
+//
+//      //auto pixmap = this->pixmap::map();
+//
+//      if (::is_null(m_pacmeuserinteractionAffinity))
+//      {
+//
+//         if (::is_set(::get_task()))
+//         {
+//
+//            m_pacmeuserinteractionAffinity = ::get_task()->main_acme_user_interaction();
+//
+//         }
+//
+//         if (::is_null(m_pacmeuserinteractionAffinity))
+//         {
+//
+//            m_pacmeuserinteractionAffinity = m_papplication->main_acme_user_interaction();
+//
+//         }
+//
+//      }
+//
+//      auto pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow;
+//
+//      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+//
+//      _synchronous_lock synchronouslock(pgpudevice->synchronization());
+//
+//      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, m_size, m_pgraphicsOwned);
+//
+//      ::pixmap_t pixmap;
+//
+//      pixmap.m_pimage32Raw = (::image32_t *) pimage32;
+//
+//      pixmap.m_pimage32 = (::image32_t *) pimage32;
+//
+//      pixmap.m_size = size;
+//
+//      pixmap.m_sizeRaw = size;
+//
+//      pixmap.m_iScan = iScan;
+//
+//      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pixmap);
+//
+//      //auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+//
+//      //::gpu::context_lock contextlock(pgpucontext);
+//
+//      //pixmap_t pixmap;
+//
+//      //pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
+//
+//      //pgputexture->initialize_gpu_pimage(pgpucontext, size, pixmap);
+//
+//      m_eflagElement = eflagCreate;
+//
+//      m_estatus = ::success;
+//
+//      set_ok_flag();
+//
+////      m_pgputexture->write_pixels(size, pimage32, iScan);
+
+   }
+
+
+
+   //void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool bPreserve)
+   //{
+
+   //   auto pdraw2dbitmap = m_pdraw2dbitmap;
+
+   //   //if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+   //   if (m_pdraw2dbitmap && m_pdraw2dbitmap->size() == size)
+   //   {
+
+   //      return;
+
+   //   }
+
+   //   auto pbitmapDestroy = ::transfer(m_pdraw2dbitmap);
+   //   
+   //   auto pixmapDestroy = *(pixmap_t *)this;
+   //   
+   //   auto pixmapMemoryDestroy = ::transfer(m_memoryPixmap);
+   //   
+   //   m_phost = nullptr;
+
+   //   //if (!bPrepgputextureDestroy)
+   //   //{
+   //   //auto pimageToDestroy = ::as_pointer(this);
+
+   //   //destroy();
+
+   //   if (size.is_empty())
+   //   {
+
+   //      return;
+
+   //   }
+
+   //   constructø(m_pdraw2dbitmap);
+
+   //   auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+
+   //   auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+
+   //   _synchronous_lock synchronouslock(pgpudevice->synchronization());
+
+   //   auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+
+   //   ::cast<::gpu::bitmap> pgpubitmapDestroy = pbitmapDestroy;
+
+   //   ::cast<::gpu::bitmap> pgpubitmap = m_pdraw2dbitmap;
+
+   //   if (bPreserve && pbitmapDestroy && pgpubitmapDestroy->m_pgputexture)
+   //   {
+
+   //      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pgpubitmapDestroy->m_pgputexture.get());
+
+   //   }
+   //   else if (bPreserve && pixmapMemoryDestroy.data())
+   //   {
+
+   //      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pixmapDestroy);
+
+   //   }
+   //   else
+   //   {
+
+   //      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, {});
+
+   //   }
+
+   //   m_eflagElement = eobjectCreate;
+   //   m_estatus = ::success;
+   //   set_ok_flag();
+
+   //}
+
+//   bool image::host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw)
+//   //bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
+//   {
+//
+//      //if (::is_null(ppixmap) || ppixmap->nok())
+//      //{
+//
+//      //   return false;
+//
+//      //}
+//      //   
+//      //if (ppixmap->m_pimage32Raw == m_pimage32Raw
+//      //   && m_size == ppixmap->m_size)
+//      //{
+//
+//      //   return true;
+//
+//      //}
+//
+//      //::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
+//
+//
+//      if (::is_null(pwindowbuffer)
+//|| ::is_null(pwindowbuffer->m_ppixmapWindowBuffer)
+//|| pwindowbuffer->m_ppixmapWindowBuffer.nok())
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      if (pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32Raw == m_pimage32Raw
+//         && m_size == pwindowbuffer->m_ppixmapWindowBuffer->m_size)
+//      {
+//
+//         return true;
+//
+//      }
+//
+//      ::memory_copy((::pixmap *)this, pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32, sizeof(::pixmap));
+//
+//      ////constructø(m_pdraw2dbitmap);
+//      //defer_constructø(m_pgraphics);
+//      ////m_pgraphics->set(m_pdraw2dbitmap);
+//
+//      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+//      //{
+//
+//      //   m_pgraphics->create_window_graphics(pwindow);
+//
+//      //}
+//      //else
+//      //{
+//
+//      //   m_pgraphics->create_memory_graphics(ppixmap->m_size);
+//
+//      //}
+//
+//
+//      m_eflagElement = DEFAULT_CREATE_IMAGE_FLAG;
+//
+//      //m_pgraphics->m_pimage = this;
+//
+//      set_ok_flag();
+//
+//      m_estatus = ::success;
+//
+//      return true;
+//
+//   }
+//
+//   void image::dc_select(bool bSelect)
+//   {
+//      /*      if(bSelect)
+//            {
+//               return m_pgraphics->set(m_pdraw2dbitmap) != nullptr;
+//            }
+//            else
+//            {
+//               return m_pgraphics->set(m_hbitmapOriginal) != nullptr;
+//            }*/
+//
+//      //return true;
+//
+//   }
+
+
+   void image::create(::draw2d::graphics * pdraw2dgraphics)
+   {
+
+      ::draw2d::bitmap * pdraw2dbitmap = (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->get_current_bitmap();
+
+      if (pdraw2dbitmap == nullptr)
       {
-
-         destroy();
-
-         //return false;
 
          return;
-
-      }
-
-
-      this->::pixmap::initialize(size, pimage32, iStride);
-
-      m_eflagElement = eobjectCreate;
-
-      set_ok_flag();
-
-      m_estatus = ::success;
-
-      //return true;
-
-   }
-
-
-   bool image::host(::pixmap * ppixmap, ::windowing::window * pwindow)
-   {
-
-      if (::is_null(ppixmap) || ppixmap->nok())
-      {
-
-         return false;
-
-      }
-         
-      if (ppixmap->m_pimage32Raw == m_pimage32Raw
-         && m_size == ppixmap->m_size)
-      {
-
-         return true;
-
-      }
-
-      ::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
-
-      //constructø(m_pbitmap);
-      defer_constructø(m_pgraphics);
-      //m_pgraphics->set(m_pbitmap);
-
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      {
-
-         m_pgraphics->create_window_graphics(pwindow);
-
-      }
-      else
-      {
-
-         m_pgraphics->create_memory_graphics(ppixmap->m_size);
-
-      }
-
-
-      m_eflagElement = DEFAULT_CREATE_IMAGE_FLAG;
-
-      m_pgraphics->m_pimage = this;
-
-      set_ok_flag();
-
-      m_estatus = ::success;
-
-      return true;
-
-   }
-
-   void image::dc_select(bool bSelect)
-   {
-      /*      if(bSelect)
-            {
-               return m_pgraphics->set(m_pbitmap) != nullptr;
-            }
-            else
-            {
-               return m_pgraphics->set(m_hbitmapOriginal) != nullptr;
-            }*/
-
-      //return true;
-
-   }
-
-
-   void image::create(::draw2d::graphics * pgraphics)
-   {
-
-      ::draw2d::bitmap * pbitmap = (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->get_current_bitmap();
-
-      if (pbitmap == nullptr)
-      {
-
-         return;
          //return false;
 
       }
 
-      //if (!create(pbitmap->get_size()))
-      create(pbitmap->get_size());
+      //if (!create(pdraw2dbitmap->get_size()))
+      create_as_descriptor(pdraw2dbitmap->size());
       {
          //return false;//
       }
 
-      from(pgraphics);
+      from(pdraw2dgraphics);
 
       //return true;
 
    }
 
 
-   void image::destroy ()
+   void image::destroy()
    {
 
-      m_pbitmap.release();
-
-      m_pgraphics.release();
-
-      set_nok();
-
-      //return true;
+      m_phost = nullptr;
+      ::gpu::image::destroy();
 
    }
 
 
-   //bool image::to(::draw2d::graphics * pgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc)
+   //bool image::to(::draw2d::graphics * pdraw2dgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc)
    //{
 
-   //   return pgraphics->draw(point, size, get_graphics(), point);
+   //   return pdraw2dgraphics->draw(point, size, get_graphics(), point);
 
    //  
    //}
 
 
-   bool image::from(::draw2d::graphics * pgraphics)
+   bool image::from(::draw2d::graphics * pdraw2dgraphics)
    {
 
       ::draw2d::bitmap_pointer bitmap;
 
-      bitmap->CreateCompatibleBitmap(pgraphics, 1, 1);
+      bitmap->CreateCompatibleBitmap(pdraw2dgraphics, 1, 1);
 
       //auto estatus =
-      VK2D_GRAPHICS(pgraphics)->set(bitmap);
+      VK2D_GRAPHICS(pdraw2dgraphics)->set(bitmap);
 
       //if (!estatus)
       //{
@@ -255,10 +619,10 @@ namespace draw2d_nanovg
 
       //}
 
-      ::i32_size size = pgraphics->m_pimage->get_size();
+      ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
 
       //if(!create(size))
-      create(size);
+      create_as_descriptor(size);
       //{
 
       //   return false;
@@ -267,22 +631,22 @@ namespace draw2d_nanovg
 
       throw ::exception(todo, "::opengl::image::image");
 
-      //bool bOk = GetDIBits(VK2D_HDC(pgraphics), (HBITMAP) pbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
+      //bool bOk = GetDIBits(VK2D_HDC(pdraw2dgraphics), (HBITMAP) pdraw2dbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
 
-      //VK2D_GRAPHICS(pgraphics)->set(pbitmap);
+      //VK2D_GRAPHICS(pdraw2dgraphics)->set(pdraw2dbitmap);
 
       //return bOk;
 
    }
 
 
-   //bool image::from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz)
+   //bool image::from(i32_point ptDest, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, ::i32_size sz)
    //{
 
    //   if (m_pgraphics.is_null())
    //      return false;
 
-   //   return m_pgraphics->BitBlt(ptDest, sz, pgraphics, i32_point) != false;
+   //   return m_pgraphics->BitBlt(ptDest, sz, pdraw2dgraphics, i32_point) != false;
 
    //}
 
@@ -1734,7 +2098,7 @@ namespace draw2d_nanovg
    //   pimage2 = create_image({cx,  cy});
    //   pimage2->Fill(0, 0, 0, 0);
 
-   //   pimage2->get_graphics()->DrawIcon(
+   //   pgraphicsImage2->DrawIcon(
    //   0, 0,
    //   picon,
    //   cx, cy,
@@ -2375,85 +2739,57 @@ namespace draw2d_nanovg
    //}
 
 
-   void image::stretch_image(::image::image *pimage)
-   {
+   //void image::stretch_image(::image::image *pimage)
+   //{
 
-      if (::is_null(pimage))
-      {
+   //   if (::is_null(pimage))
+   //   {
 
-         return;
+   //      return;
 
-      }
+   //   }
 
-      //plusplus::rectF rectangleDest(0, 0, (plusplus::REAL) m_size.cx, (plusplus::REAL) m_size.cy);
+   //   //plusplus::rectF rectangleDest(0, 0, (plusplus::REAL) m_size.cx, (plusplus::REAL) m_size.cy);
 
-      //plusplus::rectF rectangleSource(0, 0, (plusplus::REAL) pimage->width(), (plusplus::REAL) pimage->height());
+   //   //plusplus::rectF rectangleSource(0, 0, (plusplus::REAL) pimage->width(), (plusplus::REAL) pimage->height());
 
-      unmap();
-      
-      pimage->unmap();
+   //   //unmap();
+   //   
+   //   //pimage->unmap();
 
-      m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
+   //   //m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
 
-      //((plusplus::Graphics * ) m_pgraphics->get_os_data())->DrawImage(((plusplus::Bitmap *)pimage->get_bitmap()->get_os_data()), rectangleDest, rectangleSource, plusplus::UnitPixel);
+   //   //((plusplus::Graphics * ) m_pgraphics->get_os_data())->DrawImage(((plusplus::Bitmap *)pimage->get_bitmap()->get_os_data()), rectangleDest, rectangleSource, plusplus::UnitPixel);
 
-      //return true;
+   //   //return true;
 
-   }
-
-
-   ::draw2d::graphics * image::_get_graphics() const
-   {
-
-      if (m_pgraphics)
-      {
-
-         return m_pgraphics;
-
-      }
-
-      //::draw2d::graphics * image::_get_graphics()
-      //{
-
-  /*       if (m_pgraphics)
-         {
-
-            return pgraphics;
-
-         }*/
-
-         if (!m_pbitmap)
-         {
-
-      /*      m_size.cx = 0;
-
-            m_size.cy = 0;
-
-            m_iScan = 0;*/
-
-            return m_pgraphics;
-
-         }
-
-         ((image *)this)->constructø(((image*)this)->m_pgraphics);
+   //}
 
 
-         ((image *)this)->m_pgraphics->set(m_pbitmap);
+   //::draw2d::graphics * image::_get_graphics() const
+   //{
 
-         ((image *)this)->m_pgraphics->create_memory_graphics(m_size);
+   //   if (!m_pgraphics)
+   //   {
 
-         ((image *)this)->m_pgraphics->m_pimage = (image *) this;
+   //      ((::image::image *)this)->constructø(((::image::image*)this)->m_pgraphics);
+   //      m_pgraphics->m_pimage = (::image::image*)this;
+   //      m_pgraphics->create_memory_graphics(m_size);
 
-         return m_pgraphics;
+   //      ::cast<::draw2d_nanovg::graphics> pdraw2dgraphics = m_pgraphics;
 
+   //      if (!pdraw2dgraphics || !pdraw2dgraphics->gpu_context())
+   //      {
 
-      //unmap();
+   //         ((::image::image*)this)->destroy();
+   //         throw ::exception(error_wrong_state, "NanoVG GPU image has no OpenGL graphics context.");
+   //      }
 
-      //m_pgraphics->set(m_pbitmap);
+   //   }
 
-      //return m_pgraphics;
+   //   return m_pgraphics;
 
-   }
+   //}
 
 
    // double image::pi()
@@ -2639,7 +2975,7 @@ namespace draw2d_nanovg
 //
 //      vkFlush();
 //
-//      ::pointer<bitmap>b = m_pbitmap;
+//      ::pointer<bitmap>b = m_pdraw2dbitmap;
 //
 //      b->defer_reveal();
 //
@@ -2682,12 +3018,12 @@ namespace draw2d_nanovg
 //
 //      ::i32_rectangle rectx;
 //
-//      ::draw2d::bitmap * pbitmap = m_pgraphics->get_current_bitmap();
+//      ::draw2d::bitmap * pdraw2dbitmap = m_pgraphics->get_current_bitmap();
 //
 //      ::GetCurrentObject((HDC) pusermessage->m_wparam, OBJ_BITMAP);
 //
 //      //      unsigned int dw = ::get_last_error();
-//      ::i32_size size = pbitmap->get_size();
+//      ::i32_size size = pdraw2dbitmap->get_size();
 //
 //      rectx.left = 0;
 //      rectx.top = 0;
@@ -2706,9 +3042,9 @@ namespace draw2d_nanovg
 //         if(!image = create_image(rectangleWindow.bottom_right()))
 //            return false;
 //
-//         ::draw2d::graphics * pgraphics = pimage->get_graphics();
+//         ::draw2d::graphics * pdraw2dgraphics = pgraphicsImage;
 //
-//         if(pgraphics->get_os_data() == nullptr)
+//         if(pdraw2dgraphics->nok())
 //            return false;
 //
 //         ::i32_rectangle rectanglePaint;
@@ -2717,19 +3053,19 @@ namespace draw2d_nanovg
 //         rectanglePaint = rectangleWindow;
 //         rectanglePaint.offset(-rectanglePaint.top_left());
 //         m_pgraphics->SelectClipRgn(nullptr);
-//         puserinteraction->_001OnDeferPaintLayeredWindowBackground(pimage->get_graphics());
+//         puserinteraction->_001OnDeferPaintLayeredWindowBackground(pgraphicsImage);
 //         m_pgraphics->SelectClipRgn(nullptr);
 //         m_pgraphics-> set_origin(::i32_point());
-//         puserinteraction->_000OnDraw(pimage->get_graphics());
+//         puserinteraction->_000OnDraw(pgraphicsImage);
 //         m_pgraphics->set_origin(::i32_point());
-//         //(dynamic_cast<::win::graphics * >(pgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
+//         //(dynamic_cast<::win::graphics * >(pdraw2dgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
 //         m_pgraphics->SelectClipRgn(nullptr);
 //         m_pgraphics->set_origin(::i32_point());
 //
 //         m_pgraphics->SelectClipRgn( nullptr);
 //         m_pgraphics->BitBlt(rectanglePaint.left, rectanglePaint.top,
 //            rectanglePaint.width(), rectanglePaint.height(),
-//            pgraphics, rectangleUpdate.left, rectangleUpdate.top,
+//            pdraw2dgraphics, rectangleUpdate.left, rectangleUpdate.top,
 //            SRCCOPY);
 //
 //      }
@@ -2749,145 +3085,6 @@ namespace draw2d_nanovg
 
 
 
-   void image::map(bool bApplyTransform) const
-   {
-
-      return;
-
-      if (m_bMapped)
-      {
-
-         //return true;
-
-         return;
-
-      }
-
-      if (!m_pgraphics)
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (m_size.is_empty())
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (::is_null(m_pimage32Raw))
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      m_pgraphics->thread_select();
-
-      int hasAlphaBits = 0;
-
-      ////xxxopengl>>>>opengl vkGetIntegerv(VK_ALPHA_BITS, &hasAlphaBits);
-
-      //vkFlush();
-
-      //vkReadBuffer(VK_BACK);
-      //vkReadBuffer(VK_FRONT);
-
-
-
-      ::pointer < graphics > pgraphics = m_pgraphics;
-
-      int cx = pgraphics->m_sizeWindow.cx;
-
-      int cy = pgraphics->m_sizeWindow.cy;
-
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      ::opengl::resize(pgraphics->m_sizeWindow, bYSwap);
-
-      // //xxxopengl>>>>opengl 
-      //vkReadBuffer(VK_BACK);
-
-      //vkPixelStorei(VK_PACK_SWAP_BYTES, 0);
-
-      //vkPixelStorei(VK_PACK_ROW_LENGTH, m_iScan/4);
-
-      //vkReadPixels(0, 0, cx, cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      ////vkReadPixels(0, 0, m_size.cx, m_size.cy, VK_ARGB, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      //int i1280 = VK_INVALID_ENUM;
-
-      //int i1281 = VK_INVALID_VALUE;
-
-      //int iError = vkGetError();
-
-      m_bMapped = true;
-
-      //return true;
-
-   }
-
-
-   void image::unmap() const
-   {
-
-      if (!m_bMapped)
-      {
-
-         //return true;
-
-         return;
-
-      }
-
-      if (!m_pgraphics)
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (m_size.is_empty())
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (::is_null(m_pimage32Raw))
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      m_pgraphics->thread_select();
-
-      //xxxopengl>>>>opengl 
-      //vkDrawPixels(m_size.cx, m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      m_bMapped = false;
-
-      //return true;
-
-   }
-
-
    bool image::host(const ::pixmap* ppixmap)
    {
     /*  if (m_phost == nullptr)
@@ -2901,41 +3098,41 @@ namespace draw2d_nanovg
    }
 
 
-   bool image::on_host_read_pixels(::pixmap* ppixmap) const
-   {
-
-      return false;
-
-/*      if (!m_pgraphics)
-      {
-
-         return false;
-
-      }
-
-      if (!ppixmap->m_size)
-      {
-
-         return false;
-
-      }
-
-      if (::is_null(ppixmap->m_pimage32Raw))
-      {
-
-         return false;
-
-      }
-
-      m_pgraphics->thread_select();
-
-      vkReadBuffer(VK_BACK);
-
-      vkReadPixels(0, 0, ppixmap->m_size.cx, ppixmap.m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, ppixmap.m_pimage32);
-
-      *///return true;
-
-   }
+//   bool image::on_host_read_pixels(::pixmap_t * ppixmap) const
+//   {
+//
+//      return false;
+//
+///*      if (!m_pgraphics)
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      if (!ppixmap->m_size)
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      if (::is_null(ppixmap->m_pimage32Raw))
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      m_pgraphics->thread_select();
+//
+//      vkReadBuffer(VK_BACK);
+//
+//      vkReadPixels(0, 0, ppixmap->m_size.cx, ppixmap.m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, ppixmap.m_pimage32);
+//
+//      *///return true;
+//
+//   }
 
 
 } // namespace draw2d_nanovg

@@ -1,5 +1,6 @@
-#include "framework.h"
+#include "platform.h"
 #include "draw2d.h"
+#include "acme/filesystem/filesystem/file_context.h"
 #include "acme/exception/resource.h"
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
@@ -62,12 +63,97 @@ namespace draw2d_vkvg
    }
 
 
+   const void * draw2d::get_gpu_physical_device_features(void * p)
+   {
+
+      auto prequiredFeatures = (VkPhysicalDeviceFeatures *) p;
+
+      const void * vkvgPNext =
+         vkvg_get_device_requirements(
+            prequiredFeatures);
+
+      return vkvgPNext;
+
+   }
+
+
+
+
+   void draw2d::get_required_gpu_device_extensions(::u64 uPhysicalDevice, ::array<const char *> & pszaRequiredDeviceExtensions)
+   {
+
+      VkPhysicalDevice vkphysicaldevice = (VkPhysicalDevice)uPhysicalDevice;
+      uint32_t extensionCount = 0;
+
+      vkvg_get_required_device_extensions(
+         vkphysicaldevice,
+         nullptr,
+         &extensionCount);
+
+      ::array<const char *> vkvgExtensions;
+      vkvgExtensions.set_size(extensionCount);
+      
+
+      vkvg_get_required_device_extensions(
+         vkphysicaldevice,
+         vkvgExtensions.data(),
+         &extensionCount);
+
+      
+
+      for (int i = 0; i < vkvgExtensions.size(); i++)
+      {
+
+         auto ext = vkvgExtensions[i];
+
+         if (ext)
+         {
+
+            bool bFound = false;
+
+            for(int j = 0; j < pszaRequiredDeviceExtensions.size(); j++)
+            {
+
+               auto existing = pszaRequiredDeviceExtensions[j];
+
+               if (existing)
+               {
+
+                  if (!strcmp(existing, ext))
+                  {
+
+                     bFound = true;
+
+                     break;
+
+                  }
+
+               }
+            
+            }
+
+            if (!bFound)
+            {
+
+               pszaRequiredDeviceExtensions.add(ext);
+
+            }
+
+         }
+
+      }
+
+   }
+
+
+
    void draw2d::initialize(::particle * pparticle)
    {
 
       //auto estatus = 
 
       ::gpu::draw2d::initialize(pparticle);
+
 
 
       //application()->create_gpu();
@@ -82,6 +168,8 @@ namespace draw2d_vkvg
 
       m_pmutex = node()->create_mutex();
       vulkan_init();
+
+
 
 
 
@@ -100,12 +188,12 @@ namespace draw2d_vkvg
    }
 
 
-   bool draw2d::graphics_context_supports_single_buffer_mode()
-   {
+   //bool draw2d::graphics_context_supports_single_buffer_mode()
+   //{
 
-      return true;
+   //   return true;
 
-   }
+   //}
 
 
    bool draw2d::graphics_context_does_full_redraw()
@@ -156,40 +244,40 @@ namespace draw2d_vkvg
    //draw2d::private_font * draw2d::get_file_private_font(::platform::context * pcontext, const ::file::path & path)
    //{
 
-   //   auto & pfont = m_mapPrivateFont[path];
+   //   auto & pwritetextfont = m_mapPrivateFont[path];
 
-   //   if (::is_set(pfont))
+   //   if (::is_set(pwritetextfont))
    //   {
 
-   //      return pfont;
+   //      return pwritetextfont;
 
    //   }
 
-   //   construct_newø(pfont);
+   //   construct_newø(pwritetextfont);
 
-   //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
+   //   pwritetextfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
    //   auto pmemory = system()->draw2d()->write_text()->get_file_memory(pcontext, path);
 
    //   if (pmemory->has_data())
    //   {
 
-   //      pfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
+   //      pwritetextfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
 
-   //      auto & fontCollection = *pfont->m_pcollection;
+   //      auto & fontCollection = *pwritetextfont->m_pcollection;
 
    //      auto iFamilyCount = fontCollection.GetFamilyCount();
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
-   //      fontCollection.GetFamilies(iFamilyCount, pfont->m_familya.data(), &pfont->m_iFamilyCount);
+   //      fontCollection.GetFamilies(iFamilyCount, pwritetextfont->m_familya.data(), &pwritetextfont->m_iFamilyCount);
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
    //      for (int iFamily = 0; iFamily < iFamilyCount; iFamily++)
    //      {
 
-   //         if (pfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
+   //         if (pwritetextfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
    //         {
 
    //            warningf("font family nok");
@@ -200,7 +288,7 @@ namespace draw2d_vkvg
 
    //   }
 
-   //   return pfont;
+   //   return pwritetextfont;
 
    //}
 
@@ -245,32 +333,106 @@ namespace draw2d_vkvg
    }
 
 
-   void draw2d::defer_load_font_by_family_name(VkvgContext pdc, const ::scoped_string& scopedstrName)
+   bool draw2d::write_text_supports_raster_fonts()
+   {
+
+      // This backend resolves file-backed outline faces, not GDI bitmap fonts.
+      return false;
+
+   }
+
+
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      // Keep legacy GDI-only faces out of the shared Windows enumeration.
+      return false;
+
+   }
+
+
+   ::string draw2d::defer_load_font(
+      VkvgContext pdc,
+      VkvgDevice pdevice,
+      ::write_text::font * pwritetextfont)
    {
 
       _synchronous_lock lock(m_pmutex);
 
-      auto& font = m_mapFont[scopedstrName];
+      ::write_text::font_face_request request;
+      request.m_strFamily = pwritetextfont->family_name();
+      request.m_fontweight = pwritetextfont->m_fontweight;
+      request.m_bItalic = pwritetextfont->m_bItalic;
+
+      ::string strFontKey;
+      strFontKey.formatf(
+         "family=%s;weight=%d;italic=%d",
+         request.m_strFamily.c_str(),
+         request.m_fontweight.as_i32(),
+         request.m_bItalic ? 1 : 0);
+
+      ::string strDeviceFontKey;
+      strDeviceFontKey.formatf("device=%p;%s", pdevice, strFontKey.c_str());
+
+      auto& font = m_mapFont[strDeviceFontKey];
 
       if (!font.m_bLoaded)
       {
 
-         font.m_bLoaded = true;
+         ::write_text::font_face_source source;
 
-         ::file::path pathFont = node()->get_font_path_from_name(scopedstrName);
-
-         vkvg_load_font_from_path(pdc, pathFont, scopedstrName);
-
-         auto status = vkvg_status(pdc);
-
-         if (status)
+         if (!system()->draw2d()->write_text()->resolve_font_face(source, request))
          {
 
-            warning() << "oh no";
+            ::string strMessage;
+
+            strMessage.formatf(
+               "VKVG could not resolve the requested font face. family=\"%s\" weight=%d italic=%s.",
+               request.m_strFamily.c_str(),
+               request.m_fontweight.as_i32(),
+               request.m_bItalic ? "true" : "false");
+
+            information() << "[draw2d_vkvg.font] " << strMessage;
+
+            throw ::exception(error_failed, strMessage);
 
          }
 
+         vkvg_load_font_from_path(pdc, source.m_path, strFontKey);
+
+         auto status = vkvg_status(pdc);
+
+         if (status != VKVG_STATUS_SUCCESS)
+         {
+
+            const auto bExists = source.m_path.has_character() && file()->exists(source.m_path);
+            const auto strExtension = ::string(source.m_path.final_extension());
+            ::string strMessage;
+
+            strMessage.formatf(
+               "VKVG failed to load the requested font face. family=\"%s\" weight=%d italic=%s "
+               "resolved_family=\"%s\" path=\"%s\" face_index=%d exists=%s extension=\"%s\" status=%d.",
+               request.m_strFamily.c_str(),
+               request.m_fontweight.as_i32(),
+               request.m_bItalic ? "true" : "false",
+               source.m_strResolvedFamily.c_str(),
+               source.m_path.c_str(),
+               source.m_iFaceIndex,
+               bExists ? "true" : "false",
+               strExtension.c_str(),
+               (int)status);
+
+            information() << "[draw2d_vkvg.font] " << strMessage;
+
+            throw ::exception(error_failed, strMessage);
+
+         }
+
+         font.m_bLoaded = true;
+
       }
+
+      return strFontKey;
 
    }
 

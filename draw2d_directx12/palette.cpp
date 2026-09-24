@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "palette.h"
 
 
@@ -38,8 +38,8 @@ namespace draw2d_directx12
 //
 //   bool palette::CreateHalftonePalette(::image::image * pimage)
 //   {
-//      //ASSERT(pgraphics != nullptr && (dynamic_cast<::draw2d_directx12::graphics * >(pgraphics))->get_handle1() != nullptr);
-//      //return Attach(::CreateHalftonePalette((dynamic_cast<::draw2d_directx12::graphics * >(pgraphics))->get_handle1()));
+//      //ASSERT(pdraw2dgraphics != nullptr && (dynamic_cast<::draw2d_directx12::graphics * >(pdraw2dgraphics))->get_handle1() != nullptr);
+//      //return Attach(::CreateHalftonePalette((dynamic_cast<::draw2d_directx12::graphics * >(pdraw2dgraphics))->get_handle1()));
 //      return false;
 //
 //   }

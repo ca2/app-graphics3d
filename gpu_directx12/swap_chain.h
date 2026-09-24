@@ -25,7 +25,7 @@ namespace gpu_directx12
       ::comptr < ID3D12RootSignature > m_prootsignature;
 
       HANDLE m_handleSharedTexture;
-      ::pointer_array < ::gpu_directx12::texture > m_textureaSwapChain;
+      //::pointer_array < ::gpu_directx12::texture > m_textureaSwapChain;
       //VkSwapchainKHR       m_vkswapchain;
       uint32_t             m_uCurrentSwapChainImage;
       //::i32_size m_size;
@@ -57,12 +57,14 @@ namespace gpu_directx12
 
       void on_init() override;
 
+      void on_new_frame() override;
+
       void initialize_swap_chain_window(::gpu::context* pcontext, ::acme::windowing::window* pwindow) override;
 
       bool create_frame_sync(frame_sync &frame) override;
 
-      //void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
-      void present(::gpu::texture * pgputexture, ::gpu::command_buffer * pgpucommandbuffer) override;
+      //void endDraw(::draw2d_gpu::graphics* pdraw2dgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
+      void present(::gpu::texture_site * pgputexturesite, ::gpu::command_buffer * pgpucommandbuffer) override;
       void set_present_state(::gpu::command_buffer *pgpucommandbuffer) override;
       void swap_buffers() override;
       int swap_chain_frame_index() override;

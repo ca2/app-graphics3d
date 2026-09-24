@@ -1,7 +1,8 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 //#include "camera.h"
-#include "engine.h"
+#include "engine_instance.h"
+#include "graphics3d.h"
 //#include "frame.h"
 //#include "model.h"
 //#include "shader.h"
@@ -14,8 +15,9 @@
 //#include "sockets/basic/listen_socket_impl.h"
 #include "render_system/gltf_render_system.h"
 #include "render_system/scene_render_system.h"
-#include "render_system/wavefront_obj_render_system.h"
 #include "render_system/skybox_render_system.h"
+#include "render_system/texture_render_system.h"
+#include "render_system/wavefront_obj_render_system.h"
 
 
 IMPLEMENT_FACTORY(graphics3d_vulkan)
@@ -31,7 +33,9 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    //pfactory->add_factory_item < ::graphics3d_vulkan::shader, ::graphics3d::shader >();
 
-   pfactory->add_factory_item < ::graphics3d_vulkan::engine, ::graphics3d::engine >();
+   pfactory->add_factory_item < ::graphics3d_vulkan::graphics3d, ::graphics3d::graphics3d >();
+
+   pfactory->add_factory_item < ::graphics3d_vulkan::engine_instance, ::graphics3d::engine_instance >();
 
    //pfactory->add_factory_item < ::graphics3d_vulkan::context, ::gpu::context >();
 
@@ -39,8 +43,9 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    pfactory->add_factory_item< ::graphics3d_vulkan::gltf_render_system, ::graphics3d::gltf_render_system>();
    pfactory->add_factory_item<::graphics3d_vulkan::scene_render_system, ::graphics3d::scene_render_system>();
-   pfactory->add_factory_item<::graphics3d_vulkan::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
    pfactory->add_factory_item<::graphics3d_vulkan::skybox_render_system, ::graphics3d::skybox_render_system>();
+   pfactory->add_factory_item<::graphics3d_vulkan::texture_render_system, ::graphics3d::texture_render_system>();
+   pfactory->add_factory_item<::graphics3d_vulkan::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
 
 }
 

@@ -6,17 +6,24 @@
 #include "bred/gpu/device.h"
 #include "acme/prototype/prototype/memory.h"
 #include "acme_windows_common/dxgi_device_source.h"
-//#include "directx12/directx12.h"
+#include "gpu_directx12/_gpu_directx12.h"
 #include <dcomp.h>
 #include <d3d11.h>
 #include <d3d11on12.h>
+#include <d3d11_3.h>
+#include <d3d11_4.h>
+#include <d3d12compatibility.h>
+
 
 namespace gpu_directx12
 {
 
 
+
+
    class CLASS_DECL_GPU_DIRECTX12 device :
-      virtual public ::gpu::device
+      virtual public ::gpu::device,
+      virtual public ::dxgi_device_source
    {
    public:
 
@@ -44,7 +51,7 @@ namespace gpu_directx12
       //::comptr<ID3D11DeviceContext>  m_pd3d11context;
       //::comptr<ID3D11On12Device>  m_pd3d11on12;
       //::comptr<IDXGIDevice>  m_pdxgidevice;
-
+      ::comptr < ID3D12CompatibilityDevice >          m_pd3d12compatibiltydevice;
 
       //comptr<IDCompositionDevice> m_pdcompositiondevice;
       //comptr<IDCompositionTarget> m_pdcompositiontarget;
@@ -106,7 +113,21 @@ namespace gpu_directx12
       //} m_queuefamilyindexes;
 
 
+      ::comptr<ID3D12DescriptorHeap> m_pheapCbvSrvUav;
+      ::array<::comptr<ID3D12DescriptorHeap>> m_heapaRtv;
+      ::array<::comptr<ID3D12DescriptorHeap>> m_heapaDsv;
+      ::comptr<ID3D12DescriptorHeap> m_pheapSampler;
 
+      ::interlocked_count m_iCbvSrvUavHeapDescriptorCount;
+      ::array<::interlocked_count> m_iaRtvHeapDescriptorCount;
+      ::array<::interlocked_count> m_iaDsvHeapDescriptorCount;
+      ::interlocked_count m_iSamplerHeapDescriptorCount;
+
+      // Descriptor allocation never waits for GPU/context work. Entries are
+      // immutable and device-owned, so in-flight command lists remain valid.
+      ::particle_pointer                        m_pparticleMutexDescriptors;
+      ::map<::comparable_eq_array<UINT64>, cpu_gpu_handle>    m_textureTables;
+      cpu_gpu_handle                            m_handleLinearClampSampler;
 
 
       //graphics3d_directx12::context
@@ -135,6 +156,33 @@ namespace gpu_directx12
 
 
 
+      // For IDXGIDevice
+      class d3d11on12 :
+         virtual public particle
+      {
+      public:
+
+         ::comptr<ID3D11Device> m_pd3d11device;
+         ::comptr<ID3D11DeviceContext> m_pd3d11devicecontextMain;
+         ::comptr<ID3D11On12Device> m_pd3d11on12;
+         ::comptr<IDXGIDevice> m_pdxgidevice;
+
+
+         ::comptr<ID3D12Fence> dx12Fence;
+         UINT64 fenceValue = 0;
+         ::comptr<ID3D11Fence> dx11Fence;
+         ::comptr<ID3D11Device5> dx11Device5;
+         ::comptr<ID3D11DeviceContext4> m_pd3d11devicecontext4;
+         HANDLE fenceEvent = NULL;
+         HANDLE sharedFenceHandle = nullptr;
+
+      };
+      //::pointer_array < class d3d11on12 > >     m_d3d11on12a;
+      ::pointer < class d3d11on12 > m_pd3d11on12;
+      //::comptr < ID3D12CommandQueue > m_pcommandqueueMain;
+
+      ::pointer < ::gpu::queue > m_pqueueMain;
+      ::pointer < ::gpu::queue > m_pqueueCopy;
 
       device();
       ~device() override;
@@ -163,6 +211,22 @@ namespace gpu_directx12
          bool requestHighPerformanceAdapter = false);
 
       void _create_d3d12_device();
+
+
+      virtual d3d11on12 * d3d11on12();
+
+      IDXGIDevice* _get_dxgi_device() override;
+
+      virtual ::pointer < ::gpu::queue > create_queue(bool bCopy);
+
+      //ID3D12CommandQueue * _main_d3d12_command_queue();
+
+      //ID3D12CommandQueue * _copy_d3d12_command_queue();
+
+      ::gpu::queue * transfer_queue() override;
+      ::gpu::queue * graphics_queue() override;
+
+
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
 
@@ -209,6 +273,14 @@ namespace gpu_directx12
       virtual void defer_shader_memory(::memory& memory, const ::file::path& pathShader);
 
 
+      virtual ID3D12DescriptorHeap * _cbv_srv_uav_heap();
+      virtual ID3D12DescriptorHeap * _sampler_heap();
+      virtual cpu_gpu_handle _allocate_cbv_srv_uav_handle(int iDescriptorCount);
+      virtual cpu_handle _allocate_render_target_view_handle(int iLayerCount, int iMipCount);
+      virtual cpu_handle _allocate_depth_stencil_view_handle();
+      virtual cpu_gpu_handle _allocate_sampler_handle();
+      cpu_gpu_handle _linear_clamp_sampler();
+      cpu_gpu_handle _texture_table(const ::array<texture *> & textures);
 
       //virtual void create_device();
 
@@ -309,7 +381,7 @@ namespace gpu_directx12
       //::gpu_directx12::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
 
       
-      void on_end_frame() override;
+      //void on_end_frame() override;
       //void on_top_end_frame() override;
 
 
@@ -321,6 +393,8 @@ namespace gpu_directx12
       ::gpu::payload load_dds(const ::scoped_string& scopedstrImagePath) override;
       ::file::path shader_path(const ::file::path& pathShader) override;
 
+
+      //::pointer <::gpu::fence > create_gpu_fence(::u32 uInitialPayload) override;
 
    };
 

@@ -52,12 +52,12 @@ namespace gpu_vulkan
          //    ::gpu::renderer * pgpurenderer,
          //    unsigned int uEnvironmentCubemapId) override;
 
-         void initialize_diffuse_irradiance_map(::graphics3d::scene_base *pscenebase) override;
+         void initialize_diffuse_irradiance_map(::graphics3d::scene_base * pscenebase, ::gpu::context * pgpucontext) override;
 
          /**
           * Render the diffuse irradiance map.
           */
-         void computeIrradianceMap(::gpu::command_buffer *pgpucommandbuffer) override;
+         void computeIrradianceMap(::gpu::command_buffer *pgpucommandbuffer, ::graphics3d::scene_base * pscenebase) override;
 
 
          /**

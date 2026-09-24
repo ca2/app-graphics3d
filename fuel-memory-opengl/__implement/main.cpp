@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #define APPLICATION_NAMESPACE app_graphics3d_fuel_memory_opengl
 #include "acme/inline/application/main.inl"
 

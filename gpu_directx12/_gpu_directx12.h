@@ -138,4 +138,123 @@ namespace directx12
 } // namespace directx12
 
 
+namespace gpu_directx12
+{
+
+   struct cpu_handle :
+      public D3D12_CPU_DESCRIPTOR_HANDLE
+   {
+
+
+      cpu_handle()
+      {
+         ptr = 0;
+      }
+
+      cpu_handle(const D3D12_CPU_DESCRIPTOR_HANDLE & h) 
+      {
+         ptr = h.ptr;
+      }
+
+      bool is_null() const
+      {
+
+         return ptr == 0;
+
+      }
+
+      bool is_set() const
+      {
+
+         return !this->is_null();
+
+      }
+
+      operator bool() const
+      {
+
+         return is_set();
+
+      }
+
+   };
+
+
+   struct gpu_handle :
+      public D3D12_GPU_DESCRIPTOR_HANDLE
+   {
+
+
+      gpu_handle()
+      {
+         ptr = 0;
+      }
+
+      gpu_handle(const D3D12_GPU_DESCRIPTOR_HANDLE & h)
+      {
+         ptr = h.ptr;
+      }
+
+      bool is_null() const
+      {
+
+         return ptr == 0;
+
+      }
+
+      bool is_set() const
+      {
+
+         return !this->is_null();
+
+      }
+
+      operator bool() const
+      {
+
+         return is_set();
+
+      }
+
+   };
+
+
+   struct cpu_gpu_handle
+   {
+
+      
+      cpu_handle     m_cpuhandle;
+      gpu_handle     m_gpuhandle;
+
+
+      bool is_set() const
+      {
+
+         return m_cpuhandle.is_set() && m_gpuhandle.is_set();
+
+      }
+
+
+      bool is_null() const
+      {
+
+         return !this->is_set();
+
+      }
+
+      operator bool() const
+      {
+
+         return this->is_set();
+
+      }
+
+
+   };
+
+
+
+} // namespace gpu_directx12
+
+
 

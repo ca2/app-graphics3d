@@ -6,6 +6,11 @@
 #include "bred/gpu/renderer.h"
 
 
+#include <atomic>
+#include <chrono>
+#include <vector>
+
+
 
 //typedef void FN_VKVG_TEXT(VkvgContext, const char*);
 //typedef FN_VKVG_TEXT* PFN_VKVG_TEXT;
@@ -37,6 +42,11 @@ namespace draw2d_nanovg
       //VkvgDevice                       m_nanovgdevice;
       //VkvgSurface                      m_nanovgsurface;
       NVGcontext *                     m_pdc = nullptr;
+      ::pointer < ::gpu::texture >     m_pgputextureNvgBeginFrame;
+      ::i32_size                       m_sizeNvgBeginFrame;
+      bool                             m_bNvgBeginFrameExternalRendering = false;
+      //::i32_size                       m_sizeRawNvgBeginFrame;
+
       bool                             m_bHasCurrentPoint;
       //::pointer < ::gpu::texture >     m_ptextureTarget;
       //::plusplus::Matrix *           m_pm;
@@ -54,6 +64,39 @@ namespace draw2d_nanovg
       ::i32_size                    m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
+      struct nanovg_gpu_image_wrapper_cache_entry
+      {
+
+         ::collection::index                 m_iTextureSerial = -1;
+         ::u32                               m_uOpenGlTexture = 0;
+         ::i32_size                          m_size;
+         int                                 m_iNanovgImage = 0;
+         ::pointer < ::gpu::texture >        m_pgputexture;
+         ::u64                               m_uLastUsedFrame = 0;
+
+      };
+
+      ::std::vector < nanovg_gpu_image_wrapper_cache_entry >
+         m_nanovgGpuImageWrapperCache;
+      ::u64 m_uNanovgGpuImageWrapperFrameSerial = 0;
+      static constexpr ::u64 s_uNanovgGpuImageWrapperStaleFrames = 120;
+      static constexpr ::std::size_t
+         s_zNanovgGpuImageWrapperPreferredMaximum = 512;
+      ::std::atomic_bool m_bPerformanceDiagnosticsEnabledLast{false};
+      ::std::atomic<::u64> m_uPerformanceDiagnosticsGenerationLast{0};
+      ::std::atomic<::u64> m_uPerformanceGpuImageDraws{0};
+      ::std::atomic<::u64> m_uPerformanceCpuFallbackDraws{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperCreations{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperDeletions{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperCacheHits{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperCacheMisses{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperEvictions{0};
+      ::std::atomic<::u64> m_uPerformancePendingFenceWaits{0};
+      ::std::atomic<::u64> m_uPerformanceFenceWaitMicroseconds{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperMicroseconds{0};
+      ::std::atomic<::u64> m_uPerformanceRenderedTextureDiagnostics{0};
+      ::std::atomic<::u64> m_uPerformanceSampledTextureDiagnostics{0};
+      ::std::atomic<::i64> m_iPerformanceNextReportNanoseconds{0};
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       //::pointer<::gpu::context>             m_pgpucontextOutput;
 
@@ -79,18 +122,29 @@ namespace draw2d_nanovg
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
 
+      //void on_begin_draw(::acme::windowing::window * pacmewindowingwindow, const ::f64_rectangle & rectangleFrame) override;
 
-      ::gpu::texture* current_target_texture(::gpu::layer * pgpulayer) override;
+      void begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget) override;
+      void end_draw() override;
+
+      virtual void _nvg_begin_frame(bool bExternalRendering, ::gpu::texture * pgputexture, const ::i32_size & size);
+      virtual void _nvg_end_frame(bool bExternalRendering);
+
+      ::gpu::texture_site * current_target_texture(::gpu::layer * pgpulayer) override;
 
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
       void send(const ::procedure & procedure) override;
 
-      //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
+      //void attach(void * pdraw2dgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-      void defer_load_font_by_family_name(const ::scoped_string& scopedstrName);
+      //void on_set_target_rectangle(::image::image * pimage) override;
+      bool is_y_flip() override;
+      //void begin_draw() override;
+      //void end_draw() override;
+
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC
@@ -108,6 +162,8 @@ namespace draw2d_nanovg
 
       //bool IsPrinting() const;            // true if being used for printing
 
+      void set_target_image(::image::image * pimage) override;
+
       ::draw2d::pen *     get_current_pen() override;
       ::draw2d::brush *   get_current_brush() override;
       //::draw2d::palette_pointer get_current_palette() const;
@@ -115,7 +171,65 @@ namespace draw2d_nanovg
       ::draw2d::bitmap *  get_current_bitmap() override;
       //::gpu::frame* end_gpu_layer(::gpu::layer * pgpulayer) override;
 
+      void _draw_raw(const ::image::image_drawing & imagedrawing) override;
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
+
+      void _draw_raw_with_source_rectangle(
+         const ::f64_rectangle & rectangleTarget,
+         ::image::image * pimage,
+         const ::image::image_drawing_options & imagedrawingoptions,
+         const ::f64_rectangle & rectangleSource);
+
+      virtual bool _draw_gpu_image(
+         const ::f64_rectangle & rectangleTarget,
+         ::image::image * pimage,
+         const ::image::image_drawing_options & imagedrawingoptions,
+         const ::f64_rectangle & rectangleSource);
+
+      int acquire_nanovg_gpu_image_wrapper(
+         ::gpu_opengl::texture * pgputexture,
+         const ::i32_size & sizeImage,
+         bool & bCreatedWrapper);
+      void maintain_nanovg_gpu_image_wrapper_cache();
+      void clear_nanovg_gpu_image_wrapper_cache();
+
+      void reset_gpu_image_performance_diagnostics();
+      void record_gpu_image_fast_path(
+         bool bWaitedForFence,
+         bool bCreatedWrapper,
+         ::u64 uFenceMicroseconds,
+         ::u64 uWrapperMicroseconds);
+      void record_gpu_image_cpu_fallback();
+      void report_gpu_image_performance_diagnostics_if_due();
+      ::i64 reserve_rendered_gpu_image_diagnostic();
+      void diagnose_gpu_image_target_state(
+         ::i64 iDiagnosticIndex,
+         ::gpu::context * pgpucontext,
+         ::gpu::layer * pgpulayer,
+         ::gpu_opengl::texture * pgputexture,
+         ::i32 iDrawFramebufferBefore);
+      void diagnose_rendered_gpu_image(
+         ::gpu_opengl::texture * pgputexture,
+         ::i64 iDiagnosticIndex);
+      void diagnose_sampled_gpu_image(
+         ::gpu_opengl::texture * pgputexture,
+         const ::f64_rectangle & rectangleTarget);
+
+   private:
+
+
+      void prepare_nanovg_render_target(::gpu::texture * pgputexture);
+
+
+   public:
+
+
+      virtual void _draw_nanovg_image(
+         int iImage,
+         const ::i32_size & sizeImage,
+         const ::f64_rectangle & rectangleTarget,
+         const ::image::image_drawing_options & imagedrawingoptions,
+         const ::f64_rectangle & rectangleSource);
 
       //plusplus::Pen *       vk2d_pen();
       //plusplus::Brush *     vk2d_brush();
@@ -138,13 +252,22 @@ namespace draw2d_nanovg
                     const char * lpszOutput, const void * lpInitData);
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
-      void create_memory_graphics(const ::i32_size & size = {}) override;
+      //void create_memory_graphics(const ::i32_size & size = {}) override;
+      //void _create_memory_graphics(const ::i32_size & size) override;
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      void on_acquire_memory_graphics(
+         bool bExternalRendering,
+         ::image::image * pimage,
+         const ::i32_size & size,
+         ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      void on_release_memory_graphics() override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
-      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
+      //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;
 
-      virtual bool opengl_create_offscreen_buffer(const ::i32_size & sizePlacement);
-      virtual bool opengl_delete_offscreen_buffer();
+      //virtual bool opengl_create_offscreen_buffer(const ::i32_size & sizePlacement);
+      //virtual bool opengl_delete_offscreen_buffer();
 
       virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
 
@@ -290,7 +413,7 @@ namespace draw2d_nanovg
 //      i32_point MoveTo(int x, int y);
       //    i32_point MoveTo(const ::i32_point & point);
       //void set_current_point(double x, double y) override;
-      void line(double x1, double y1, double x2, double y2) override;
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen * pdraw2dpen) override;
       //bool LineTo(int x,int y);
       //  bool LineTo(const ::i32_point & point);
       void polyline(const ::f64_point* ppoints,::collection::count nCount) override;
@@ -321,7 +444,7 @@ namespace draw2d_nanovg
       void fill_rectangle(const ::f64_rectangle& rectangle, const ::color::color& color) override;
       void fill_rectangle(const ::f64_rectangle &  rectangle, ::draw2d::brush* pBrush) override;
       void frame_rectangle(const ::f64_rectangle & rectangle, ::draw2d::brush* pBrush) override;
-      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * ppen);
+      //bool DrawRect(const ::i32_rectangle & rectangle, ::draw2d::pen * pdraw2dpen);
       void invert_rectangle(const ::f64_rectangle & i32_rectangle) override;
       //void draw_icon(double x, double y, ::image::icon * picon) override;
       //void draw_icon(const ::i32_point & point, ::image::icon * picon);
@@ -372,7 +495,7 @@ namespace draw2d_nanovg
       void rectangle(const ::f64_rectangle & rectangle) override;
       //virtual bool drw(int x1, int y1, int x2, int y2);
       void draw_rectangle(const ::f64_rectangle & rectangle) override;
-      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen * ppen) override;
+      void draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen * pdraw2dpen) override;
       //virtual bool FillRectangle(int x1, int y1, int x2, int y2);
       void fill_rectangle(const ::f64_rectangle & rectangle);
       //void round_rectangle(double x1, double y1, double x2, double y2, double x3, double y3) override;
@@ -441,9 +564,10 @@ namespace draw2d_nanovg
 
 
       //virtual f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex) override;
-      using ::gpu::graphics::get_text_extent;
-      ::f64_size get_text_extent(const ::scoped_string& scopedstr) override;
-      ::f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+      using ::gpu::graphics::_get_text_extent;
+      ::f64_size _get_text_extent(const ::scoped_string& scopedstr) override;
+      ::f64_size _get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+      //::f64_size _get_text_extent(const ::scoped_string & scopedstr) override;
 //      virtual f64_size get_text_extent(const ::scoped_string & str) override;
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount, character_count iIndex);
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount);
@@ -549,33 +673,33 @@ namespace draw2d_nanovg
       float GetMiterLimit() override;
       void SetMiterLimit(float fMiterLimit) override;
 
-      void draw(::draw2d::path * ppath);
-      void draw(::draw2d::path * ppath, ::draw2d::pen * ppen);
-      void fill(::draw2d::path * ppath);
-      void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush);
-      //bool draw(::draw2d::pen* ppen);
+      void draw(::draw2d::path * pdraw2dpath);
+      void draw(::draw2d::path * pdraw2dpath, ::draw2d::pen * pdraw2dpen);
+      void fill(::draw2d::path * pdraw2dpath);
+      void fill(::draw2d::path * pdraw2dpath, ::draw2d::brush * pdraw2dbrush);
+      //bool draw(::draw2d::pen* pdraw2dpen);
       
 
-      //bool fill_and_draw(::draw2d::brush* pbrush, ::draw2d::pen* ppen);
-      bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      bool draw(::draw2d::pen* ppen);
+      //bool fill_and_draw(::draw2d::brush* pdraw2dbrush, ::draw2d::pen* pdraw2dpen);
+      bool fill(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill1(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill2(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool draw(::draw2d::pen* pdraw2dpen);
       //bool fill_and_draw();
       bool fill(double xOrg = 0.0, double yOrg = 0.0);
       bool _fill1(double xOrg = 0.0, double yOrg = 0.0);
       bool _fill2(double xOrg = 0.0, double yOrg = 0.0);
       void draw();
 
-      //bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      //bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
-      //bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool fill(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool _fill1(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool _fill2(::draw2d::brush* pdraw2dbrush, double xOrg = 0.0, double yOrg = 0.0);
 
 
-      bool _set(::write_text::font* pfont);
-      bool _set(::draw2d::pen* ppen);
-      bool _set(::draw2d::path* ppath);
-      bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
+      bool _set(::write_text::font* pwritetextfont);
+      bool _set(::draw2d::pen* pdraw2dpen);
+      bool _set(::draw2d::path* pdraw2dpath);
+      bool _set(::draw2d::brush* pdraw2dbrush, double x = 0.0, double y = 0.0);
 
       bool _set(::geometry2d::item* pitem);
 
@@ -594,14 +718,14 @@ namespace draw2d_nanovg
       bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::region>& pregion);
 
 
-      bool _set(const ::f64_arc& arc, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_line& line, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_lines& lines, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_rectangle& rectangle, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_ellipse& ellipse, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::f64_polygon& polygon, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& ppath);
-      bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::f64_arc& arc, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_line& line, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_lines& lines, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_rectangle& rectangle, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_ellipse& ellipse, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::f64_polygon& polygon, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& pdraw2dpath);
+      bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& pdraw2dpath);
 
 
       bool _set(const ::f64_arc& arc);
@@ -672,11 +796,11 @@ namespace draw2d_nanovg
       void flush() override;
       void sync_flush() override;
 
-      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * ppen);
-      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * ppen);
+      //virtual bool DrawLine(float x1, float y1, float x2, float y2, ::draw2d::pen * pdraw2dpen);
+      //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * pdraw2dpen);
 
       
-      void draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* ppen);
+      void draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* pdraw2dpen);
 
 
       //virtual void enum_fonts(::write_text::font_enumeration_item_array& itema) override;
@@ -684,13 +808,13 @@ namespace draw2d_nanovg
       //void prefer_mapped_image_on_mix() override;
 
       virtual void set(::draw2d::region* pregion) override;
-      virtual void set(::draw2d::pen* ppen) override;
-      virtual void set(::write_text::font* pfont) override;
-      virtual void set(::draw2d::brush* pbrush) override;
-      virtual void set(::draw2d::bitmap* pbitmap) override;
+      virtual void set(::draw2d::pen* pdraw2dpen) override;
+      virtual void set(::write_text::font* pwritetextfont) override;
+      virtual void set(::draw2d::brush* pdraw2dbrush) override;
+      virtual void set(::draw2d::bitmap* pdraw2dbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
+      //void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 
@@ -700,7 +824,7 @@ namespace draw2d_nanovg
       void on_end_layer(::gpu::layer* pgpulayer) override;
       //void start_layer(::e_graphics egraphics) override;
       //void end_layer(::e_graphics egraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
       // void on_begin_layout1() override;
       //void on_end_layout1() override;

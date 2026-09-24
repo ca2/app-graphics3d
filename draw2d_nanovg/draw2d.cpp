@@ -1,11 +1,13 @@
-#include "framework.h"
+#include "platform.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"
+#include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
 #include "acme/prototype/prototype/memory.h"
 #include "fontstash.h"
+#include "aura/graphics/image/image.h"
 
 //CLASS_DECL_DRAW2D_NANOVG void initialize_opengl();
 //CLASS_DECL_DRAW2D_NANOVG void terminate_opengl();
@@ -63,6 +65,66 @@ namespace draw2d_nanovg
    }
 
 
+   ::draw2d::graphics_pointer draw2d::do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+                                                          const ::i32_size & size)
+   {
+
+      if (::is_set(pimage))
+      {
+
+         auto pgraphicsOwned = pimage->m_pgraphicsOwned;
+
+         if (pgraphicsOwned)
+         {
+
+            return pgraphicsOwned;
+
+         }
+
+         auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+
+         pdraw2dgraphics->update_as_image_render_target(pimage, pacmeuserinteractionAffinity);
+
+         return pdraw2dgraphics;
+
+         //auto pdraw2dbitmap = pimage->get_bitmap();
+
+         //if (::is_set(pdraw2dbitmap))
+         //{
+
+         //   pdraw2dgraphics->create_bitmap_graphics(pdraw2dbitmap);
+         //}
+         //else
+         //{
+
+         //   throw ::exception(error_wrong_state);
+         //}
+      }
+      else
+      {
+         auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+         pdraw2dgraphics->create_memory_graphics(size, pacmeuserinteractionAffinity);
+         return pdraw2dgraphics;
+      }
+
+
+
+      //return ::draw2d::draw2d::do_allocation_strategy(pdraw2dhost, pimage, size);
+
+      //auto pdraw2dgraphics = create_memory_graphics(pdraw2dhost, size);
+
+      //if (::is_set(pimage))
+      //{
+
+      //   pimage->create_from_graphics(pdraw2dgraphics);
+
+      //}
+
+      //return pdraw2dgraphics;
+
+   }
+
+
    void draw2d::initialize(::particle * pparticle)
    {
 
@@ -70,6 +132,8 @@ namespace draw2d_nanovg
 
       ::gpu::draw2d::initialize(pparticle);
 
+      m_bNanoVGGeometryAntialias =
+         !m_papplication->m_gpu.m_bMultisample;
 
       //application()->create_gpu();
       //if (!estatus)
@@ -101,12 +165,28 @@ namespace draw2d_nanovg
    }
 
 
-   bool draw2d::graphics_context_supports_single_buffer_mode()
+   bool draw2d::write_text_supports_raster_fonts()
    {
 
-      return true;
+      return false;
 
    }
+
+
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      return false;
+
+   }
+
+
+   //bool draw2d::graphics_context_supports_single_buffer_mode()
+   //{
+
+   //   return true;
+
+   //}
 
 
    bool draw2d::graphics_context_does_full_redraw()
@@ -157,40 +237,40 @@ namespace draw2d_nanovg
    //draw2d::private_font * draw2d::get_file_private_font(::platform::context * pcontext, const ::file::path & path)
    //{
 
-   //   auto & pfont = m_mapPrivateFont[path];
+   //   auto & pwritetextfont = m_mapPrivateFont[path];
 
-   //   if (::is_set(pfont))
+   //   if (::is_set(pwritetextfont))
    //   {
 
-   //      return pfont;
+   //      return pwritetextfont;
 
    //   }
 
-   //   construct_newø(pfont);
+   //   construct_newø(pwritetextfont);
 
-   //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
+   //   pwritetextfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
    //   auto pmemory = system()->draw2d()->write_text()->get_file_memory(pcontext, path);
 
    //   if (pmemory->has_data())
    //   {
 
-   //      pfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
+   //      pwritetextfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
 
-   //      auto & fontCollection = *pfont->m_pcollection;
+   //      auto & fontCollection = *pwritetextfont->m_pcollection;
 
    //      auto iFamilyCount = fontCollection.GetFamilyCount();
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
-   //      fontCollection.GetFamilies(iFamilyCount, pfont->m_familya.data(), &pfont->m_iFamilyCount);
+   //      fontCollection.GetFamilies(iFamilyCount, pwritetextfont->m_familya.data(), &pwritetextfont->m_iFamilyCount);
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
    //      for (int iFamily = 0; iFamily < iFamilyCount; iFamily++)
    //      {
 
-   //         if (pfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
+   //         if (pwritetextfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
    //         {
 
    //            warningf("font family nok");
@@ -201,7 +281,7 @@ namespace draw2d_nanovg
 
    //   }
 
-   //   return pfont;
+   //   return pwritetextfont;
 
    //}
 
@@ -246,34 +326,74 @@ namespace draw2d_nanovg
    }
 
 
-   void draw2d::defer_load_font_by_family_name(NVGcontext * pdc, const ::scoped_string& scopedstrName)
+   ::string draw2d::defer_load_font(NVGcontext * pdc, ::write_text::font * pwritetextfont)
    {
 
       _synchronous_lock lock(m_pmutex);
 
-      auto& font = m_mapFont[scopedstrName];
+      ::write_text::font_face_request request;
+      request.m_strFamily = pwritetextfont->family_name();
+      request.m_fontweight = pwritetextfont->m_fontweight;
+      request.m_bItalic = pwritetextfont->m_bItalic;
 
-      if (!font.m_bLoaded)
+      ::string strFontKey;
+      strFontKey.formatf(
+         "family=%s;weight=%d;italic=%d",
+         request.m_strFamily.c_str(),
+         request.m_fontweight.as_i32(),
+         request.m_bItalic ? 1 : 0);
+
+      auto iFont = nvgFindFont(pdc, strFontKey);
+
+      if (iFont >= 0)
       {
 
-         font.m_bLoaded = true;
-
-         ::file::path pathFont = node()->get_font_path_from_name(scopedstrName);
-
-         nvgCreateFont(pdc, scopedstrName, pathFont);
-
-         //nanovg_load_font_from_path(pdc, pathFont, scopedstrName);
-
-         //auto status = nanovg_status(pdc);
-
-         //if (status)
-         //{
-
-         //   warning() << "oh no";
-
-         //}
+         return strFontKey;
 
       }
+
+      ::write_text::font_face_source source;
+
+      if (system()->draw2d()->write_text()->resolve_font_face(source, request))
+      {
+
+         iFont = nvgCreateFontAtIndex(
+            pdc,
+            strFontKey,
+            source.m_path,
+            source.m_iFaceIndex);
+
+      }
+
+      if (iFont < 0)
+      {
+
+         const auto bExists = source.m_path.has_character() && file()->exists(source.m_path);
+         const auto strExtension = ::string(source.m_path.final_extension());
+         ::string strMessage;
+
+         strMessage.formatf(
+            "NanoVG failed to load the requested font into the current graphics context. "
+            "family=\"%s\" weight=%d italic=%s resolved_family=\"%s\" "
+            "path=\"%s\" face_index=%d exists=%s extension=\"%s\".",
+            request.m_strFamily.c_str(),
+            request.m_fontweight.as_i32(),
+            request.m_bItalic ? "true" : "false",
+            source.m_strResolvedFamily.c_str(),
+            source.m_path.c_str(),
+            source.m_iFaceIndex,
+            bExists ? "true" : "false",
+            strExtension.c_str());
+
+         information() << "[draw2d_nanovg.font] " << strMessage;
+
+         throw ::exception(
+            error_failed,
+            strMessage);
+
+      }
+
+      return strFontKey;
 
    }
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 //#include "buffer.h"
 #include "context.h"
@@ -94,8 +94,8 @@ namespace gpu_directx12
       else
       {
 
-         m_papplication->m_gpu.m_eoutputDraw2d = ::gpu::e_output_cpu_buffer;
-         m_papplication->m_gpu.m_eoutputEngine = ::gpu::e_output_cpu_buffer;
+         m_papplication->m_gpu.m_eoutputDraw2d = ::gpu::e_output_aaa_cpu_buffer;
+         m_papplication->m_gpu.m_eoutputEngine = ::gpu::e_output_aaa_cpu_buffer;
 
       }
 
@@ -446,7 +446,7 @@ namespace gpu_directx12
 
 
 
-   //   ::pointer < ::gpu::context > approach::_create_context(const ::gpu::start_context_t & startcontext)
+   //   ::gpu::context_pointer approach::_create_context(const ::gpu::start_context_t & startcontext)
    //   {
    //
    //      ::pointer < ::gpu_directx12::context > pgpucontext;

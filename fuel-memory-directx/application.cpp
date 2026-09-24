@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "application.h"
 //#include "child_frame.h"
 //#include "document.h"

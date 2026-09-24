@@ -67,7 +67,7 @@ namespace app_graphics3d_continuum
 	public:
 
 
-		//::pointer < ::graphics3d::engine > m_pengine;
+		//::pointer < ::graphics3d::engine_instance > m_pgraphics3dengineinstance;
 		camera();
 		~camera() override;
 		//camera(const ::floating_sequence3 & position, float yaw, float pitch);

@@ -21,6 +21,7 @@ namespace app_graphics3d_continuum
       int                              m_iSequence;
 
 
+
       impact();
       ~impact() override;
 
@@ -37,9 +38,9 @@ namespace app_graphics3d_continuum
 
       virtual void install_message_routing(::channel * psender) override;
 
-      virtual void _001OnClip(::draw2d::graphics_pointer & pgraphics) override;
+      virtual void _001OnClip(::draw2d::graphics_pointer & pdraw2dgraphics) override;
 
-      virtual void _001OnDraw(::draw2d::graphics_pointer & pgraphics) override;
+      virtual void _001OnDraw(::draw2d::graphics_pointer & pdraw2dgraphics) override;
 
       void handle(::topic * ptopic, ::handler_context * phandlercontext) override;
 
@@ -48,7 +49,7 @@ namespace app_graphics3d_continuum
 
       //s::block global_ubo_block() override;
 
-      void on_layout(::draw2d::graphics_pointer & pgraphics) override;
+      void on_layout(::draw2d::graphics_pointer & pdraw2dgraphics) override;
 
       DECLARE_MESSAGE_HANDLER(on_message_create);
       DECLARE_MESSAGE_HANDLER(on_message_destroy);
@@ -63,6 +64,32 @@ namespace app_graphics3d_continuum
       //void on_load_engine() override;
 
       ::pointer < ::graphics3d::key_map > get_default_key_map() override;
+
+
+   };
+
+   
+   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM switcher_impact :
+      virtual public impact
+   {
+   public:
+
+
+      switcher_impact();
+      ~switcher_impact() override;
+
+
+   };
+
+
+   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM skybox_impact :
+      virtual public impact
+   {
+   public:
+
+
+      skybox_impact();
+      ~skybox_impact() override;
 
 
    };

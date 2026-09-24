@@ -55,7 +55,7 @@ namespace app_graphics3d_continuum
 
 
    //   //::pointer<::user::graphics3d > m_pusergraphics3d;
-   //   //::pointer<::graphics3d::engine > m_pengine;
+   //   //::pointer<::graphics3d::engine_instance > m_pgraphics3dengineinstance;
    //   //::pointer<::graphics3d::key_map > m_pkeymap;
 
 

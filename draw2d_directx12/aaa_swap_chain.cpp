@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-10 14:28 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 //#include "graphics.h"
 //#include "swap_chain.h"
 //#include "directx12/directx12.h"
@@ -64,10 +64,10 @@
 //   //}
 //
 //
-//   void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
+//   void swap_chain::endDraw(::draw2d_gpu::graphics* pdraw2dgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
 //   {
 //
-//      ::cast < ::draw2d_directx12::graphics > pgraphicsDirect2d = pgraphics;
+//      ::cast < ::draw2d_directx12::graphics > pgraphicsDirect2d = pdraw2dgraphics;
 //
 //      comptr < ID2D1Bitmap > pd2d1bitmap;
 //

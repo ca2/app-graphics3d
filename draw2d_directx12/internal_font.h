@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "aura/graphics/write_text/internal_font.h"
 #include "acme/_operating_system.h"
 #include "acme/operating_system/windows_common/com/comptr.h"
@@ -18,8 +18,8 @@ namespace draw2d_directx12
    {
    public:
 
-      ::comptr < IDWriteFontFileLoader > m_pfontfileloader;
-      ::comptr < IDWriteFontCollectionLoader > m_pfontcollectionloader;
+      ::comptr < IDWriteFontFileLoader > m_pdwritefontfileloader;
+      ::comptr < IDWriteFontCollectionLoader > m_pdwritefontcollectionloader;
 
       ::comptr<IDWriteFontCollection>                       m_pcollection;
       ::array < ::comptr < IDWriteFontFamily > >            m_familya;
@@ -33,7 +33,7 @@ namespace draw2d_directx12
 
 
       void load_from_memory(::memory_base * pmemory) override;
-      void on_create_font(::draw2d::graphics * pgraphics, ::write_text::font * pfont) override;
+      void on_create_font(::draw2d::graphics * pdraw2dgraphics, ::write_text::font * pwritetextfont) override;
 
 
    };

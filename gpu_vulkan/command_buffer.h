@@ -19,6 +19,10 @@ namespace gpu_vulkan
       VkCommandBuffer         m_vkcommandbuffer;
       VkCommandBufferLevel    m_vkcommandbufferlevel;
       VkCommandPool           m_vkcommandpool;
+      VkViewport              m_vkviewport;
+      VkRect2D                m_vkrect2dScissor;
+      bool                    m_bViewportSet;
+      bool                    m_bScissorSet;
       bool                    m_bFenceWaitIfNoPreexistingFence = false;
 
       //bool m_bPresentQueue;
@@ -43,9 +47,11 @@ namespace gpu_vulkan
 
       virtual void set_line_width(float fLineWidth);
 
-      void set_viewport(const ::i32_rectangle & rectangle) override;
+      void clear(::gpu::texture * pgputexture, const ::color::color & color) override;
 
-      void set_scissor(const ::i32_rectangle& rectangle) override;  
+      void set_viewport(const ::i32_rectangle & rectangle, const ::i32_size & sizeRaw = {}) override;
+
+      void set_scissor(const ::i32_rectangle & rectangle, const ::i32_size & sizeRaw = {}) override;
 
       //void set_primitive_topology_triangle_strip() override;
 
@@ -71,7 +77,7 @@ namespace gpu_vulkan
       void draw_indexes(int iIndexCount) override;
 
 
-      void begin_render(::gpu::shader *pgpushader, ::gpu::texture *pgputextureTarget) override;
+      void begin_render(::gpu::shader *pgpushader, ::gpu::texture_site *pgputexturesiteTarget) override;
       void end_render() override;
 
 

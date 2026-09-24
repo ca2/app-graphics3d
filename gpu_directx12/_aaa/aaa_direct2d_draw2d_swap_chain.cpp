@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-04 23:11 <3ThomasBorregaardSørensen!!
-#include "../framework.h"
+#include "../platform.h"
 //#include "approach.h"
 //#include "direct2d_draw2d_swap_chain.h"
 //#include "offscreen_render_target_view.h"
@@ -1126,7 +1126,7 @@
 //      //if (::is_null(puserinteraction))
 //      //{
 //
-//      //   puserinteraction = dynamic_cast <::user::interaction*>(m_papplication->m_pacmeuserinteractionMain.m_p);
+//      //   puserinteraction = dynamic_cast <::user::interaction*>(m_pacmeuserinteractionMain.m_p);
 //
 //      //}
 //
@@ -1164,7 +1164,7 @@
 //      //      if (!puserinteraction)
 //      //      {
 //
-//      //         puserinteraction = dynamic_cast <::user::interaction*>(m_papplication->m_pacmeuserinteractionMain.m_p);
+//      //         puserinteraction = dynamic_cast <::user::interaction*>(m_pacmeuserinteractionMain.m_p);
 //
 //      //      }
 //

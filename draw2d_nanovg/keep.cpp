@@ -1,18 +1,18 @@
 // From draw2d_cairo/keep.cpp by
 // camilo on 2025-07-14 09:57 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "keep.h"
 #include "draw2d.h"
 #include "acme/parallelization/synchronous_lock.h"
 
 
-nanovg_keep::nanovg_keep(NVGcontext* pgraphics, bool bSave)
+nanovg_keep::nanovg_keep(NVGcontext* pdraw2dgraphics, bool bSave)
 {
 
    m_bSave = false;
 
-   if (pgraphics == nullptr)
+   if (pdraw2dgraphics == nullptr)
    {
 
       m_pdc = nullptr;
@@ -21,7 +21,7 @@ nanovg_keep::nanovg_keep(NVGcontext* pgraphics, bool bSave)
 
    }
 
-   m_pdc = pgraphics;
+   m_pdc = pdraw2dgraphics;
 
    if (bSave)
    {

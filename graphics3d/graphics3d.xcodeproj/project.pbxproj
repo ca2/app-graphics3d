@@ -66,8 +66,8 @@
 		9A9124FC2F23268B002F52F3 /* engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
 		9A9124FD2F23268B002F52F3 /* entity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = entity.h; sourceTree = "<group>"; };
 		9A9124FE2F23268B002F52F3 /* frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame.h; sourceTree = "<group>"; };
-		9A9124FF2F23268B002F52F3 /* framework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
-		9A9125002F23268B002F52F3 /* framework.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = framework.cpp; sourceTree = "<group>"; };
+		9A9124FF2F23268B002F52F3 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		9A9125002F23268B002F52F3 /* platform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
 		9A9125062F23268B002F52F3 /* game_object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = game_object.h; sourceTree = "<group>"; };
 		9A91250F2F23268B002F52F3 /* immersion_layer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = immersion_layer.h; sourceTree = "<group>"; };
 		9A9125102F23268B002F52F3 /* input.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
@@ -175,9 +175,9 @@
 				9A9124FC2F23268B002F52F3 /* engine.h */,
 				9A9124FD2F23268B002F52F3 /* entity.h */,
 				9A9124FE2F23268B002F52F3 /* frame.h */,
-				9A9124FF2F23268B002F52F3 /* framework.h */,
+				9A9124FF2F23268B002F52F3 /* platform.h */,
 				9A9125062F23268B002F52F3 /* game_object.h */,
-				9A9125002F23268B002F52F3 /* framework.cpp */,
+				9A9125002F23268B002F52F3 /* platform.cpp */,
 				9A91250F2F23268B002F52F3 /* immersion_layer.h */,
 				9A9125102F23268B002F52F3 /* input.h */,
 				9A9125112F23268B002F52F3 /* input1.h */,
@@ -411,7 +411,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
@@ -522,7 +522,7 @@
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;

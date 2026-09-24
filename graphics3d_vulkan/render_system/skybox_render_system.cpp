@@ -1,6 +1,6 @@
 // From graphics3d_opengl/render_systems/skybox_render_system.cpp
 // by camilo on 2025-12-04 16:16 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "skybox_render_system.h"
 #include "bred/gltf/vertex.h"
 #include "bred/gpu/command_buffer.h"
@@ -9,7 +9,7 @@
 #include "bred/gpu/shader.h"
 #include "bred/gpu/texture.h"
 #include "bred/graphics3d/game_object.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 //#include "bred/graphics3d/frame.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/shape_factory.h"

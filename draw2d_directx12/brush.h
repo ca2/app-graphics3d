@@ -16,7 +16,7 @@ namespace draw2d_directx12
    public:
 
 
-      //comptr<ID2D1Brush>                 m_pbrush;
+      //comptr<ID2D1Brush>                 m_pdraw2dbrush;
       //comptr<ID2D1SolidColorBrush>       m_psolidbrush;
       //comptr<ID2D1LinearGradientBrush>   m_plineargradientbrush;
       //comptr<ID2D1RadialGradientBrush>   m_pradialgradientbrush;
@@ -31,10 +31,10 @@ namespace draw2d_directx12
 
 
       void destroy() override;
-      void destroy_os_data() override;
-      void create(::draw2d::graphics * pgraphics, char iCreate) override;
+      // void destroy_os_data() override;
+      void update(::draw2d::graphics * pdraw2dgraphics) override;
 
-      //virtual ID2D1Brush * get_os_brush(::draw2d_directx12::graphics * pgraphics) const;
+      //virtual ID2D1Brush * get_os_brush(::draw2d_directx12::graphics * pdraw2dgraphics) const;
 
       //bool CreateSolidBrush(::color::color crColor);
       //bool CreateHatchBrush(int nIndex, ::color::color crColor);

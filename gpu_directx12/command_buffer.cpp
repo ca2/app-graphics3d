@@ -1,11 +1,13 @@
 // Created by camilo on 2025-06-23 00:16 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
+#include "texture_copy.h"
 #include "approach.h"
 #include "command_buffer.h"
 #include "depth_stencil.h"
 #include "descriptors.h"
 #include "fence.h"
 #include "frame.h"
+#include "queue.h"
 #include "renderer.h"
 #include "semaphore.h"
 #include "texture.h"
@@ -13,13 +15,13 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/buffer.h"
 #include "bred/gpu/layer.h"
 //#include "bred/gpu/render_state.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
-#include "aura/graphics/image/target.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
 
@@ -35,9 +37,9 @@ namespace gpu_directx12
    command_buffer::command_buffer()
    {
 
-      m_fenceValue = 0;
+      //m_uFence = 0;
 
-      m_hFenceEvent = nullptr;
+      //m_hFenceEvent = nullptr;
 
    }
 
@@ -45,14 +47,14 @@ namespace gpu_directx12
    command_buffer::~command_buffer()
    {
 
-      if (m_hFenceEvent)
-      {
+      //if (m_hFenceEvent)
+      //{
 
-         ::CloseHandle(m_hFenceEvent);
+      //   ::CloseHandle(m_hFenceEvent);
 
-         m_hFenceEvent = nullptr;
+      //   m_hFenceEvent = nullptr;
 
-      }
+      //}
 
    }
 
@@ -66,32 +68,10 @@ namespace gpu_directx12
 
       ::cast < context > pcontext = prenderer->m_pgpucontext;
 
-      if (ecommandbuffer == ::gpu::e_command_buffer_graphics)
-      {
-
-         _initialize_command_buffer(
-            pcontext->command_queue(),
-            D3D12_COMMAND_LIST_TYPE_DIRECT,
-            prenderer);
-
-      }
-      else if (ecommandbuffer == ::gpu::e_command_buffer_copy)
-      {
-
-         _initialize_command_buffer(
-            pcontext->copy_command_queue(),
-            D3D12_COMMAND_LIST_TYPE_COPY,
-            prenderer);
-
-      }
-
-   }
+      ::cast < device > pdevice = pcontext->m_pgpudevice;
 
 
-   void command_buffer::_initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer)
-   {
-
-      if (::is_null(pcommandqueue))
+      if (::is_null(pqueue))
       {
 
          throw ::exception(error_wrong_state);
@@ -100,17 +80,19 @@ namespace gpu_directx12
 
       m_prenderer = prenderer;
 
-      m_pcommandqueue = pcommandqueue;
+      m_pgpuqueue = pqueue;
 
-      m_ecommandlisttype = ecommandlisttype;
+      ::cast < ::gpu_directx12::queue > pgpuqueue = pqueue;
+
+      auto ecommandlisttype = pgpuqueue->m_ecommandlisttype;
 
       // D3D12_COMMAND_LIST_TYPE_DIRECT
       // D3D12_COMMAND_LIST_TYPE_DIRECT
 
-      ::cast<gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+      ///::cast<gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
       HRESULT hr = pdevice->m_pd3d12device->CreateCommandAllocator(
-         m_ecommandlisttype,  // Type: DIRECT for graphics
+         ecommandlisttype,  // Type: DIRECT for graphics
          __interface_of(m_pcommandallocator)
       );
 
@@ -120,7 +102,7 @@ namespace gpu_directx12
       // 4. Create command list (can be reused)
       ::defer_throw_hresult(pdevice->m_pd3d12device->CreateCommandList(
          0,
-         m_ecommandlisttype,
+         ecommandlisttype,
          m_pcommandallocator, // initial allocator
          nullptr, // No PSO yet
          __interface_of(m_pcommandlist)
@@ -128,19 +110,115 @@ namespace gpu_directx12
 
       ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
 
-      HRESULT hrCreateFeence =
-         pdevice->m_pd3d12device->CreateFence(m_fenceValue, D3D12_FENCE_FLAG_NONE,
-            __interface_of(m_pfence));
 
-      ::defer_throw_hresult(hrCreateFeence);
+      m_pgpufence = pcontext->create_gpu_fence();
 
       // 5. Create fence + event for GPU sync
-      m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+      //m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-      ///m_fenceValue = 1;
+      ///m_uFence = 1;
+
+     /* if (ecommandbuffer == ::gpu::e_command_buffer_graphics)
+      {
+
+         _initialize_command_buffer(
+            pdevice->_main_d3d12_command_queue(),
+            D3D12_COMMAND_LIST_TYPE_DIRECT,
+            prenderer);
+
+      }
+      else if (ecommandbuffer == ::gpu::e_command_buffer_copy)
+      {
+
+         _initialize_command_buffer(
+            pdevice->_copy_d3d12_command_queue(),
+            D3D12_COMMAND_LIST_TYPE_COPY,
+            prenderer);
+
+      }*/
+
 
    }
 
+
+   //void command_buffer::_initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer)
+   //{
+
+   //   if (::is_null(pcommandqueue))
+   //   {
+
+   //      throw ::exception(error_wrong_state);
+
+   //   }
+
+   //   m_prenderer = prenderer;
+
+   //   m_pcommandqueue = pcommandqueue;
+
+   //   m_ecommandlisttype = ecommandlisttype;
+
+   //   // D3D12_COMMAND_LIST_TYPE_DIRECT
+   //   // D3D12_COMMAND_LIST_TYPE_DIRECT
+
+   //   ::cast<gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+   //   HRESULT hr = pdevice->m_pd3d12device->CreateCommandAllocator(
+   //      m_ecommandlisttype,  // Type: DIRECT for graphics
+   //      __interface_of(m_pcommandallocator)
+   //   );
+
+   //   ::defer_throw_hresult(hr);
+
+   //   //auto& pcommandlist = m_framea.element_at_grow(iFrame);
+   //   // 4. Create command list (can be reused)
+   //   ::defer_throw_hresult(pdevice->m_pd3d12device->CreateCommandList(
+   //      0,
+   //      m_ecommandlisttype,
+   //      m_pcommandallocator, // initial allocator
+   //      nullptr, // No PSO yet
+   //      __interface_of(m_pcommandlist)
+   //   ));
+
+   //   ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
+
+   //   HRESULT hrCreateFeence =
+   //      pdevice->m_pd3d12device->CreateFence(m_uFence, D3D12_FENCE_FLAG_NONE,
+   //         __interface_of(m_pfence));
+
+   //   ::defer_throw_hresult(hrCreateFeence);
+
+   //   // 5. Create fence + event for GPU sync
+   //   m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+   //   ///m_uFence = 1;
+
+   //}
+   void command_buffer::_defer_set_device_descriptor_heaps()
+   {
+
+      if (!m_pcommandlist || m_estate != ::gpu::command_buffer::e_state_recording ||
+          (m_pcommandlist->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT &&
+           m_pcommandlist->GetType() != D3D12_COMMAND_LIST_TYPE_COMPUTE))
+         throw ::exception(error_wrong_state, "Descriptor heaps require a recording DIRECT or COMPUTE command list");
+      if (m_bDeviceDescriptorHeapSet)
+         return;
+
+      ::cast < renderer > prenderer = m_pgpurendertarget->m_pgpurenderer;
+
+      ::cast < context > pcontext = prenderer->m_pgpucontext;
+
+      ::cast < device > pdevice = pcontext->m_pgpudevice;
+
+      ID3D12DescriptorHeap * heaps[] =
+      {
+         pdevice->_cbv_srv_uav_heap(),
+         pdevice->_sampler_heap()
+      };
+      m_pcommandlist->SetDescriptorHeaps(2, heaps);
+      m_bDeviceDescriptorHeapSet = true;
+
+
+   }
 
    void command_buffer::begin_command_buffer(bool bOneTime)
    {
@@ -148,6 +226,8 @@ namespace gpu_directx12
       reset();
 
       m_estate = ::gpu::command_buffer::e_state_recording;
+
+  
 
    }
 
@@ -170,13 +250,73 @@ namespace gpu_directx12
    }
 
 
-   void command_buffer::_copy_resource(texture * ptextureTarget, texture * ptextureSource)
+   void command_buffer::_copy_resource(texture * target, texture * source)
+   {
+      _copy_texture_region(target, source);
+   }
+
+   void command_buffer::_copy_texture_region(texture * target, texture * source)
+   {
+      if (m_estate != ::gpu::command_buffer::e_state_recording || !target || !source ||
+          !target->m_pgpucontext || !source->m_pgpucontext ||
+          target->m_pgpucontext->m_pgpudevice != source->m_pgpucontext->m_pgpudevice ||
+          target->m_pgpucontext->m_pgpudevice != m_prenderer->m_pgpucontext->m_pgpudevice ||
+          !target->m_pd3d12resourceTexture || !source->m_pd3d12resourceTexture)
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 texture preservation copy");
+      auto dst = target->m_pd3d12resourceTexture;
+      auto src = source->m_pd3d12resourceTexture;
+      m_comptraHold.add(comptr<IUnknown>(dst->m_presource));
+      m_comptraHold.add(comptr<IUnknown>(src->m_presource));
+      auto hr = detail::copy_texture_region(m_pcommandlist, dst->m_presource, src->m_presource,
+         dst->m_state.m_resourcestates, src->m_state.m_resourcestates);
+      if (FAILED(hr))
+         throw ::exception(error_bad_argument, "Texture preservation requires compatible non-MSAA color textures on a DIRECT list");
+   }
+
+
+   void command_buffer::_clear(::gpu::texture * pgputexture, const ::i32_rectangle & rectangle, const ::color::color & color)
    {
 
+      float clearColor[4] = {
+         color.f32_red() * color.f32_opacity(),
+         color.f32_green() * color.f32_opacity(),
+         color.f32_blue() * color.f32_opacity(),
+         color.f32_opacity() }; // Clear to transparent
+
+      ::cast < texture > ptexture = pgputexture;
+
+      D3D12_RECT r2[1];
+
+      r2[0].left = rectangle.left;
+      r2[0].top = rectangle.top;
+      r2[0].right = rectangle.right;
+      r2[0].bottom = rectangle.bottom;
+
+      //pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, r2);
+
+      m_pcommandlist->ClearRenderTargetView(ptexture->current_layer().m_handleRenderTargetView, clearColor, 1, r2);
+
+   }
 
 
-            m_pcommandlist->CopyResource(ptextureTarget->m_pd3d12resourceTexture->m_presource, ptextureSource->m_pd3d12resourceTexture->m_presource);
+   void command_buffer::clear(::gpu::texture * pgputexture, const ::color::color & color)
+   {
 
+      float clearColor[4] = {
+         color.f32_red() * color.f32_opacity(),
+         color.f32_green() * color.f32_opacity(),
+         color.f32_blue() * color.f32_opacity(),
+         color.f32_opacity() }; // Clear to transparent
+
+      ::cast < texture > ptexture = pgputexture;
+
+      ptexture->set_state(this, ::gpu::e_texture_state_color_attachment);
+
+      //pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, r2);
+
+      auto handleRenderTargetView = ptexture->current_layer().m_handleRenderTargetView;
+
+      m_pcommandlist->ClearRenderTargetView(handleRenderTargetView, clearColor, 0, nullptr);
 
    }
 
@@ -190,38 +330,50 @@ namespace gpu_directx12
 
       HRESULT hrCloseCommandList = m_pcommandlist->Close();
 
+      // Invalidate guards even if Close or subsequent queue operations fail.
+      ++m_uRasterizerStateGeneration;
+
       pdevice->defer_throw_hresult(hrCloseCommandList);
 
       for (auto &pgpusemaphore : m_semaphoreaWait)
       {
 
-         ::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
+         //::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
 
-         psemaphore->wait(m_pcommandqueue);
+         pgpusemaphore->wait(m_pgpuqueue);
+
+         //psemaphore->wait(m_pcommandqueue);
 
       }
 
-      ID3D12CommandList* ppCommandLists[] = { m_pcommandlist };
-
-      m_pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
+      m_pgpuqueue->execute_command_buffer(this);
 
       for (auto &pgpusemaphore : m_semaphoreaSignal)
       {
 
-         ::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
+         //::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
 
-         psemaphore->signal(m_pcommandqueue);
+         pgpusemaphore->signal(m_pgpuqueue);
 
       }
 
-      ::cast<::gpu_directx12::fence> pfence = m_pgpufence;
+      //::cast<::gpu_directx12::fence> pfence = m_pgpufence;
 
-      if (pfence)
+      if (m_pgpufence)
       {
 
-         pfence->signal(m_pcommandqueue);
+         m_pgpufence->signal_gpu_fence(m_pgpuqueue);
 
       }
+
+      //::cast<::gpu_directx12::fence> pfence = m_pgpufence;
+
+      //if (pfence)
+      //{
+
+      //   pfence->signal_gpu_dence(m_pgpuqueue);
+
+      //}
 
       m_estate = ::gpu::command_buffer::e_state_submitted;
 
@@ -231,15 +383,17 @@ namespace gpu_directx12
    void command_buffer::wait_commands_to_execute()
    {
 
-      ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
+      //::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
 
-      //UINT64 uploadFenceValue = ++m_fenceValue;
+      //UINT64 uploadFenceValue = ++m_uFence;
 
-      m_fenceValue++;
+      m_pgpufence->m_uFence++;
 
-      auto hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, m_fenceValue);
+      m_pgpufence->signal_gpu_fence(m_pgpuqueue);
 
-      pdevice->defer_throw_hresult(hrSignalCommandQueue);
+      //auto hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, m_uFence);
+
+      //pdevice->defer_throw_hresult(hrSignalCommandQueue);
 
       wait_for_gpu();
 
@@ -249,20 +403,22 @@ namespace gpu_directx12
    void command_buffer::wait_for_gpu()
    {
 
-      //const UINT64 fenceValue = ++m_fenceValue;
+      //const UINT64 fenceValue = ++m_uFence;
 
-      //prenderer->m_pcommandqueue->Signal(m_pfence, m_fenceValue);
+      //prenderer->m_pcommandqueue->Signal(m_pfence, m_uFence);
 
-      if (m_pfence->GetCompletedValue() < m_fenceValue)
-      {
+      m_pgpufence->wait_gpu_fence();
 
-         ::ResetEvent(m_hFenceEvent);
+      //if (m_pgpufence->GetCompletedValue() < m_uFence)
+      //{
 
-         m_pfence->SetEventOnCompletion(m_fenceValue, m_hFenceEvent);
+      //   ::ResetEvent(m_hFenceEvent);
 
-         ::WaitForSingleObject(m_hFenceEvent, INFINITE);
+      //   m_pfence->SetEventOnCompletion(m_uFence, m_hFenceEvent);
 
-      }
+      //   ::WaitForSingleObject(m_hFenceEvent, INFINITE);
+
+      //}
 
       //m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
 
@@ -273,21 +429,56 @@ namespace gpu_directx12
    void command_buffer::reset()
    {
 
+      // An old guard must never write into a new recording of this list.
+      ++m_uRasterizerStateGeneration;
+
       auto pcommandallocator = m_pcommandallocator;
 
       HRESULT hrResetCommandAllocator = pcommandallocator->Reset();
 
       ::defer_throw_hresult(hrResetCommandAllocator);
 
-      m_pcommandlist->Reset(pcommandallocator, nullptr);
+      ::defer_throw_hresult(m_pcommandlist->Reset(pcommandallocator, nullptr));
 
+      m_uViewportCount = 0;
+      m_uScissorCount = 0;
+      m_bDeviceDescriptorHeapSet = false;
+
+   }
+
+
+   void command_buffer::set_viewports(UINT count, const D3D12_VIEWPORT * pviewports)
+   {
+      if (count > D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE || (count && !pviewports))
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 viewport array");
+      if (!m_pcommandlist || m_estate != ::gpu::command_buffer::e_state_recording)
+         throw ::exception(error_wrong_state, "Setting viewports requires a recording DirectX 12 command buffer");
+
+      m_pcommandlist->RSSetViewports(count, pviewports);
+      for (UINT i = 0; i < count; ++i)
+         m_viewporta[i] = pviewports[i];
+      m_uViewportCount = count;
+   }
+
+
+   void command_buffer::set_scissor_rects(UINT count, const D3D12_RECT * prects)
+   {
+      if (count > D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE || (count && !prects))
+         throw ::exception(error_bad_argument, "Invalid DirectX 12 scissor array");
+      if (!m_pcommandlist || m_estate != ::gpu::command_buffer::e_state_recording)
+         throw ::exception(error_wrong_state, "Setting scissors requires a recording DirectX 12 command buffer");
+
+      m_pcommandlist->RSSetScissorRects(count, prects);
+      for (UINT i = 0; i < count; ++i)
+         m_scissora[i] = prects[i];
+      m_uScissorCount = count;
    }
 
 
    bool command_buffer::has_finished()
    {
 
-      return m_pfence->GetCompletedValue() >= m_fenceValue;
+      return m_pgpufence->has_finished();
 
    }
 

@@ -2,7 +2,7 @@
 // camilo on 2025-09-26 19:52 <3ThomasBorregaardSorensen!!
 // From gpu_opengl/ibl/cubemap_framebuffer.cpp by
 // camilo on 2025-10-10 22:15 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "cubemap_framebuffer.h"
 #include "bred/gpu/context_lock.h"
 #include "gpu_vulkan/command_buffer.h"
@@ -368,7 +368,7 @@ namespace gpu_vulkan
             ptexture->rectangle().width(), ptexture->rectangle().height(),
             ptexture->m_textureattributes.m_iMipCount);
 
-         pcontext->endSingleTimeCommands(pcommandbufferCopy);
+         pgpucommandbufferCopy.commit();
 
 
          VkImageViewCreateInfo imageViewCreateInfo = {};

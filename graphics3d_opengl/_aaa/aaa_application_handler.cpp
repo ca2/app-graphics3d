@@ -1,4 +1,4 @@
-#include "../framework.h"
+#include "../platform.h"
 // vk_core.cpp
 //#include "shared.h"
 #include "application_handler.h"

@@ -1,8 +1,9 @@
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 #include "command_buffer.h"
 #include "depth_stencil.h"
 #include "descriptors.h"
+#include "window_attachment.h"
 #include "frame.h"
 #include "input_layout.h"
 #include "renderer.h"
@@ -11,18 +12,20 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/buffer.h"
 #include "bred/gpu/layer.h"
 //#include "bred/gpu/layer.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/types.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/types.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
-#include "aura/graphics/image/target.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
+#include "bred/gpu/fence.h"
 
 
 using namespace directx12;
@@ -167,21 +170,15 @@ float4 main(PSInput input) : SV_TARGET {
       m_pgpucontext = pgpucontext;
 
       ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
-      // Describe and create a constant buffer view (CBV) descriptor heap.
-// Flags indicate that this descriptor heap can be bound to the pipeline 
-// and that descriptors contained in it can be referenced by a root table.
-      D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-      cbvHeapDesc.NumDescriptors = 2;
-      cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-      cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      auto pd3d12device = pgpudevice->m_pd3d12device;
-      HRESULT hrCreateDescriptorHeapCbv = pd3d12device->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
-      pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
+      pgpudevice->_cbv_srv_uav_heap();
+      pgpudevice->_sampler_heap();
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
 
-         pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
+         //throw todo;
+
+         pgpucontext->create_cpu_buffer(pgpucontext->size());
 
          construct_newø(m_pcpubuffersampler);
 
@@ -542,7 +539,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      m_commandbuffera.set_size(pdevice->get_frame_count());
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pcontext);
+
+      m_commandbuffera.set_size(pgpuwindowattachment->get_frame_count());
 
       //for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
       for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
@@ -631,36 +630,38 @@ float4 main(PSInput input) : SV_TARGET {
    ::gpu::command_buffer* renderer::getLoadAssetsCommandBuffer()
    {
 
-      if (m_pgpucontext->m_pcommandbufferMain)
-      {
+      return ::gpu::renderer::getLoadAssetsCommandBuffer();
 
-         return m_pgpucontext->m_pcommandbufferMain;
+      //if (m_pgpucontext->m_pcommandbufferMain)
+      //{
 
-      }
+      //   return m_pgpucontext->m_pcommandbufferMain;
 
-      if (!m_pcommandbufferLoadAssets)
-      {
+      //}
 
-         defer_constructø(m_pcommandbufferLoadAssets);
+      //if (!m_pcommandbufferLoadAssets)
+      //{
 
-         ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+      //   defer_constructø(m_pcommandbufferLoadAssets);
 
-         ::cast < command_buffer > pcommandbuffer = m_pcommandbufferLoadAssets;
+      //   ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
-         auto pgpurendertarget = this->render_target();
+      //   ::cast < command_buffer > pcommandbuffer = m_pcommandbufferLoadAssets;
 
-         pcommandbuffer->initialize_command_buffer(
-            pgpurendertarget,
-            m_pgpucontext->m_pgpudevice->transfer_queue(),
-            ::gpu::e_command_buffer_copy);
-            //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
+      //   auto pgpurendertarget = this->render_target();
 
-         pcommandbuffer->reset();
+      //   pcommandbuffer->initialize_command_buffer(
+      //      pgpurendertarget,
+      //      m_pgpucontext->m_pgpudevice->transfer_queue(),
+      //      ::gpu::e_command_buffer_copy);
+      //      //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
+
+      //   pcommandbuffer->reset();
 
 
-      }
+      //}
 
-      return m_pcommandbufferLoadAssets;
+      //return m_pcommandbufferLoadAssets;
 
    }
 
@@ -681,7 +682,7 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::on_begin_draw()
    {
 
-      if (m_pgpucontext->m_rectangle.is_empty())
+      if (m_pgpucontext->size().is_empty())
       {
 
          throw ::exception(error_wrong_state, "please call set size before at least once with no empty preferrably good initial size");
@@ -694,7 +695,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
-      assert(m_pgpucontext->m_pgpudevice->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+
+      assert(pgpuwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
@@ -779,22 +782,24 @@ float4 main(PSInput input) : SV_TARGET {
          if (pgpurendertargetview)
          {
 
-            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer());
+            auto ptexturesiteCurrent = pgpurendertargetview->current_texture(::gpu::current_layer(), true);
+
+            ::cast < texture > ptextureCurrent = ptexturesiteCurrent->gpu_texture();
 
             auto presourceTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
             if (presourceTexture)
             {
-
-               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                  ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
+               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(ptextureCurrent->m_handleRenderTargetView);
                if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
                {
-                  if (!ptextureCurrent->m_pheapDepthStencilView)
+                  if (!ptextureCurrent->m_handleDepthStencilView.ptr)
                   {
                      ptextureCurrent->create_depth_resources();
                   }
-                  auto hDsv = ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+
+                  auto hDsv = ptextureCurrent->m_handleDepthStencilView;
+                  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(hDsv);
                   CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
                   pcommandlist->OMSetRenderTargets(
                      1,                    // One render target
@@ -820,22 +825,22 @@ float4 main(PSInput input) : SV_TARGET {
                D3D12_VIEWPORT viewport = {};
                viewport.TopLeftX = 0.0f;
                viewport.TopLeftY = 0.0f;
-               viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
-               viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+               viewport.Width = static_cast<float>(m_pgpucontext->width());
+               viewport.Height = static_cast<float>(m_pgpucontext->height());
                viewport.MinDepth = 0.0f;
                viewport.MaxDepth = 1.0f;
 
                D3D12_RECT scissorRect = {};
                scissorRect.left = 0;
                scissorRect.top = 0;
-               scissorRect.right = m_pgpucontext->m_rectangle.width();
-               scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+               scissorRect.right = m_pgpucontext->width();
+               scissorRect.bottom = m_pgpucontext->height();
 
-               if (ptextureCurrent->m_pheapDepthStencilView)
+               if (ptextureCurrent->m_handleDepthStencilView.ptr)
                {
 
                   pcommandlist->ClearDepthStencilView(
-                     ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart(),
+                     ptextureCurrent->m_handleDepthStencilView,
                      D3D12_CLEAR_FLAG_DEPTH,
                      1.0f, 0,
                      0, nullptr
@@ -1179,7 +1184,9 @@ float4 main(PSInput input) : SV_TARGET {
       // Setup footprint
       UINT64 totalBytes = 0;
 
-      m_pgpucontext->m_pgpudevice->m_pd3d12device->GetCopyableFootprints(
+      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      pgpudevice->m_pd3d12device->GetCopyableFootprints(
          &m_desc,
          0, 1, 0,
          &m_footprint, nullptr, nullptr, &totalBytes);
@@ -1330,7 +1337,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::cpu_buffer_sampler::send_sample()
+   void renderer::cpu_buffer_sampler::send_sample2()
    {
 
       void* data = nullptr;
@@ -1340,7 +1347,8 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
       ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer());
+      auto ptexturesiteCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
+      ::cast < texture > ptextureCurrent = ptexturesiteCurrent->gpu_texture();
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
 
@@ -1351,24 +1359,24 @@ float4 main(PSInput input) : SV_TARGET {
       UINT h = 0;
       UINT s = 0;
       GetTextureSizeInfo(pdevice->m_pd3d12device, presourceOffscreenTexture, w, h, s);
-      auto pcpubuffer = m_pgpucontext->m_pcpubuffer;
+
+      throw todo;
+      
+      auto pcpubuffer = m_pgpucontext->m_pbuffer;
 
       if (pcpubuffer && w > 0 && h > 0 && s >0)
       {
 
-         auto pimagetarget = pcpubuffer->m_pimagetarget;
+         auto ppixmap = pcpubuffer->m_ppixmap;
 
-         if (pimagetarget)
+         if (ppixmap)
          {
 
-            //auto size = m_pgpucontext->m_rectangle.size();
+            //auto size = m_pgpucontext->size();
 
-            pimagetarget->set_image_pixels(
-               (const ::image32_t *) data,
-               w,
-               h,
-               s,
-               false);
+            ppixmap->copy({w, h},
+               (const ::image32_t *)data,
+               s);
 
          }
 
@@ -1514,7 +1522,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::sample_to_cpu_buffer()
+   void renderer::sample_to_cpu_buffer21()
    {
 
       sample();
@@ -1539,7 +1547,8 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
       ID3D12Device* device = pgpudevice->m_pd3d12device;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer());
+      auto ptexturesiteCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
+      ::cast < texture > ptextureCurrent = ptexturesiteCurrent->gpu_texture();
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
       //if (!pdevice || !context || !offscreenTexture)
       if (!device || !presourceOffscreenTexture)
@@ -1721,7 +1730,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    }
 
-   void renderer::gpu_blend(::draw2d::graphics* pgraphics)
+   void renderer::gpu_blend(::draw2d::graphics * pdraw2dgraphics)
    {
 
       //::cast < ::gpu_directx12::offscreen_render_target_view > ptargetview = m_prendertargetview;
@@ -1744,7 +1753,7 @@ float4 main(PSInput input) : SV_TARGET {
       //   throw ::exception(error_wrong_state);
       //}
 
-      //::cast < ::draw2d_direct2d::graphics > pgraphics2d = pgraphics;
+      //::cast < ::draw2d_direct2d::graphics > pgraphics2d = pdraw2dgraphics;
 
       ////D3D11_TEXTURE2D_DESC texDesc = {};
       ////texDesc.Width = width;
@@ -1875,7 +1884,7 @@ float4 main(PSInput input) : SV_TARGET {
       //      //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
       //      //imagedata += subResourceLayout.offset;
 
-      m_pcpubuffersampler->send_sample();
+      m_pcpubuffersampler->send_sample2();
 
       //      ///*
       //      //	Save host visible framebuffer image to disk (ppm format)
@@ -2330,7 +2339,7 @@ float4 main(PSInput input) : SV_TARGET {
       //   //	throw ::exception(error_failed, "failed to present swap chain image!");
       //   //}
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
          sample();
       }
@@ -3354,7 +3363,9 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::blend(::gpu::layer * pgpulayer)
    {
 
-      ::cast < texture > ptexture = pgpulayer->texture();
+      auto ptexturesite = pgpulayer->texture(false);
+
+      ::cast < texture > ptexture = ptexturesite->gpu_texture();
 
       auto pshader = get_image_blend_shader();
 
@@ -3364,14 +3375,14 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesiteTarget = pgpurendertarget->current_texture(::gpu::current_layer(), true);
 
-      pshader->bind(pcommandbuffer, ptextureTarget);
-      pshader->bind_source(pcommandbuffer, ptexture);
+      pshader->bind(pcommandbuffer, ptexturesiteTarget);
+      pshader->bind_source(pcommandbuffer, ptexturesite);
 
-      auto sizeHost = m_pgpucontext->m_rectangle.size();
+      auto sizeHost = m_pgpucontext->size();
 
-      const auto& rect = pgpulayer->texture()->rectangle();
+      const auto& rect = pgpulayer->texture(false)->output_placement();
       float left = ((float)rect.left / (float) sizeHost.width()) * 2.0f - 1.0f;
       float right = ((float)rect.right / (float) sizeHost.width()) * 2.0f - 1.0f;
       float top = 1.0f - ((float)rect.top / (float) sizeHost.height()) * 2.0f;
@@ -3749,13 +3760,13 @@ float4 main(PSInput input) : SV_TARGET {
       if (pgpulayer)
       {
 
-         ptextureCurrent = pgpulayer->source_texture();
+         ptextureCurrent = pgpulayer->texture(true)->gpu_texture();
 
       }
       else
       {
 
-         ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer());
+         ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer(), true)->gpu_texture();
 
       } 
 
@@ -3765,11 +3776,20 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
+      // D3D11-on-12 owns the state transitions for Direct2D layers.  Recording
+      // a D3D12 color-attachment transition here is too early: this command
+      // list is submitted only after Direct2D releases the wrapped resource.
+      if (m_pgpucontext->m_bD3D11On12Shared
+         && m_pgpucontext->m_escene == ::gpu::e_scene_2d)
+      {
+
+         return;
+
+      }
+
       ptextureCurrent->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
-      ID3D12DescriptorHeap* ppHeaps[] = { m_pheapCbv };
-
-      pcommandlist->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+      pcommandbuffer->_defer_set_device_descriptor_heaps();
     
       ////::cast < frame > pframe = pframeParam;
 
@@ -3870,7 +3890,7 @@ float4 main(PSInput input) : SV_TARGET {
             //if (presourceTexture)
             //{
 
-            if (!ptextureCurrent->m_pheapRenderTargetView)
+            if (!ptextureCurrent->m_handleRenderTargetView.ptr)
             {
 
                ptextureCurrent->create_render_target();
@@ -3888,20 +3908,20 @@ float4 main(PSInput input) : SV_TARGET {
 
                //}
 
-               if (ptextureCurrent->m_pheapRenderTargetView)
+               if (ptextureCurrent->m_handleRenderTargetView.ptr)
                {
 
                   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
                   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                     ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
+                     ptextureCurrent->m_handleRenderTargetView);
 
                   if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
                   {
-                     if (!ptextureCurrent->m_pheapDepthStencilView)
+                     if (!ptextureCurrent->m_handleDepthStencilView.ptr)
                      {
                         ptextureCurrent->create_depth_resources();
                      }
-                     auto hDsv = ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+                     auto hDsv = ptextureCurrent->m_handleDepthStencilView;
                      CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
                      pcommandlist->OMSetRenderTargets(
                         1,                    // One render target
@@ -3911,7 +3931,7 @@ float4 main(PSInput input) : SV_TARGET {
                      );
                      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
                      pcommandlist->ClearRenderTargetView(
-   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+   ptextureCurrent->m_handleRenderTargetView,
    clearColor,
    0,
    nullptr
@@ -3929,14 +3949,12 @@ float4 main(PSInput input) : SV_TARGET {
                         nullptr
                      );
 
-
                      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
                      pcommandlist->ClearRenderTargetView(
-   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
-   clearColor,
-   0,
-   nullptr
-);
+                        ptextureCurrent->m_handleRenderTargetView,
+                        clearColor,
+                        0,
+                        nullptr);
 
                   }
                //}
@@ -3961,19 +3979,19 @@ float4 main(PSInput input) : SV_TARGET {
                D3D12_VIEWPORT viewport = {};
                viewport.TopLeftX = 0.0f;
                viewport.TopLeftY = 0.0f;
-               viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
-               viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+               viewport.Width = static_cast<float>(m_pgpucontext->width());
+               viewport.Height = static_cast<float>(m_pgpucontext->height());
                viewport.MinDepth = 0.0f;
                viewport.MaxDepth = 1.0f;
 
                D3D12_RECT scissorRect = {};
                scissorRect.left = 0;
                scissorRect.top = 0;
-               scissorRect.right = m_pgpucontext->m_rectangle.width();
-               scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+               scissorRect.right = m_pgpucontext->width();
+               scissorRect.bottom = m_pgpucontext->height();
 
-               pcommandlist->RSSetViewports(1, &viewport);
-               pcommandlist->RSSetScissorRects(1, &scissorRect);
+               pcommandbuffer->set_viewports(1, &viewport);
+               pcommandbuffer->set_scissor_rects(1, &scissorRect);
 
                //// 2. Begin command recording
                //commandAllocator->Reset();
@@ -4004,12 +4022,12 @@ float4 main(PSInput input) : SV_TARGET {
                //   nullptr
                //);
 
-               if (ptextureCurrent->m_pheapDepthStencilView)
+               if (ptextureCurrent->m_handleDepthStencilView)
                {
 
 
                   pcommandlist->ClearDepthStencilView(
-                     ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart(),
+                     ptextureCurrent->m_handleDepthStencilView,
                      D3D12_CLEAR_FLAG_DEPTH,
                      1.0f, 0,
                      0, nullptr
@@ -4140,9 +4158,11 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-      int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      int iFrameCount = pgpuwindowattachment->get_frame_count();
+
+      int iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       bool bIsFrameInProgress = isFrameInProgress();
 
@@ -4185,7 +4205,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      ::cast<::gpu_directx12::texture> ptexture = pgpulayer->texture();
+      auto ptexturesite = pgpulayer->texture(true);
+
+      ::cast<::gpu_directx12::texture> ptexture = ptexturesite->gpu_texture();
 
       ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
@@ -4383,16 +4405,16 @@ float4 main(PSInput input) : SV_TARGET {
    //            D3D12_VIEWPORT viewport = {};
    //            viewport.TopLeftX = 0.0f;
    //            viewport.TopLeftY = 0.0f;
-   //            viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
-   //            viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+   //            viewport.Width = static_cast<float>(m_pgpucontext->width());
+   //            viewport.Height = static_cast<float>(m_pgpucontext->height());
    //            viewport.MinDepth = 0.0f;
    //            viewport.MaxDepth = 1.0f;
 
    //            D3D12_RECT scissorRect = {};
    //            scissorRect.left = 0;
    //            scissorRect.top = 0;
-   //            scissorRect.right = m_pgpucontext->m_rectangle.width();
-   //            scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+   //            scissorRect.right = m_pgpucontext->width();
+   //            scissorRect.bottom = m_pgpucontext->height();
 
    //            pcommandlist->RSSetViewports(1, &viewport);
    //            pcommandlist->RSSetScissorRects(1, &scissorRect);
@@ -4862,7 +4884,7 @@ float4 main(PSInput input) : SV_TARGET {
       //      // Create the vertex buffer.
       //      {
 
-      //         float aspectRatio = (float)m_pgpucontext->m_rectangle.width() / (float)m_pgpucontext->m_rectangle.height();
+      //         float aspectRatio = (float)m_pgpucontext->width() / (float)m_pgpucontext->height();
       //         // Define the geometry for a triangle.
       //         HelloTriangleVertex triangleVertices[] =
       //         {
@@ -5517,7 +5539,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       }
 
-      m_pgpucontext->set_placement(prenderer->m_pgpucontext->rectangle());
+      m_pgpucontext->set_input_placement(prenderer->m_pgpucontext->output_placement());
 
       //VkImage image = prenderer->m_prendertargetview->m_images[prenderer->get_frame_index()];
 
@@ -5672,7 +5694,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::endDraw(::gpu::graphics * pgraphics, ::user::interaction* puserinteraction)
+   void renderer::endDraw(::gpu::graphics * pdraw2dgraphics, ::user::interaction* puserinteraction)
    {
 
       ::cast < renderer > prenderer = this;
@@ -5689,7 +5711,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //   auto pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-      //   pswapchain->endDraw(pgraphics, puserinteraction, this);
+      //   pswapchain->endDraw(pdraw2dgraphics, puserinteraction, this);
 
       //}
 

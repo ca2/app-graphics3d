@@ -1,5 +1,5 @@
 // Created by camilo on 2025-12-18 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "acme/prototype/mathematics/mathematics.h"
@@ -13,7 +13,7 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/types.h"
-#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/engine_instance.h"
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"

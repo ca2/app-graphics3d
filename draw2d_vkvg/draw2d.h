@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "bred/gpu/draw2d.h"
 #include "gpu_vulkan/context.h"
 
@@ -56,12 +56,14 @@ namespace draw2d_vkvg
 
       draw2d();
       ~draw2d() override;
-
+      
+      const void * get_gpu_physical_device_features(void * p) override;
+      void get_required_gpu_device_extensions(::u64 uPhysicalDevice, ::array<const char *> & pszaRequiredDeviceExtensions) override;
 
       void initialize(::particle * pparticle) override;
 
 
-      bool graphics_context_supports_single_buffer_mode() override;
+      //bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;
 
       /*void on_create_window(::windowing::window * pwindow) override;*/
@@ -70,12 +72,18 @@ namespace draw2d_vkvg
 
       virtual string write_text_get_default_implementation_name() override;
 
+      bool write_text_supports_raster_fonts() override;
+      bool write_text_supports_legacy_gdi_fonts() override;
+
 
       //virtual private_font * get_file_private_font(::platform::context * pcontext, const ::file::path & path);
       virtual int  vulkan_init();
 
 
-      virtual void defer_load_font_by_family_name(VkvgContext pdc, const ::scoped_string& scopedstrName);
+      virtual ::string defer_load_font(
+         VkvgContext pdc,
+         VkvgDevice pdevice,
+         ::write_text::font * pwritetextfont);
 
 
 
