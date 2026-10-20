@@ -82,7 +82,7 @@ namespace draw2d_direct2d_for_directx12
 
       //clear_os_data();
 
-      m_pthis = this;
+      //m_pthis = this;
 
       defer_create_synchronization();
 
@@ -183,17 +183,17 @@ namespace draw2d_direct2d_for_directx12
 
       auto pgpuapproach = m_papplication->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(puserinteraction->draw2d_domain());
 
       //m_pdirect2d_ = ::direct2d::from_gpu_device(pgpudevice);
 
       //m_pdirect2d_ = ::direct2d::get();
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(puserinteraction);
 
       auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
-      auto pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow;
+      auto pacmewindowingwindow = m_puserinteractionTopic->m_pacmewindowingwindow;
 
       auto rectangleWindow = pacmewindowingwindow->get_window_rectangle();
 
@@ -205,8 +205,7 @@ namespace draw2d_direct2d_for_directx12
 
       sizeRaw = puserinteraction->m_pacmewindowingwindow->get_raw_buffer_size().maximum(sizeRaw);
 
-      pgpucontextNew->create_draw2d_gpu_context(pgpudevice, m_pacmeuserinteractionAffinity
-      ->m_pacmewindowingwindow, this, {}, pointOutput, sizeWindow, sizeRaw);
+      pgpucontextNew->create_draw2d_gpu_context(pgpudevice,puserinteraction->draw2d_domain(), this, {}, pointOutput, sizeWindow, sizeRaw);
 
       m_pgpucontextOwned = pgpucontextNew;
 
@@ -397,7 +396,7 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   void graphics::create_bitmap_graphics(::draw2d::bitmap *pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::draw2d::domain * pdraw2ddomain)
    {
 
       throw ::interface_only();
@@ -690,7 +689,7 @@ namespace draw2d_direct2d_for_directx12
 }
 
 
-   void graphics::_create_memory_graphics(const ::i32_size & size, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::_create_memory_graphics(const ::i32_size & size, ::draw2d::domain * pdraw2ddomain)
    {
 
       auto pcontext = gpu_context();
@@ -718,18 +717,18 @@ namespace draw2d_direct2d_for_directx12
 
       }
 
-      ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
+      //::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
 
-      if (::is_null(puserinteraction))
-      {
+      //if (::is_null(puserinteraction))
+      //{
 
-         auto pacmeuserinteractionMain = m_papplication->main_acme_user_interaction();
+      //   auto pacmeuserinteractionMain = m_papplication->main_acme_user_interaction();
 
-         puserinteraction = dynamic_cast <::user::interaction*>(pacmeuserinteractionMain);
+      //   puserinteraction = dynamic_cast <::user::interaction*>(pacmeuserinteractionMain);
 
-      }
+      //}
 
-      auto pwindow = puserinteraction->window();
+      //auto pwindow = puserinteraction->window();
 
       //auto rectanglePlacement = pwindow->get_window_rectangle();
 
@@ -737,10 +736,10 @@ namespace draw2d_direct2d_for_directx12
 
       ::acme::windowing::window *pacmewindowingwindow = nullptr;
 
-      if (::is_set(m_pacmeuserinteractionAffinity))
+      if (::is_set(m_puserinteractionTopic))
       {
 
-         pacmewindowingwindow = m_pacmeuserinteractionAffinity->acme_windowing_window();
+         pacmewindowingwindow = m_puserinteractionTopic->acme_windowing_window();
 
       }
 
@@ -753,7 +752,7 @@ namespace draw2d_direct2d_for_directx12
 
       }
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(pdraw2ddomain   );
 
       auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
@@ -761,7 +760,7 @@ namespace draw2d_direct2d_for_directx12
 
       auto sizeRaw = pacmewindowingwindow->get_raw_buffer_size().maximum(size);
 
-      pgpucontextNew->create_draw2d_gpu_context(pgpudevice, pacmewindowingwindow, this, {}, {}, size, sizeRaw);
+      pgpucontextNew->create_draw2d_gpu_context(pgpudevice, pdraw2ddomain, this, {}, {}, size, sizeRaw);
 
       set_gpu_context(pgpucontextNew);
 
@@ -809,7 +808,7 @@ namespace draw2d_direct2d_for_directx12
 
             //HRESULT hr;
 
-            ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
+            ::cast < ::user::interaction > puserinteraction = m_puserinteractionTopic;
 
             if (!puserinteraction)
             {
@@ -6825,9 +6824,10 @@ namespace draw2d_direct2d_for_directx12
       bool bExternalRendering,
    ::image::image * pimage,
    const ::i32_size & size,
-   ::acme::user::interaction * pacmeuserinteractionAffinity)
+      ::draw2d::domain * pdomaindraw2d)
+   //::acme::user::interaction * pacmeuserinteractionAffinity)
    {
-      ::draw2d_direct2d_for_directx11::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pacmeuserinteractionAffinity);
+      ::draw2d_direct2d_for_directx11::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pdomaindraw2d);
 
       ////if (::is_set(pimage))
       ////{
@@ -7171,7 +7171,7 @@ namespace draw2d_direct2d_for_directx12
 
          constructø(pimage);
 
-         auto puserinteraction = m_pacmeuserinteractionAffinity->user_interaction();
+         //auto puserinteraction = m_puserinteractionTopic;
 
          ::cast < ::gpu::image > pgpuimage = pimage;
 
@@ -7845,14 +7845,14 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   ::f64 graphics::get_dpix()
-   {
+   //::f64 graphics::get_dpix()
+   //{
 
-      //return 72.0;
+   //   //return 72.0;
 
-      return ::draw2d_direct2d_for_directx11::graphics::get_dpix();
+   //   return ::draw2d_direct2d_for_directx11::graphics::get_dpix();
 
-   }
+   //}
 
 
    void graphics::destroy()

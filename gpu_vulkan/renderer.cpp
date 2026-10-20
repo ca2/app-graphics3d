@@ -3780,6 +3780,12 @@ namespace gpu_vulkan
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
+      // A bitmap replacement can release this target while the command
+      // buffer is still recording. Keep its render pass and framebuffer alive
+      // through submission and completion, like the other recorded resources.
+      pcommandbuffer->m_particleaHold.add(ptexture);
+      pcommandbuffer->m_particleaHold.add(prenderpass);
+
       vkCmdBeginRenderPass(vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
       assert(

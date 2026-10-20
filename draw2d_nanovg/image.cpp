@@ -71,10 +71,11 @@ namespace draw2d_nanovg
    }
 
 
-   void image::update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
+   //void image::update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
+   void image::update_as_render_target(const ::i32_size & sizeRaw, ::draw2d::domain * pdraw2ddomain, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
    {
 
-      ::gpu::image::update_as_render_target(sizeRaw, puserinteraction, pdraw2dgraphics, eflagCreate, iGoodStride, bPreserve, bTopDraw2d);
+      ::gpu::image::update_as_render_target(sizeRaw, pdraw2ddomain, pdraw2dgraphics, eflagCreate, iGoodStride, bPreserve, bTopDraw2d);
 
       //if (!puserinteraction)
       //{
@@ -305,12 +306,12 @@ namespace draw2d_nanovg
 
 
 
-   void image::create_from_data(const ::pixmap_t & pixmap, ::enum_flag eflagCreate, bool bPreserve)
+   void image::create_from_data(const ::pixmap_t & pixmap, ::draw2d::domain * pdraw2ddomain, ::enum_flag eflagCreate, bool bPreserve)
    {
 
       // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
 
-      ::gpu::image::create_from_data(pixmap, eflagCreate, bPreserve);
+      ::gpu::image::create_from_data(pixmap, pdraw2ddomain, eflagCreate, bPreserve);
 
 //      destroy();
 //
@@ -572,12 +573,12 @@ namespace draw2d_nanovg
       }
 
       //if (!create(pdraw2dbitmap->get_size()))
-      create_as_descriptor(pdraw2dbitmap->size());
+      create_as_descriptor(pdraw2dbitmap->size(), pdraw2dgraphics->draw2d_domain());
       {
          //return false;//
       }
 
-      from(pdraw2dgraphics);
+      //from(pdraw2dgraphics);
 
       //return true;
 
@@ -602,42 +603,42 @@ namespace draw2d_nanovg
    //}
 
 
-   bool image::from(::draw2d::graphics * pdraw2dgraphics)
-   {
+   //bool image::from(::draw2d::graphics * pdraw2dgraphics)
+   //{
 
-      ::draw2d::bitmap_pointer bitmap;
+   //   ::draw2d::bitmap_pointer bitmap;
 
-      bitmap->CreateCompatibleBitmap(pdraw2dgraphics, 1, 1);
+   //   bitmap->CreateCompatibleBitmap(pdraw2dgraphics, 1, 1);
 
-      //auto estatus =
-      VK2D_GRAPHICS(pdraw2dgraphics)->set(bitmap);
+   //   //auto estatus =
+   //   VK2D_GRAPHICS(pdraw2dgraphics)->set(bitmap);
 
-      //if (!estatus)
-      //{
+   //   //if (!estatus)
+   //   //{
 
-      //   return false;
+   //   //   return false;
 
-      //}
+   //   //}
 
-      ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
+   //   ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
 
-      //if(!create(size))
-      create_as_descriptor(size);
-      //{
+   //   //if(!create(size))
+   //   create_as_descriptor(size);
+   //   //{
 
-      //   return false;
+   //   //   return false;
 
-      //}
+   //   //}
 
-      throw ::exception(todo, "::opengl::image::image");
+   //   throw ::exception(todo, "::opengl::image::image");
 
-      //bool bOk = GetDIBits(VK2D_HDC(pdraw2dgraphics), (HBITMAP) pdraw2dbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
+   //   //bool bOk = GetDIBits(VK2D_HDC(pdraw2dgraphics), (HBITMAP) pdraw2dbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
 
-      //VK2D_GRAPHICS(pdraw2dgraphics)->set(pdraw2dbitmap);
+   //   //VK2D_GRAPHICS(pdraw2dgraphics)->set(pdraw2dbitmap);
 
-      //return bOk;
+   //   //return bOk;
 
-   }
+   //}
 
 
    //bool image::from(i32_point ptDest, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, ::i32_size sz)

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "acme/graphics/image/image32.h"
+//#include "acme/graphics/image/image32.h"
 #include "bred/gpu/graphics.h"
 #include "bred/gpu/renderer.h"
 
@@ -124,8 +124,10 @@ namespace draw2d_vkvg
 
       bool renders_layer_externally(::gpu::layer * pgpulayer) override;
       void prepare_vkvg_render_target(::gpu::texture * pgputexture, bool bMemoryImage = false);
+      //void on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage,
+       //  const ::i32_size & size, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
       void on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage,
-         const ::i32_size & size, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+         const ::i32_size & size, ::draw2d::domain * pdraw2ddomain) override;
       void on_release_memory_graphics() override;
       void maintain_vkvg_direct_target_cache();
       bool is_vkvg_direct_target_saved(direct_target * pdirecttarget);
@@ -192,7 +194,8 @@ namespace draw2d_vkvg
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
       //void create_memory_graphics(const ::i32_size & size = {}) override;
-      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
+      //void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::draw2d::domain * pdraw2ddomain = nullptr) override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;

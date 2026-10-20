@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "acme/graphics/image/image32.h"
+//#include "acme/graphics/image/image32.h"
 #include "bred/gpu/graphics.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
@@ -43,7 +43,8 @@ namespace draw2d_vulkan
          const ::i32_point & pointInput,
          const ::i32_point & pointOutput,
          const ::i32_size & size,
-         ::acme::windowing::window * pacmewindowingwindow, 
+         //::acme::windowing::window * pacmewindowingwindow, 
+         ::draw2d::domain * pdraw2ddomain,
          ::draw2d::graphics * pdraw2dgraphics) override;
 
       void on_set_gpu_context() override;
@@ -83,7 +84,8 @@ namespace draw2d_vulkan
       bool CreateIC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName,
          const char* lpszOutput, const void* lpInitData);
       //void create_memory_graphics(const ::i32_size& size = {}) override;
-      void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      //void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      void _create_memory_graphics(const ::i32_size & sizeParameter, ::draw2d::domain * pdraw2ddomain) override;
       //void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;

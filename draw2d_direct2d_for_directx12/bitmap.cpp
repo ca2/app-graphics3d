@@ -32,13 +32,15 @@ namespace draw2d_direct2d_for_directx12
 
    void bitmap::update_bitmap_as_image_render_target(
       ::image::image * pimage,
-      ::acme::user::interaction * pacmeuserinteractionAffinity,
+      //::acme::user::interaction * pacmeuserinteractionAffinity,
+      ::draw2d::domain * pdraw2ddomain,
       ::draw2d::graphics * pdraw2dgraphics)
    {
 
       ::draw2d::bitmap::update_bitmap_as_image_render_target(
          pimage,
-         pacmeuserinteractionAffinity,
+         //pacmeuserinteractionAffinity,
+         pdraw2ddomain,
          pdraw2dgraphics);
 
    }
@@ -438,7 +440,7 @@ namespace draw2d_direct2d_for_directx12
       props.colorContext = nullptr;
 
       props.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET;
-      _create_d2d1_bitmap(pgraphics2d, size, nullptr, {}, {}, 0, pgraphics2d->m_pacmeuserinteractionAffinity);
+      _create_d2d1_bitmap(pgraphics2d, size, nullptr, {}, {}, 0, pdraw2dgraphics->draw2d_domain());
 
       //HRESULT hr = ((ID2D1DeviceContext *)pdraw2dgraphics->get_os_data())->CreateBitmap(usize, nullptr, 0, props, &m_pd2d1bitmap1);
 

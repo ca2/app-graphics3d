@@ -340,7 +340,8 @@ namespace gpu_vulkan
    const ::i32_size & size,
    ::i32 iScan,
    ::i32 iBytesPerPixel,
-   const ::i32_point & point)
+   const ::i32_point & point,
+      bool bTopDown)
    {
 
       if (!pData)
@@ -690,7 +691,8 @@ namespace gpu_vulkan
          ppixmap->size(),
          ppixmap->m_iScan,
          sizeof(::image32_t),
-         point);
+         point,
+         ppixmap->m_bTopLeft);
 
    }
 
@@ -900,7 +902,8 @@ namespace gpu_vulkan
          { w, h },
          w * iBytesPerPixel,
          iBytesPerPixel,
-         { 0, 0 });
+         { 0, 0 },
+         true);
 
    }
 
@@ -2702,7 +2705,31 @@ namespace gpu_vulkan
    }
 
 
-   void texture::set_pixels(bool bSync, const ::i32_rectangle &rectangle, const void *data)
+   //void texture::set_pixels(bool bSync, const ::i32_rectangle &rectangle, const void *data)
+   //{
+
+   //   if (::is_null(data) || rectangle.is_empty())
+   //   {
+
+   //      throw ::exception(error_bad_argument);
+
+   //   }
+
+   //   ::pixmap_t pixmap;
+
+   //   pixmap.m_size = rectangle.size();
+   //   pixmap.m_sizeRaw = pixmap.m_size;
+   //   pixmap.m_iScan = pixmap.m_size.cx * 4;
+
+   //   pixmap.m_pimage32 = (::image32_t *) data;
+   //   pixmap.m_pimage32Raw = (::image32_t *)data;
+
+   //   write_pixels(bSync, &pixmap, rectangle.origin());
+
+   //}
+
+
+   void texture::set_pixels(bool bSync, const ::i32_rectangle & rectangle, const void * data, bool bTopDown)
    {
 
       if (::is_null(data) || rectangle.is_empty())
@@ -2718,7 +2745,7 @@ namespace gpu_vulkan
       pixmap.m_sizeRaw = pixmap.m_size;
       pixmap.m_iScan = pixmap.m_size.cx * 4;
 
-      pixmap.m_pimage32 = (::image32_t *) data;
+      pixmap.m_pimage32 = (::image32_t *)data;
       pixmap.m_pimage32Raw = (::image32_t *)data;
 
       write_pixels(bSync, &pixmap, rectangle.origin());

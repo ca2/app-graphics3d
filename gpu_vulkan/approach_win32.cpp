@@ -1,11 +1,13 @@
 #include "platform.h"
 #include "approach.h"
 #include "context.h"
+#include "device.h"
 #include "debug.h"
 #include "descriptors.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "swap_chain.h"
 #include "acme/filesystem/file/file.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "bred/gpu/context.h"
@@ -19,6 +21,34 @@
 
 namespace gpu_vulkan
 {
+
+
+   VkResult swap_chain::_create_window_surface(::windowing::window * pwindowParam)
+   {
+
+      if (m_vksurfacekhr)
+      {
+
+         return VK_SUCCESS;
+
+      }
+
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_vulkan::approach> pgpu = pdevice->m_pgpuapproach;
+
+      ::cast < ::windowing_win32::window > pwindow = pwindowParam;
+      // Surface creation
+      if (!pwindow || !pwindow->_HWND()) return VK_ERROR_INITIALIZATION_FAILED;
+      VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {
+          .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+          .hinstance = (HINSTANCE)::system()->m_hinstanceThis,
+                                                       .hwnd = (HWND)pwindow->_HWND()
+      };
+      auto result = vkCreateWin32SurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
+
+      return result;
+
+   }
 
 
 

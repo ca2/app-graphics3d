@@ -224,17 +224,17 @@ namespace draw2d_direct2d_for_directx12
 //   }
 
 
-   void image::update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iStride, bool bPreserve, bool bTopDraw2d)
+   void image::update_as_render_target(const ::i32_size & sizeRaw, ::draw2d::domain * pdraw2ddomain, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iStride, bool bPreserve, bool bTopDraw2d)
    {
 
-      if (!puserinteraction)
-      {
+      //if (!puserinteraction)
+      //{
 
-         throw ::exception(error_null_pointer, "user::interaction is null");
+      //   throw ::exception(error_null_pointer, "user::interaction is null");
 
-      }
+      //}
 
-      m_pacmeuserinteractionAffinity = puserinteraction;
+      //m_pacmeuserinteractionAffinity = puserinteraction;
 
       // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
 
@@ -247,7 +247,7 @@ namespace draw2d_direct2d_for_directx12
 
       }
 
-      create_as_descriptor(sizeRaw, eflagCreate, iStride);
+      create_as_descriptor(sizeRaw, pdraw2ddomain, eflagCreate, iStride);
 
       //auto pdraw2dbitmap = createø<::draw2d::bitmap>();
 
@@ -261,9 +261,9 @@ namespace draw2d_direct2d_for_directx12
 
       //auto pixmap = this->pixmap::map();
 
-      auto pacmewindowingwindow = m_pacmeuserinteractionAffinity->acme_windowing_window();
+      //auto pacmewindowingwindow = m->acme_windowing_window();
 
-      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pdraw2ddomain);
 
       _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
@@ -407,7 +407,7 @@ namespace draw2d_direct2d_for_directx12
 
       ::i32_size size = pdraw2dbitmap->size();
 
-      create_as_descriptor(size);
+      create_as_descriptor(size, pdraw2dgraphics->draw2d_domain());
 
       //if (!create(size))
       //{
@@ -513,7 +513,7 @@ namespace draw2d_direct2d_for_directx12
 
       //auto estatus = 
       
-      create_as_descriptor({ cx, cy });
+      create_as_descriptor({ cx, cy }, draw2d_domain());
 
       //if (!estatus)
       //{
@@ -524,7 +524,7 @@ namespace draw2d_direct2d_for_directx12
       //}
 
       // White blend image
-      auto pimage1 = ::particle::image()->create_image({cx,  cy});
+      auto pimage1 = ::particle::image()->create_image({cx,  cy}, draw2d_domain());
 
       {
 
@@ -543,7 +543,7 @@ namespace draw2d_direct2d_for_directx12
       }
 
       // Black blend image
-      auto pimage2 = ::particle::image()->create_image({cx,  cy});
+      auto pimage2 = ::particle::image()->create_image({cx,  cy}, draw2d_domain());
 
       {
 
@@ -574,7 +574,7 @@ namespace draw2d_direct2d_for_directx12
 //#endif
 
       // Mask image
-      auto pimageM = ::particle::image()->create_image({cx,  cy});
+      auto pimageM = ::particle::image()->create_image({cx,  cy}, draw2d_domain());
 
       {
 

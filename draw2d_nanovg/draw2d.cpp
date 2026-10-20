@@ -65,7 +65,7 @@ namespace draw2d_nanovg
    }
 
 
-   ::draw2d::graphics_pointer draw2d::do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+   ::draw2d::graphics_pointer draw2d::do_allocation_strategy(::draw2d::domain * pdraw2ddomain, ::image::image * pimage,
                                                           const ::i32_size & size)
    {
 
@@ -81,9 +81,11 @@ namespace draw2d_nanovg
 
          }
 
-         auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+         auto pdraw2dgraphics = allocate_graphics(pdraw2ddomain);
 
-         pdraw2dgraphics->update_as_image_render_target(pimage, pacmeuserinteractionAffinity);
+         //pdraw2dgraphics->update_as_image_render_target(pimage, pacmeuserinteractionAffinity);
+
+         pdraw2dgraphics->update_as_image_render_target(pimage);
 
          return pdraw2dgraphics;
 
@@ -102,8 +104,8 @@ namespace draw2d_nanovg
       }
       else
       {
-         auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
-         pdraw2dgraphics->create_memory_graphics(size, pacmeuserinteractionAffinity);
+         auto pdraw2dgraphics = allocate_graphics(pdraw2ddomain);
+         pdraw2dgraphics->create_memory_graphics(size, pdraw2ddomain );
          return pdraw2dgraphics;
       }
 

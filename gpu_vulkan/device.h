@@ -111,8 +111,10 @@ namespace gpu_vulkan
       bool _is_ok() const override;
 
 
-      void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
-      void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::i32_rectangle& rectanglePlacement) override;
+      //void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
+      //void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::i32_rectangle& rectanglePlacement) override;
+
+      void initialize_gpu_device(::gpu::approach * pgpuapproach, ::draw2d::domain * pdraw2ddomain) override;
 
 
       void on_initialize_gpu_device() override;
@@ -169,6 +171,7 @@ namespace gpu_vulkan
       ::gpu::queue *transfer_queue() override;
       ::gpu::queue *graphics_queue() override;
       ::gpu::queue *present_queue() override;
+      ::pointer<::gpu::queue> present_queue(VkSurfaceKHR vksurface, ::u32 & uQueueFamily);
 
 
       void defer_shader_memory(::memory& memory, const ::file::path& pathShader) override;

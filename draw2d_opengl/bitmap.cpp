@@ -213,61 +213,11 @@ namespace draw2d_opengl
 
    void bitmap::update_bitmap_as_image_render_target(
       ::image::image * pimage,
-      ::acme::user::interaction * pacmeuserinteractionAffinity,
+      ::draw2d::domain * pdraw2ddomain,
       ::draw2d::graphics * pdraw2dgraphics)
    {
 
-      __UNREFERENCED_PARAMETER(pacmeuserinteractionAffinity);
-
-      if (!pimage)
-      {
-
-         throw ::exception(
-            error_bad_argument,
-            "OpenGL image render target requires an image");
-
-      }
-
-      auto sizeRaw = pimage->raw_size();
-
-      if (!m_pgputexture || m_size != sizeRaw)
-      {
-
-         m_size = sizeRaw;
-         m_iStride = sizeRaw.cx * (::i32)sizeof(::image32_t);
-
-         ::cast < ::gpu::graphics > pgpugraphics = pdraw2dgraphics;
-
-         if (pgpugraphics)
-         {
-
-            if (pimage->m_ppixmapOwned)
-            {
-
-               initialize_gpu_bitmap(
-                  pgpugraphics->gpu_context(),
-                  sizeRaw,
-                  *pimage->m_ppixmapOwned);
-
-            }
-            else
-            {
-
-               initialize_gpu_bitmap(pgpugraphics->gpu_context(), sizeRaw, {});
-
-            }
-
-         }
-         else
-         {
-
-            _create_gpu_bitmap(sizeRaw, pdraw2dgraphics, pimage->m_ppixmapOwned);
-
-         }
-
-      }
-
-      pimage->m_pdraw2dbitmap = this;
+      ::gpu::bitmap::update_bitmap_as_image_render_target(pimage, pdraw2ddomain, pdraw2dgraphics);
 
    }
 
@@ -443,27 +393,27 @@ namespace draw2d_opengl
    }
    
    
-   void bitmap::CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
-   {
+//   void bitmap::CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
+//   {
+//
+////      ::acme::del(m_pdraw2dbitmap);
+//
+//      //    m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
+//
+//      //return true;
+//
+//   }
 
-//      ::acme::del(m_pdraw2dbitmap);
 
-      //    m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
-
-      //return true;
-
-   }
-
-
-   void bitmap::CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
-   {
-
-//      ::acme::del(m_pdraw2dbitmap);
-
-      //    m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
-
-      //return true;
-   }
+//   void bitmap::CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
+//   {
+//
+////      ::acme::del(m_pdraw2dbitmap);
+//
+//      //    m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
+//
+//      //return true;
+//   }
 
 
    // int bitmap::GetBitmap(BITMAP* pBitMap)
@@ -545,17 +495,17 @@ namespace draw2d_opengl
 
    //}
 
-   void * bitmap::detach()
-   {
-
-      //plusplus::Bitmap * pdraw2dbitmap = m_pdraw2dbitmap;
-
-      //m_pdraw2dbitmap = nullptr;
-
-//      return m_pdraw2dbitmap;
-      return nullptr;
-
-   }
+//   void * bitmap::detach()
+//   {
+//
+//      //plusplus::Bitmap * pdraw2dbitmap = m_pdraw2dbitmap;
+//
+//      //m_pdraw2dbitmap = nullptr;
+//
+////      return m_pdraw2dbitmap;
+//      return nullptr;
+//
+//   }
 
 
    // HBITMAP bitmap::_GetHBITMAP()

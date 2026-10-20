@@ -200,8 +200,10 @@ namespace gpu_directx12
       virtual void initialize_cpu_buffer(const ::i32_size & size);
       
 
-      void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
-      void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::i32_rectangle& rectanglePlacement) override;
+      //void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
+      //void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::i32_rectangle& rectanglePlacement) override;
+
+      void initialize_gpu_device(::gpu::approach * pgpuapproach, ::draw2d::domain * pdraw2ddomain) override;
 
       //virtual ::gpu::context* main_draw2d_context();
 

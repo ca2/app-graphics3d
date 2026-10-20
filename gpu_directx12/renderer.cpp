@@ -1106,14 +1106,14 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      if (m_pgpucontext->m_pgpudevice->m_edevicetarget ==
-         ::gpu::e_device_target_swap_chain)
-      {
+      //if (m_pgpucontext->m_pgpudevice->m_edevicetarget ==
+      //   ::gpu::e_device_target_swap_chain)
+      //{
 
-         ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
+      //   ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
-      }
-      else
+      //}
+      //else
       {
 
          ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_source);

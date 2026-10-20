@@ -1965,14 +1965,14 @@ namespace gpu_directx12
 
 
    void texture::write_pixels(bool bSync, const void * pData, const ::i32_size & size,
-      ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point)
+      ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bTopDown)
    {
-      _write_pixels(bSync, pData, size, iScan, iBytesPerPixel, point, false);
+      _write_pixels(bSync, pData, size, iScan, iBytesPerPixel, point, false, bTopDown);
    }
 
 
    void texture::_write_pixels(bool bSync, const void * pData, const ::i32_size & size,
-      ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bShaderRead)
+      ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bShaderRead, bool bTopDown)
    {
       if (!pData)
          throw ::exception(error_null_pointer, "DirectX 12 pixel upload requires source data");
@@ -2017,7 +2017,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::set_pixels(bool bSync, const ::i32_rectangle & rectangle, const void * data)
+   void texture::set_pixels(bool bSync, const ::i32_rectangle & rectangle, const void * data, bool bTopDown)
    {
       const auto size = rectangle.size();
       if (size.cx <= 0 || size.cy <= 0)
@@ -2029,7 +2029,7 @@ namespace gpu_directx12
       // its copy until frame end: a cached font preview would capture an empty
       // atlas and never request a retry.
       _write_pixels(bSync, data, size, size.cx * (int)sizeof(::image32_t),
-         sizeof(::image32_t), rectangle.top_left(), true);
+         sizeof(::image32_t), rectangle.top_left(), true, bTopDown);
    }
 
 

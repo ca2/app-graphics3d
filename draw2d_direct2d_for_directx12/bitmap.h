@@ -51,7 +51,8 @@ namespace draw2d_direct2d_for_directx12
       //void _create_from_dxgi_surface(::i32 iIndex, ::i32 iLayerIndex, IDXGISurface * pdxgisurface, ::draw2d_direct2d_for_directx12::graphics * pdraw2dgraphics);
       void update_bitmap_as_image_render_target(
          ::image::image * pimage,
-         ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr,
+         //::acme::user::interaction * pacmeuserinteractionAffinity = nullptr,
+         ::draw2d::domain * pdomaindraw2d,
          ::draw2d::graphics * pdraw2dgraphics = nullptr) override;
       virtual void CreateBitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& size, ::u32 nPlanes, ::u32 nBitcount, const void * lpBits, ::i32 stride) override;
       virtual bool CreateBitmapIndirect(::draw2d::graphics * pdraw2dgraphics, LPBITMAP lpBitmap);

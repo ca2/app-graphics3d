@@ -65,6 +65,7 @@ namespace gpu_vulkan
       uint32_t getQueueFamilyIndex(VkQueueFlags queueFlags) const;
 
       SwapChainSupportDetails querySwapChainSupport();
+      SwapChainSupportDetails querySwapChainSupport(VkSurfaceKHR vksurface);
       vulkan::QueueFamilyIndices findQueueFamilies();
 
 

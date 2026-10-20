@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "acme/graphics/image/image32.h"
+#include "acme/graphics/image/image32_t.h"
 #include "bred/gpu/graphics.h"
 #include "bred/gpu/renderer.h"
 
@@ -254,13 +254,17 @@ namespace draw2d_nanovg
                     const char * lpszOutput, const void * lpInitData);
       //void create_memory_graphics(const ::i32_size & size = {}) override;
       //void _create_memory_graphics(const ::i32_size & size) override;
-      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
-      void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      //void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::draw2d::domain * pdraw2ddomain) override;
+      //void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+
+      void _create_memory_graphics(const ::i32_size & sizeParameter, ::draw2d::domain * pdraw2ddomain) override;
       void on_acquire_memory_graphics(
          bool bExternalRendering,
          ::image::image * pimage,
          const ::i32_size & size,
-         ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+         ::draw2d::domain * pdraw2ddomain) override;
       void on_release_memory_graphics() override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;

@@ -233,12 +233,12 @@ namespace draw2d_vkvg
       }
 
       //if (!create(pdraw2dbitmap->get_size()))
-      create_as_descriptor(pdraw2dbitmap->size());
+      create_as_descriptor(pdraw2dbitmap->size(), pdraw2dgraphics->draw2d_domain());
       //{
       //   //return false;//
       //}
 
-      from(pdraw2dgraphics);
+      //from(pdraw2dgraphics);
 
       //return true;
 
@@ -268,42 +268,42 @@ namespace draw2d_vkvg
    //}
 
 
-   bool image::from(::draw2d::graphics * pdraw2dgraphics)
-   {
+   //bool image::from(::draw2d::graphics * pdraw2dgraphics)
+   //{
 
-      ::draw2d::bitmap_pointer bitmap;
+   //   ::draw2d::bitmap_pointer bitmap;
 
-      bitmap->CreateCompatibleBitmap(pdraw2dgraphics, 1, 1);
+   //   bitmap->CreateCompatibleBitmap(pdraw2dgraphics, 1, 1);
 
-      //auto estatus =
-      VK2D_GRAPHICS(pdraw2dgraphics)->set(bitmap);
+   //   //auto estatus =
+   //   VK2D_GRAPHICS(pdraw2dgraphics)->set(bitmap);
 
-      //if (!estatus)
-      //{
+   //   //if (!estatus)
+   //   //{
 
-      //   return false;
+   //   //   return false;
 
-      //}
+   //   //}
 
-      ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
+   //   ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
 
-      //if(!create(size))
-      create_as_descriptor(size);
-      //{
+   //   //if(!create(size))
+   //   create_as_descriptor(size);
+   //   //{
 
-      //   return false;
+   //   //   return false;
 
-      //}
+   //   //}
 
-      throw ::exception(todo, "::vulkan::image::image");
+   //   throw ::exception(todo, "::vulkan::image::image");
 
-      //bool bOk = GetDIBits(VK2D_HDC(pdraw2dgraphics), (HBITMAP) pdraw2dbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
+   //   //bool bOk = GetDIBits(VK2D_HDC(pdraw2dgraphics), (HBITMAP) pdraw2dbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
 
-      //VK2D_GRAPHICS(pdraw2dgraphics)->set(pdraw2dbitmap);
+   //   //VK2D_GRAPHICS(pdraw2dgraphics)->set(pdraw2dbitmap);
 
-      //return bOk;
+   //   //return bOk;
 
-   }
+   //}
 
 
    //bool image::from(i32_point ptDest, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, ::i32_size sz)

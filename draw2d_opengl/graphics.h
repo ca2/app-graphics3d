@@ -127,19 +127,28 @@ namespace draw2d_opengl
 
 
       //void _create_memory_graphics(const ::i32_size & size) override;
-      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::draw2d::domain * pdraw2ddomain = nullptr) override;
 
-      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      //virtual void _create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::draw2d::domain * pdraw2ddomain) override;
 
       void begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget = nullptr) override;
       
       void end_draw() override;
 
+      //void on_acquire_memory_graphics(
+      //   bool bExternalRendering,
+      //   ::image::image * pimage,
+      //   const ::i32_size & size,
+      //   ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+
+
       void on_acquire_memory_graphics(
          bool bExternalRendering,
          ::image::image * pimage,
          const ::i32_size & size,
-         ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+         ::draw2d::domain * pdraw2ddomain) override;
 
       void on_release_memory_graphics() override;
     

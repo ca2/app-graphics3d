@@ -9,10 +9,13 @@
 #include "font.h"
 #include "path.h"
 #include "draw2d.h"
+#include "aura/graphics/draw2d/domain.h"
 
 
 __FACTORY_EXPORT void draw2d_vulkan_factory(::factory::factory * pfactory)
 {
+
+   pfactory->add_factory_item < ::draw2d::domain, ::acme::draw2d::domain >();
 
    pfactory->add_factory_item < ::draw2d_vulkan::image, ::image::image >();
    pfactory->add_factory_item < ::draw2d_vulkan::graphics, ::draw2d::graphics >();

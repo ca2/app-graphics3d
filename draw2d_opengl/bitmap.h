@@ -183,12 +183,16 @@ namespace draw2d_opengl
       bool LoadOEMBitmap(unsigned int nIDBitmap); // for OBM_/OCR_/OIC_
       bool CreateBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride);
       //bool CreateBitmapIndirect(::draw2d::graphics * pdraw2dgraphics, LPBITMAP lpBitmap);
-      void CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight) override;
-      void CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight) override;
+      //void CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight) override;
+      //void CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight) override;
       
+      //void update_bitmap_as_image_render_target(
+        // ::image::image * pimage,
+         //::acme::user::interaction * pacmeuserinteractionAffinity = nullptr,
+         //::draw2d::graphics * pdraw2dgraphics = nullptr) override;
       void update_bitmap_as_image_render_target(
          ::image::image * pimage,
-         ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr,
+         ::draw2d::domain * pdraw2ddomain = nullptr,
          ::draw2d::graphics * pdraw2dgraphics = nullptr) override;
       void create_bitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& size, ::pixmap * ppixmap) override;
       void CreateDIBitmap(::draw2d::graphics * pdraw2dgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
@@ -211,7 +215,7 @@ namespace draw2d_opengl
 
 
       //virtual void attach(void * posdata);
-      virtual void * detach() override;
+      //virtual void * detach() override;
 
       //virtual HBITMAP _GetHBITMAP();
       //virtual void _ReleaseHBITMAP(HBITMAP hbitmap);

@@ -131,11 +131,11 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   ::draw2d::graphics_pointer draw2d::do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+   ::draw2d::graphics_pointer draw2d::do_allocation_strategy(::draw2d::domain * pdraw2domain, ::image::image * pimage,
                                                                 const ::i32_size & size)
    {
 
-      return ::draw2d_direct2d_for_directx11::draw2d::do_allocation_strategy(pacmeuserinteractionAffinity, pimage, size);
+      return ::draw2d_direct2d_for_directx11::draw2d::do_allocation_strategy(pdraw2domain, pimage, size);
 
       //auto pdraw2dgraphics = create_memory_graphics(size, pacmeuserinteractionAffinity);
 

@@ -792,10 +792,147 @@ namespace gpu_vulkan
 
    }
 
-   void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow)
+
+
+//   void device::initialize_gpu_device_for_swap_chain(::gpu::approach * pgpuapproachParam, ::windowing::window * pwindow)
+//   {
+//
+//      ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
+//
+//
+//      //createInstance();
+//      //setupDebugMessenger();
+//      //createSurface();
+//      //pickPhysicalDevice();
+//      //createLogicalDevice();
+//      //createCommandPool();
+//
+//      ::cast < approach > pgpuapproach = pgpuapproachParam;
+//
+//      if (!pgpuapproach)
+//      {
+//
+//         throw ::exception(error_failed);
+//
+//      }
+//
+//      m_pgpuapproach = pgpuapproach.m_p;
+//
+//      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+//
+//      assert(pphysicaldevice && pphysicaldevice->m_vkphysicaldevice);
+//
+//      m_pphysicaldevice = pphysicaldevice;
+//
+//      //if (m_papplication->m_bUseSwapChainWindow)
+//      //{
+//
+//      //   m_pphysicaldevice->createWindowSurface(pwindow);
+//
+//      //}
+//      m_pphysicaldevice->createWindowSurface(pwindow);
+//
+//
+//      //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
+//      //{
+//
+//      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
+//
+//      //}
+//
+//      auto physicaldevice = pphysicaldevice->m_vkphysicaldevice;
+//
+//      // Get list of supported extensions
+//      uint32_t extCount = 0;
+//      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
+//      if (extCount > 0)
+//      {
+//         ::array<VkExtensionProperties> extensions(extCount);
+//         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
+//         {
+//            for (auto & ext : extensions)
+//            {
+//               m_straSupportedExtensions.add(ext.extensionName);
+//            }
+//         }
+//      }
+//
+//      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
+//      //getEnabledExtensions();
+//
+//      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
+//
+//      //bool useSwapChain = bAddSwapChainSupport;
+//
+//      //m_itaskGpu = ::current_itask();
+//
+//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+//      .scalarBlockLayout = TRUE };
+//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
+//      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
+//      bool bUseSwapChain = true;
+//
+//      // Descriptor Indexing Features
+//      VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
+//      indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+//      indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+//      indexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+//      indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+//      indexingFeatures.runtimeDescriptorArray = VK_TRUE;
+//      indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+//      scalarBlockLayoutSupport.pNext = &indexingFeatures;
+//
+//      // Vulkan 1.3 Features
+//      VkPhysicalDeviceVulkan13Features vulkan13Features{};
+//      vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+//      vulkan13Features.dynamicRendering = VK_TRUE;
+//      vulkan13Features.synchronization2 = VK_TRUE;
+//      //vulkan13Features.maintenance4 = VK_TRUE;
+//      vulkan13Features.robustImageAccess = VK_FALSE;
+//      //vulkan13Features.robustImageAccess = VK_TRUE;
+//
+//      //indexingFeatures.pNext = &vulkan13Features;
+//
+//    //VkPhysicalDeviceFeatures2 features2{};
+////      features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+//      m_physicaldevicefeaturesCreate.samplerAnisotropy = VK_TRUE;
+//      //    vulkan13Features.pNext = &indexingFeatures;
+//      draw2d()->get_required_gpu_device_extensions((::u64)physicaldevice, pgpuapproach->m_pszaEnabledDeviceExtensions);
+//
+//      //pgpuapproach->m_pDeviceCreatepNextChain = &features2;
+//      VkResult result = createLogicalDevice(
+//         m_physicaldevicefeaturesCreate,
+//         pgpuapproach->m_pszaEnabledDeviceExtensions,
+//         pgpuapproach->m_pDeviceCreatepNextChain,
+//         bUseSwapChain,
+//         VK_QUEUE_GRAPHICS_BIT
+//         | VK_QUEUE_COMPUTE_BIT
+//         | VK_QUEUE_TRANSFER_BIT);
+//
+//      if (result != VK_SUCCESS)
+//      {
+//
+//         //m_itaskGpu = {};
+//
+//         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
+//
+//         throw ::exception(error_failed);
+//
+//      }
+//
+//      on_initialize_gpu_device();
+//
+//      //device = vulkanDevice->logicalDevice;
+//
+//   }
+
+   
+   void device::initialize_gpu_device(::gpu::approach * pgpuapproachParam, ::draw2d::domain * pdraw2ddomain)
    {
 
-      ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
+      ::gpu::device::initialize_gpu_device(pgpuapproachParam, pdraw2ddomain);
 
 
       //createInstance();
@@ -828,7 +965,10 @@ namespace gpu_vulkan
       //   m_pphysicaldevice->createWindowSurface(pwindow);
 
       //}
-      m_pphysicaldevice->createWindowSurface(pwindow);
+      
+      
+      
+      //m_pphysicaldevice->createWindowSurface(pwindow);
 
 
       //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
@@ -927,103 +1067,103 @@ namespace gpu_vulkan
    }
 
 
-   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
-   {
-
-
-      //createInstance();
-      //setupDebugMessenger();
-      //createSurface();
-      //pickPhysicalDevice();
-      //createLogicalDevice();
-      //createCommandPool();
-
-      ::cast < approach > pgpuapproach = pgpuapproachParam;
-
-      if (!pgpuapproach)
-      {
-
-         throw ::exception(error_failed);
-
-      }
-
-      m_pgpuapproach = pgpuapproach.m_p;
-
-      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
-
-      assert(pphysicaldevice && pphysicaldevice->m_vkphysicaldevice);
-
-      m_pphysicaldevice = pphysicaldevice;
-
-      //if (m_papplication->m_bUseSwapChainWindow)
-      //{
-
-      //   m_pphysicaldevice->createWindowSurface(pwindow);
-
-      //}
-//if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
-      //{
-
-      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
-
-      //}
-
-      auto physicaldevice = pphysicaldevice->m_vkphysicaldevice;
-
-      // Get list of supported extensions
-      uint32_t extCount = 0;
-      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
-      if (extCount > 0)
-      {
-         ::array<VkExtensionProperties> extensions(extCount);
-         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
-         {
-            for (auto& ext : extensions)
-            {
-               m_straSupportedExtensions.add(ext.extensionName);
-            }
-         }
-      }
-
-      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
-      //getEnabledExtensions();
-
-      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
-
-      bool useSwapChain = false;
-
-      //m_itaskGpu = ::current_itask();
-
-      draw2d()->get_required_gpu_device_extensions((::u64)physicaldevice, pgpuapproach->m_pszaEnabledDeviceExtensions);
-
-      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
-.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
-      .scalarBlockLayout = TRUE };
-      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
-      m_physicaldevicefeaturesCreate.logicOp = TRUE;
-      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
-      VkResult result = createLogicalDevice(
-         m_physicaldevicefeaturesCreate,
-         pgpuapproach->m_pszaEnabledDeviceExtensions,
-         pgpuapproach->m_pDeviceCreatepNextChain,
-         useSwapChain);
-
-      if (result != VK_SUCCESS)
-      {
-
-         //m_itaskGpu = {};
-
-         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
-
-         throw ::exception(error_failed);
-
-      }
-
-      on_initialize_gpu_device();
-
-      //device = vulkanDevice->logicalDevice;
-
-   }
+//   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
+//   {
+//
+//
+//      //createInstance();
+//      //setupDebugMessenger();
+//      //createSurface();
+//      //pickPhysicalDevice();
+//      //createLogicalDevice();
+//      //createCommandPool();
+//
+//      ::cast < approach > pgpuapproach = pgpuapproachParam;
+//
+//      if (!pgpuapproach)
+//      {
+//
+//         throw ::exception(error_failed);
+//
+//      }
+//
+//      m_pgpuapproach = pgpuapproach.m_p;
+//
+//      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+//
+//      assert(pphysicaldevice && pphysicaldevice->m_vkphysicaldevice);
+//
+//      m_pphysicaldevice = pphysicaldevice;
+//
+//      //if (m_papplication->m_bUseSwapChainWindow)
+//      //{
+//
+//      //   m_pphysicaldevice->createWindowSurface(pwindow);
+//
+//      //}
+////if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
+//      //{
+//
+//      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
+//
+//      //}
+//
+//      auto physicaldevice = pphysicaldevice->m_vkphysicaldevice;
+//
+//      // Get list of supported extensions
+//      uint32_t extCount = 0;
+//      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
+//      if (extCount > 0)
+//      {
+//         ::array<VkExtensionProperties> extensions(extCount);
+//         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
+//         {
+//            for (auto& ext : extensions)
+//            {
+//               m_straSupportedExtensions.add(ext.extensionName);
+//            }
+//         }
+//      }
+//
+//      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
+//      //getEnabledExtensions();
+//
+//      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
+//
+//      bool useSwapChain = false;
+//
+//      //m_itaskGpu = ::current_itask();
+//
+//      draw2d()->get_required_gpu_device_extensions((::u64)physicaldevice, pgpuapproach->m_pszaEnabledDeviceExtensions);
+//
+//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+//      .scalarBlockLayout = TRUE };
+//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
+//      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
+//      VkResult result = createLogicalDevice(
+//         m_physicaldevicefeaturesCreate,
+//         pgpuapproach->m_pszaEnabledDeviceExtensions,
+//         pgpuapproach->m_pDeviceCreatepNextChain,
+//         useSwapChain);
+//
+//      if (result != VK_SUCCESS)
+//      {
+//
+//         //m_itaskGpu = {};
+//
+//         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
+//
+//         throw ::exception(error_failed);
+//
+//      }
+//
+//      on_initialize_gpu_device();
+//
+//      //device = vulkanDevice->logicalDevice;
+//
+//   }
 
 
    void device::_defer_throw_vkresult(VkResult vkresult, const scoped_string & scopedstrMessage)
@@ -1520,6 +1660,35 @@ VkResult device::createLogicalDevice(
 
       m_queuefamilyindexes.transferFamily =
          m_queuefamilyindexes.graphicsFamily;
+
+   }
+
+
+   // Windows are attached after this device is created. Enable a queue in
+   // each available family so later surfaces can select a presentation queue.
+   if (useSwapChain)
+   {
+
+      for (::collection::index i = 0; i < pphysicaldevice->m_vkqueuefamilypropertya.size(); ++i)
+      {
+
+         if (!pphysicaldevice->m_vkqueuefamilypropertya[i].queueCount) continue;
+         bool enabled = false;
+         for (const auto & info : queueCreateInfos)
+         {
+
+            if (info.queueFamilyIndex == (uint32_t)i) enabled = true;
+
+         }
+         if (enabled) continue;
+         VkDeviceQueueCreateInfo info{};
+         info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+         info.queueFamilyIndex = (uint32_t)i;
+         info.queueCount = 1;
+         info.pQueuePriorities = &defaultQueuePriority;
+         queueCreateInfos.add(info);
+
+      }
 
    }
 
@@ -2097,6 +2266,44 @@ VkResult device::createLogicalDevice(
 
 
    ::gpu::queue *device::present_queue() { return m_pqueuePresent; }
+
+   ::pointer<::gpu::queue> device::present_queue(VkSurfaceKHR vksurface, ::u32 & uQueueFamily)
+   {
+
+      if (!vksurface)
+         throw ::exception(error_bad_argument, "Presentation queue requires a Vulkan window surface");
+
+      // Prefer the graphics queue, then try the other enabled families.
+      for (::collection::index i = -1; i < m_pphysicaldevice->m_vkqueuefamilypropertya.size(); ++i)
+      {
+
+         auto family = i < 0 ? m_queuefamilyindexes.graphicsFamily : (int)i;
+         if (family < 0 || (i >= 0 && family == m_queuefamilyindexes.graphicsFamily)) continue;
+         if (!m_pphysicaldevice->m_vkqueuefamilypropertya[family].queueCount) continue;
+         VkBool32 supported = VK_FALSE;
+         VkCheckResult(vkGetPhysicalDeviceSurfaceSupportKHR(
+            m_pphysicaldevice->m_vkphysicaldevice, (uint32_t)family, vksurface, &supported));
+         if (!supported) continue;
+
+         uQueueFamily = (uint32_t)family;
+         if (family == m_queuefamilyindexes.graphicsFamily) return m_pqueueGraphics;
+         if (family == m_queuefamilyindexes.transferFamily) return m_pqueueTransfer;
+
+         auto pqueue = create_newø<::gpu_vulkan::queue>();
+         pqueue->initialize_gpu_queue(this);
+         vkGetDeviceQueue(m_vkdevice, (uint32_t)family, 0, &pqueue->m_vkqueue);
+         if (!pqueue->m_vkqueue)
+            throw ::exception(error_wrong_state, "Vulkan presentation queue was not enabled");
+         pqueue->m_pqueuehostcalldiagnosticstate =
+            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)pqueue->m_vkqueue);
+         return pqueue;
+
+      }
+
+      throw ::exception(error_not_supported, "No Vulkan queue supports presentation to this window surface");
+
+   }
+
 
 
 
@@ -3435,7 +3642,15 @@ VkResult device::createLogicalDevice(
    SwapChainSupportDetails physical_device::querySwapChainSupport()
    {
 
-      if (!m_vksurfacekhr)
+      return querySwapChainSupport(m_vksurfacekhr);
+
+   }
+
+
+   SwapChainSupportDetails physical_device::querySwapChainSupport(VkSurfaceKHR vksurface)
+   {
+
+      if (!vksurface)
       {
 
          throw ::exception(error_wrong_state, "querying swap chain support but no vksurfacekhr");
@@ -3444,26 +3659,33 @@ VkResult device::createLogicalDevice(
 
       SwapChainSupportDetails details{};
 
-      vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_vkphysicaldevice, m_vksurfacekhr, &details.capabilities);
+      VkCheckResult(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_vkphysicaldevice, vksurface, &details.capabilities));
 
-      uint32_t formatCount;
-      vkGetPhysicalDeviceSurfaceFormatsKHR(m_vkphysicaldevice, m_vksurfacekhr, &formatCount, nullptr);
+      uint32_t formatCount = 0;
+      VkCheckResult(vkGetPhysicalDeviceSurfaceFormatsKHR(m_vkphysicaldevice, vksurface, &formatCount, nullptr));
 
       if (formatCount != 0) {
          details.formats.resize(formatCount);
-         vkGetPhysicalDeviceSurfaceFormatsKHR(m_vkphysicaldevice, m_vksurfacekhr, &formatCount, details.formats.data());
+         VkCheckResult(vkGetPhysicalDeviceSurfaceFormatsKHR(m_vkphysicaldevice, vksurface, &formatCount, details.formats.data()));
       }
 
-      uint32_t presentModeCount;
-      vkGetPhysicalDeviceSurfacePresentModesKHR(m_vkphysicaldevice, m_vksurfacekhr, &presentModeCount, nullptr);
+      uint32_t presentModeCount = 0;
+      VkCheckResult(vkGetPhysicalDeviceSurfacePresentModesKHR(m_vkphysicaldevice, vksurface, &presentModeCount, nullptr));
 
       if (presentModeCount != 0) {
          details.presentModes.resize(presentModeCount);
-         vkGetPhysicalDeviceSurfacePresentModesKHR(
+         VkCheckResult(vkGetPhysicalDeviceSurfacePresentModesKHR(
             m_vkphysicaldevice,
-            m_vksurfacekhr,
+            vksurface,
             &presentModeCount,
-            details.presentModes.data());
+            details.presentModes.data()));
+      }
+
+      if (details.formats.is_empty() || details.presentModes.is_empty())
+      {
+
+         throw ::exception(error_not_supported, "Vulkan window surface has no swap-chain formats or present modes");
+
       }
 
       return details;

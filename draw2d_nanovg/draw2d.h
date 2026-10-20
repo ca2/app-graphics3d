@@ -50,7 +50,7 @@ namespace draw2d_nanovg
       ~draw2d() override;
 
 
-      ::draw2d::graphics_pointer do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+      ::draw2d::graphics_pointer do_allocation_strategy(::draw2d::domain * pdraw2ddomain, ::image::image * pimage,
                                                        const ::i32_size & size) override;
 
 

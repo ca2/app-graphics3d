@@ -252,10 +252,10 @@ namespace draw2d_vkvg
       ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
-      if (!m_pacmeuserinteractionAffinity && pacmeuserinteractionAffinity)
+      if (!m_puserinteractionTopic && pacmeuserinteractionAffinity)
       {
 
-         m_pacmeuserinteractionAffinity = pacmeuserinteractionAffinity;
+         m_puserinteractionTopic = pacmeuserinteractionAffinity;
 
       }
 
@@ -273,11 +273,11 @@ namespace draw2d_vkvg
 
       }
 
-      if (m_pacmeuserinteractionAffinity)
+      if (m_puserinteractionTopic)
       {
 
          auto pacmewindowingwindow =
-            m_pacmeuserinteractionAffinity->acme_windowing_window();
+            m_puserinteractionTopic->acme_windowing_window();
 
          if (pacmewindowingwindow)
          {
@@ -342,9 +342,7 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(require_gpu_window());
-
-
+      auto pgpudevice = pgpuapproach->get_gpu_device(draw2d_domain());
 
       // Serialize publication separately from queue access. Never acquire a
       // VKVG cache/device mutex while retaining ca2's queue mutex after setup.
@@ -402,7 +400,7 @@ namespace draw2d_vkvg
    }
 
    //void graphics::create_memory_graphics(const ::i32_size& size)
-   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::draw2d::domain * pdraw2ddomain)
    {
 
 
@@ -424,7 +422,7 @@ namespace draw2d_vkvg
 
       //vulkan_create_offscreen_buffer(rectanglePlacement);
 
-      absorb_user_interaction_affinity(pacmeuserinteractionAffinity);
+      absorb_user_interaction_affinity(m_puserinteractionTopic);
 
       auto pacmewindowingwindow = require_gpu_window();
 
@@ -447,7 +445,7 @@ namespace draw2d_vkvg
 
       //}
 
-      on_gpu_context_placement_change({}, {}, sizeParameter, pacmewindowingwindow, this);
+      on_gpu_context_placement_change({}, {}, sizeParameter, draw2d_domain(), this);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -671,9 +669,9 @@ namespace draw2d_vkvg
 
 
    void graphics::on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage,
-      const ::i32_size & size, ::acme::user::interaction * affinity)
+      const ::i32_size & size, ::draw2d::domain * pdraw2ddomain)
    {
-      ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, affinity);
+      ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pdraw2ddomain);
       m_bVkvgMemoryImage = false;
       if (!pimage)
          return; // Measurement-only lease continues to use its private surface.
@@ -743,7 +741,7 @@ namespace draw2d_vkvg
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, draw2d_domain(), this);
 
       }
 
@@ -756,9 +754,9 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(require_gpu_window(pwindow));
+      auto pgpudevice = pgpuapproach->get_gpu_device(draw2d_domain());
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_puserinteractionTopic);
 
       auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
 
@@ -1105,9 +1103,9 @@ namespace draw2d_vkvg
 
       //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(require_gpu_window(pwindow));
+      auto pgpudevice = pgpuapproach->get_gpu_device(draw2d_domain());
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_puserinteractionTopic);
 
       auto pgpucontext = pgpuwindowattachment->window_context();
 
@@ -8794,12 +8792,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      if (::is_set(m_pacmeuserinteractionAffinity))
+      if (::is_set(m_puserinteractionTopic))
       {
 
-         fPreferredDpiX = m_pacmeuserinteractionAffinity->preferred_dpi_x();
+         fPreferredDpiX = m_puserinteractionTopic->get_density_dpi_for_window();
 
-         fPreferredDensity = m_pacmeuserinteractionAffinity->preferred_density();
+         fPreferredDensity = m_puserinteractionTopic->get_density_for_window();
 
       }
 
@@ -9642,7 +9640,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //set_target_rectangle(pcontextVulkan->input_placement());
 
-         m_pointTarget = puserinteraction->host_origin();
+         // Nested layer scopes omit the interaction argument. The base layer
+         // setup has already resolved and validated the graphics affinity.
+         ::cast<::user::interaction> puserinteractionLayer = m_puserinteractionTopic;
+         m_pointTarget = puserinteractionLayer->host_origin();
 
          update_matrix();
 

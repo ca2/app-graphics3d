@@ -175,7 +175,7 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::draw2d::domain * pdraw2ddomain)
    //void graphics::create_memory_graphics(const ::i32_size& size)
    {
 
@@ -243,17 +243,17 @@ auto iContextHeight = pcontext->height()
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, draw2d_domain()  , this);
 
       }
 
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(draw2d_domain());
 
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_puserinteractionTopic);
 
       auto pgpucontextMain = pgpuwindowattachment->window_context();
 
@@ -261,12 +261,12 @@ auto iContextHeight = pcontext->height()
 
       ::i32_rectangle rectanglePlacement(size);
 
-      auto sizeRaw = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow->get_raw_buffer_size().maximum(size);
+      auto sizeRaw = m_puserinteractionTopic->m_pacmewindowingwindow->get_raw_buffer_size().maximum(size);
 
       pgpucontextNew->create_draw2d_gpu_context(
          // ::gpu::e_output_gpu_buffer
          pgpudevice,
-         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         draw2d_domain(),
          this,
          {},
          {},
@@ -363,7 +363,7 @@ auto iContextHeight = pcontext->height()
    bool graphics::vulkan_create_offscreen_buffer(const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size)
    {
 
-      on_gpu_context_placement_change(pointInput, pointOutput, size, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow, this);
+      on_gpu_context_placement_change(pointInput, pointOutput, size, draw2d_domain(), this);
 
       auto pcontext = gpu_context();
 
@@ -1843,16 +1843,7 @@ auto iContextHeight = pcontext->height()
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush)
    {
 
-      //       _fill_rectangle_2025_05_29(rectangle, pBrush);
-
-      f64_point quad[4] = {
-         {rectangle.top_left()},
-         {rectangle.top_right()},
-         {rectangle.bottom_right()},
-         {rectangle.bottom_left()}
-      };
-
-      _fill_quad(quad, pBrush->m_color);
+      ::gpu::graphics::fill_rectangle(rectangle, pBrush);
 
    }
 
@@ -2412,11 +2403,7 @@ auto iContextHeight = pcontext->height()
    void graphics::fill_ellipse(const ::f64_rectangle& rectangleParam)
    {
 
-      //set_smooth_mode(::draw2d::e_smooth_mode_high);
-
-  //      return (m_pgraphics->FillEllipse(vk2d_brush(), rectangleParam.left, rectangleParam.top, rectangleParam.right - rectangleParam.left, rectangleParam.bottom - rectangleParam.top)) == plusplus::Status::Ok;
-
-      //return true;
+      ::gpu::graphics::fill_ellipse(rectangleParam);
 
    }
 
@@ -2499,46 +2486,7 @@ auto iContextHeight = pcontext->height()
    void graphics::fill_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
-      //   if(nCount <= 0)
-      //      return true;
-
-      //   bool bOk1 = false;
-
-      //   plusplus::PointF * ppoints = ___new plusplus::PointF[nCount];
-
-      //   try
-      //   {
-
-      //      for(double i = 0; i < nCount; i++)
-      //      {
-      //         ppoints[i].X = (plusplus::REAL) lpPoints[i].x;
-      //         ppoints[i].Y = (plusplus::REAL) lpPoints[i].y;
-      //      }
-
-      //      m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
-
-      //      set_smooth_mode(::draw2d::e_smooth_mode_high);
-
-
-      //      bOk1 = m_pgraphics->FillPolygon(vk2d_brush(), ppoints, (::double) nCount, vk2d_get_fill_mode()) == plusplus::Status::Ok;
-
-      //   }
-      //   catch(...)
-      //   {
-      //   }
-
-      //   try
-      //   {
-      //      delete ppoints;
-      //   }
-      //   catch(...)
-      //   {
-      //   }
-
-
-      //   return bOk1;
-
-      //return true;
+      ::gpu::graphics::fill_polygon(lpPoints, nCount);
 
    }
 
@@ -3844,9 +3792,7 @@ auto iContextHeight = pcontext->height()
    void graphics::fill(::draw2d::path* pdraw2dpath)
    {
 
-      //return m_pgraphics->FillPath(vk2d_brush(),(dynamic_cast < ::draw2d_vulkan::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
-
-      //return true;
+      ::gpu::graphics::fill(pdraw2dpath);
 
    }
 
@@ -3854,9 +3800,7 @@ auto iContextHeight = pcontext->height()
    void graphics::fill(::draw2d::path* pdraw2dpath, ::draw2d::brush* pdraw2dbrush)
    {
 
-      //return m_pgraphics->FillPath((::plusplus::Brush *) pdraw2dbrush->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
-
-      //return true;
+      ::gpu::graphics::fill(pdraw2dpath, pdraw2dbrush);
 
    }
 
@@ -7152,27 +7096,28 @@ auto iContextHeight = pcontext->height()
          const ::i32_point & pointInput,
          const ::i32_point & pointOutput,
          const ::i32_size & size,
-         ::acme::windowing::window * pacmewindowingwindow, 
+         //::acme::windowing::window * pacmewindowingwindow, 
+      ::draw2d::domain * pdraw2ddomain,
          ::draw2d::graphics * pdraw2dgraphics)
    {
 
       //::acme::windowing::window *pacmewindowingwindow = nullptr;
       
-      if (::is_set(m_pacmeuserinteractionAffinity))
-      {
-         
-         pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow.m_p;
+      //if (::is_set(m_pacmeuserinteractionAffinity))
+      //{
+      //   
+      //   pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow.m_p;
 
-      }
+      //}
 
-      if (::is_null(pacmewindowingwindow))
-      {
+      //if (::is_null(pacmewindowingwindow))
+      //{
 
-         pacmewindowingwindow = m_papplication->main_acme_user_interaction()->m_pacmewindowingwindow;
+      //   pacmewindowingwindow = m_papplication->main_acme_user_interaction()->m_pacmewindowingwindow;
 
-      }
+      //}
 
-      ::gpu::graphics::on_gpu_context_placement_change(pointInput, pointOutput, size, pacmewindowingwindow, this);
+      ::gpu::graphics::on_gpu_context_placement_change(pointInput, pointOutput, size, pdraw2ddomain, this);
 
       auto sizeNew = size;
 

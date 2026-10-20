@@ -82,7 +82,8 @@ namespace draw2d_direct2d_for_directx12
 
 
       void on_acquire_memory_graphics(bool bExternalRendering, ::image::image * pimage, const ::i32_size & size,
-::acme::user::interaction * pacmeuserinteractionAffinity) override;
+//::acme::user::interaction * pacmeuserinteractionAffinity) override;
+::draw2d::domain * pdraw2ddomain) override;
 
 
       bool TextOutAlphaBlend(::f64 x, ::f64 y, const ::scoped_string & scopedstr) override;
@@ -166,7 +167,7 @@ namespace draw2d_direct2d_for_directx12
       //virtual bool save_clip() override;
       //virtual bool restore_clip() override;
 
-      ::f64 get_dpix() override;
+      //::f64 get_dpix() override;
 
       //// Constructors
       //bool CreateDC(const ::scoped_string & scopedstrDriverName, const ::scoped_string & scopedstrDeviceName,
@@ -175,8 +176,10 @@ namespace draw2d_direct2d_for_directx12
       //              const_char_pointer pszOutput, const void * lpInitData) override;
       //void create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics) override;
       //virtual void _create_from_dxgi_surface(::i32 iIndex, ::i32 iLayerIndex, IDXGISurface* pdxgisurface);
-      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
-      void create_bitmap_graphics(::draw2d::bitmap *pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
+      //void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::draw2d::domain * pdraw2ddomain = nullptr) override;
+      //void create_bitmap_graphics(::draw2d::bitmap *pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::draw2d::domain * pdraw2ddomain = nullptr) override;
       void defer_set_size(const ::i32_size& size = {}) override;
 
       //void create_offscreen_graphics_for_swap_chain_blitting(const ::i32_size& size) override;

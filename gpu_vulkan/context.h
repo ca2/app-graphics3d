@@ -120,7 +120,9 @@ namespace gpu_vulkan
       VkCommandPool getPresentCommandPool();
 
 
-      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
+      //void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
+
+      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::draw2d::domain * pdraw2ddomain, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
 
       //virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size);
 
@@ -154,6 +156,8 @@ namespace gpu_vulkan
 
       ::memory circle_shader_vert() override;
       ::memory circle_shader_frag() override;
+      ::memory brush_fill_shader_vert() override;
+      ::memory brush_fill_shader_frag(bool bPattern) override;
 
 
       ::memory _001BlendVertexShaderMemory() override;

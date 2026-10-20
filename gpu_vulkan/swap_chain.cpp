@@ -2,6 +2,8 @@
 #include "binding.h"
 #include "command_buffer.h"
 #include "context.h"
+#include "device.h"
+#include "vkresult_exception.h"
 #include "window_attachment.h"
 #include "physical_device.h"
 #include "queue.h"
@@ -77,10 +79,87 @@ namespace gpu_vulkan
    }
 
 
+   //VkResult swap_chain::_create_window_surface(::windowing::window * pwindowParam)
+   //{
+
+   //   if (m_vksurfacekhr)
+   //   {
+
+   //      return VK_SUCCESS;
+
+   //   }
+
+   //   ::cast <::gpu_vulkan::approach > pgpu = m_papplication->get_gpu_approach();
+
+   //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
+   //   // Surface creation
+   //   VkSurfaceKHR surface;
+   //   VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {
+   //       .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+   //       .hinstance = (HINSTANCE)::system()->m_hinstanceThis,
+   //                                                    .hwnd = (HWND)pwindow->_HWND()
+   //   };
+   //   auto result = vkCreateWin32SurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
+
+   //   return result;
+
+   //}
+
+
+   VkSurfaceKHR swap_chain::surface()
+   {
+
+      if (!m_vksurfacekhr)
+      {
+
+         if (!m_pwindowSwapChain)
+         {
+
+            throw ::exception(error_wrong_state, "Vulkan surface requires a swap-chain window");
+
+         }
+
+         auto result = _create_window_surface(m_pwindowSwapChain);
+         if (result != VK_SUCCESS)
+         {
+
+            throw ::vkresult_exception(result, "Could not create the Vulkan window surface");
+
+         }
+
+         if (!m_vksurfacekhr)
+         {
+
+            throw ::exception(error_wrong_state, "Vulkan surface creation returned an empty handle");
+
+         }
+
+      }
+
+      return m_vksurfacekhr;
+
+   }
+
+
    void swap_chain::initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer)
    {
 
       ::gpu::swap_chain::initialize_gpu_swap_chain(pgpurenderer);
+
+      try
+      {
+
+         ::cast<::gpu_vulkan::device> pdevice = pgpurenderer->m_pgpucontext->m_pgpudevice;
+         m_pqueuePresent = pdevice->present_queue(surface(), m_uPresentQueueFamily);
+
+      }
+      catch (...)
+      {
+
+         m_bSwapChainInitialized = false;
+         throw;
+
+      }
 
    }
 
@@ -203,7 +282,7 @@ namespace gpu_vulkan
 
       VkResult result = vkAcquireNextImageKHR(
           device,
-          m_vkswapchain,
+          m_vkswapchainkhr,
           UINT64_MAX,
                                               vkSemaphoreImageAvailable, // signal when image is ready
           VK_NULL_HANDLE,         // no fence (GPU-GPU sync only)
@@ -665,10 +744,10 @@ namespace gpu_vulkan
 
 
     presentInfo.swapchainCount     = 1;
-    presentInfo.pSwapchains        = &m_vkswapchain;
+    presentInfo.pSwapchains        = &m_vkswapchainkhr;
     ::uint32_t uImageIndex = m_iCurrentSwapChainImage;
     presentInfo.pImageIndices = &uImageIndex;
-      ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pgpurenderer->m_pgpucontext->m_pgpudevice->present_queue();
+      ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pqueuePresent;
 
     VkResult  res = pqueuePresent->present(&presentInfo);
 
@@ -742,7 +821,8 @@ namespace gpu_vulkan
 
       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-      auto swapchainSupport = pphysicaldevice->querySwapChainSupport();
+      auto vksurface = surface();
+      auto swapchainSupport = pphysicaldevice->querySwapChainSupport(vksurface);
 
       VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapchainSupport.formats);
       VkPresentModeKHR presentMode = chooseSwapPresentMode(swapchainSupport.presentModes);
@@ -757,10 +837,10 @@ namespace gpu_vulkan
 
       VkSwapchainCreateInfoKHR createInfo = {};
       createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-      createInfo.surface = pcontext->m_pgpudevice->m_pphysicaldevice->surface();
+      createInfo.surface = vksurface;
 
       //createInfo.minImageCount = imageCount;
-      createInfo.minImageCount = 3;
+      createInfo.minImageCount = imageCount;
       createInfo.imageFormat = surfaceFormat.format;
       createInfo.imageColorSpace = surfaceFormat.colorSpace;
       createInfo.imageExtent = extent;
@@ -770,7 +850,10 @@ namespace gpu_vulkan
          | VK_IMAGE_USAGE_TRANSFER_DST_BIT
          | VK_IMAGE_USAGE_SAMPLED_BIT;
 
-      vulkan::QueueFamilyIndices indexes = pcontext->m_pgpudevice->m_pphysicaldevice->findQueueFamilies();
+      // Use the queues enabled on this logical device, including the queue
+      // checked against this particular window surface during initialization.
+      auto indexes = pgpudevice->m_queuefamilyindexes;
+      indexes.presentFamily = (int)m_uPresentQueueFamily;
       uint32_t queueFamilyIndices[] =
       {
          (uint32_t)indexes.graphicsFamily,
@@ -797,11 +880,11 @@ namespace gpu_vulkan
 
       ::pointer < swap_chain> pswapchainOld = prendertarget->m_prendertargetOld;
 
-      createInfo.oldSwapchain = pswapchainOld == nullptr ? VK_NULL_HANDLE : pswapchainOld->m_vkswapchain;
+      createInfo.oldSwapchain = pswapchainOld == nullptr ? VK_NULL_HANDLE : pswapchainOld->m_vkswapchainkhr;
 
       auto logicalDevice = pcontext->logicalDevice();
 
-      auto vkResultCreateSwapChain = vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &m_vkswapchain);
+      auto vkResultCreateSwapChain = vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &m_vkswapchainkhr);
 
       if(vkResultCreateSwapChain != VK_SUCCESS)
       {
@@ -816,7 +899,7 @@ namespace gpu_vulkan
       // allowed to create a swap chain with more. That's why we'll first query the final number of
       // images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
       // retrieve the handles.
-      vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchain, &imageCount, nullptr);
+      vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchainkhr, &imageCount, nullptr);
 
       //m_pgpurenderer->m_pgpurendertarget->m_iFrameCountRequest = imageCount;
 
@@ -830,7 +913,7 @@ namespace gpu_vulkan
 
       imagea.set_size(m_ptexturesiteaSwapChain->size());
 
-      vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchain, &imageCount, imagea.data());
+      vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchainkhr, &imageCount, imagea.data());
       
       for (int i = 0; i < imagea.size(); i++)
       {

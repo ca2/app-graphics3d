@@ -579,4 +579,9 @@
       <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\_001BrushFill.vert.spv.inl"><Filter>Header Files\shader</Filter></None>
+    <None Include="shader\_001BrushFill.frag.spv.inl"><Filter>Header Files\shader</Filter></None>
+    <None Include="shader\_001BrushPattern.frag.spv.inl"><Filter>Header Files\shader</Filter></None>
+  </ItemGroup>
 </Project>

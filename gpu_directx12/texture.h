@@ -293,12 +293,12 @@ namespace gpu_directx12
       virtual void _initialize_gpu_texture(::gpu::context * pgpucontext, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
 
 
-      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data) override;
+      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data, bool bTopDown) override;
       using ::gpu::texture::write_pixels;
       void write_pixels(bool bSync, const void * pData, const ::i32_size & size,
-         ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point) override;
+         ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bTopDown) override;
       void _write_pixels(bool bSync, const void * pData, const ::i32_size & size,
-         ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bShaderRead);
+         ::i32 iScan, ::i32 iBytesPerPixel, const ::i32_point & point, bool bShaderRead, bool bTopDown);
       //void set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data) override;
       virtual upload_buffer * _get_upload_buffer();
 

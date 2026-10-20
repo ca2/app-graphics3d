@@ -3,6 +3,7 @@
 #include "font_enumeration.h"
 //#include "directx12/directx12.h"
 #include "acme/platform/application.h"
+#include "aura/graphics/draw2d/draw2d.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "acme/user/user/interaction.h"
 #include "bred/gpu/bred_approach.h"
@@ -35,7 +36,7 @@ namespace write_text_directx12
 
       auto papproach = m_papplication->get_gpu_approach();
 
-      auto pdevice = papproach->get_gpu_device(m_papplication->main_acme_user_interaction()->m_pacmewindowingwindow);
+      auto pdevice = papproach->get_gpu_device(draw2d()->main_draw2d_domain());
 
       //auto pdirectx12 = ::gpu_directx12::from_gpu_device(pdevice);
 

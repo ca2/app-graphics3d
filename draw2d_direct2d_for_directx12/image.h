@@ -41,7 +41,8 @@ namespace draw2d_direct2d_for_directx12
 
       void update_as_backed_by_gpu_texture(const ::i32_size & size, ::gpu::texture * pgputexture, ::draw2d::graphics * pdraw2dgraphics) override;
       //using ::image::image::create;
-      void update_as_render_target(const ::i32_size & size, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, ::i32 iStride = -1, bool bPreserve = false, bool bTopDraw2d = false) override;
+      //void update_as_render_target(const ::i32_size & size, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, ::i32 iStride = -1, bool bPreserve = false, bool bTopDraw2d = false) override;
+      void update_as_render_target(const ::i32_size & size, ::draw2d::domain * pdraw2ddomain, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, ::i32 iStride = -1, bool bPreserve = false, bool bTopDraw2d = false) override;
       //using ::image::image::initialize;
       //void initialize(const ::i32_size & size, ::image32_t * pimage32, ::i32 iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG) override;
       bool _create(::draw2d::graphics * pdraw2dgraphics);

@@ -15,7 +15,10 @@ namespace gpu_vulkan
    public:
 
 
-      VkSwapchainKHR                            m_vkswapchain;
+      VkSurfaceKHR                              m_vksurfacekhr = VK_NULL_HANDLE;
+      VkSwapchainKHR                            m_vkswapchainkhr = VK_NULL_HANDLE;
+      ::pointer<::gpu::queue>                   m_pqueuePresent;
+      ::u32                                     m_uPresentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
       //int                                       m_iCurrentSwapChainImage;
       //::gpu::context_pointer              m_pgpucontextSwapChain;
       ::pointer < ::gpu::shader >               m_pshaderPresent;
@@ -44,7 +47,10 @@ namespace gpu_vulkan
       virtual bool should_use_advanced_pipeline_synchronization();
 
 
-
+      // Lazily create the surface for this swap chain's window.
+      VkSurfaceKHR surface();
+      virtual VkResult _create_window_surface(::windowing::window * pwindowParam);
+   
       //virtual ::gpu::texture* current_texture();
       //virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});
       void initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer) override;

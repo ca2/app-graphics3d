@@ -984,12 +984,13 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
+   //void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
+   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::draw2d::domain * pdraw2ddomain, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
    //void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
      //                              ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
-      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, pdraw2dgraphics, pointInput, pointOutput, size, sizeRaw);
+      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pdraw2ddomain, pdraw2dgraphics, pointInput, pointOutput, size, sizeRaw);
 
       // m_itaskGpu = ::current_itask();
       m_pgpudevice = pgpudevice;
@@ -998,7 +999,9 @@ namespace gpu_vulkan
 
       m_escene = escene;
 
-      m_pacmeuserinteractionAffinity = pacmewindowingwindow->m_pacmeuserinteraction;
+      //m_pacmeuserinteractionAffinity = pacmewindowingwindow->m_pacmeuserinteraction;
+
+      //set_draw2d_domain(pdraw2ddomain);
 
       ::cast<::gpu_vulkan::device> pdevice = pgpudevice;
 
@@ -1951,6 +1954,30 @@ namespace gpu_vulkan
       return ::as_memory_block(pfragmentshader);
    }
 
+
+
+   ::memory context::brush_fill_shader_vert()
+   {
+      static const unsigned int code[] = {
+#include "shader/_001BrushFill.vert.spv.inl"
+      };
+      return ::as_memory_block(code);
+   }
+
+   ::memory context::brush_fill_shader_frag(bool bPattern)
+   {
+      if (bPattern)
+      {
+         static const unsigned int code[] = {
+#include "shader/_001BrushPattern.frag.spv.inl"
+         };
+         return ::as_memory_block(code);
+      }
+      static const unsigned int code[] = {
+#include "shader/_001BrushFill.frag.spv.inl"
+      };
+      return ::as_memory_block(code);
+   }
 
 
    ::memory context::circle_shader_vert()
@@ -5595,6 +5622,10 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
       renderPassBeginInfo.renderArea.extent = {(uint32_t)layer.m_size.width(),
                                                (uint32_t)layer.m_size.height()};
 
+
+      // Retain recorded attachments even if the image replaces its bitmap.
+      pcommandbuffer->m_particleaHold.add(ptexture);
+      pcommandbuffer->m_particleaHold.add(prenderpass);
 
       vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 

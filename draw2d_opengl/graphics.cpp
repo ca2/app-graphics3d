@@ -14,6 +14,7 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
+#include "aura/graphics/draw2d/domain.h"
 #include "aura/graphics/graphics/buffer_item.h"
 #include "bred/gpu/_model.h"
 #include "bred/gpu/bred_approach.h"
@@ -352,16 +353,16 @@ namespace draw2d_opengl
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(sizeRaw, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(sizeRaw, puserinteraction->draw2d_domain(), this);
 
       }
 
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionTopic->draw2d_domain());
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_puserinteractionTopic);
 
       auto pgpucontextMain = pgpuwindowattachment->window_context();
 
@@ -370,7 +371,7 @@ namespace draw2d_opengl
       pgpucontextNew->create_draw2d_gpu_context(
          // ::gpu::e_output_gpu_buffer
          pgpudevice, 
-         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         m_puserinteractionTopic->draw2d_domain(),
          this,
          {},
          pointOutput,
@@ -414,11 +415,11 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::_create_memory_graphics(const ::i32_size & size, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::_create_memory_graphics(const ::i32_size & size, ::draw2d::domain * pdraw2ddomain)
 //   bool graphics::opengl_create_offscreen_buffer(const ::i32_size & size)
    {
 
-      m_pacmeuserinteractionAffinity = pacmeuserinteractionAffinity;
+      set_draw2d_domain(pdraw2ddomain);
 
       //if (!draw2d_opengl()->m_popenglcontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -446,18 +447,18 @@ namespace draw2d_opengl
 
       //   ASSERT(m_puserinteractionDraw2dGraphics);
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->acme_windowing_window());
+      auto pgpudevice = pgpuapproach->get_gpu_device(draw2d_domain());
 
       auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
       //::i32_rectangle rectanglePlacement(size);
 
-      auto sizeRaw = m_pacmeuserinteractionAffinity->acme_windowing_window()->get_raw_buffer_size().maximum(size);
+      auto sizeRaw = m_puserinteractionTopic->acme_windowing_window()->get_raw_buffer_size().maximum(size);
 
       pgpucontextNew->create_draw2d_gpu_context(
          //::gpu::e_output_gpu_buffer,
          pgpudevice,
-         m_pacmeuserinteractionAffinity->acme_windowing_window(),
+         m_puserinteractionTopic->draw2d_domain(),
          this,
          {},
          {},
@@ -685,7 +686,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::draw2d::domain * pdraw2ddomain)
    {
 
       throw ::interface_only();
@@ -717,7 +718,7 @@ namespace draw2d_opengl
       bool bExternalRendering,
       ::image::image * pimage,
       const ::i32_size & size,
-      ::acme::user::interaction * pacmeuserinteractionAffinity)
+      ::draw2d::domain * pdraw2ddomain)
    {
 
       ::gpu::texture * pgputextureActiveLayer = nullptr;
@@ -759,7 +760,7 @@ namespace draw2d_opengl
          bExternalRendering,
          pimage,
          size,
-         pacmeuserinteractionAffinity);
+         pdraw2ddomain);
 
       if (pimage)
       {
@@ -1693,7 +1694,7 @@ namespace draw2d_opengl
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pdraw2dbrush)
    {
 
-      fill_rectangle(rectangle, pdraw2dbrush->m_color);
+      ::gpu::graphics::fill_rectangle(rectangle, pdraw2dbrush);
 
    }
 
@@ -2407,11 +2408,7 @@ namespace draw2d_opengl
    void graphics::fill_ellipse(const ::f64_rectangle& rectangleParam)
    {
 
-      //set_smooth_mode(::draw2d::e_smooth_mode_high);
-
-//      return (m_pgraphics->FillEllipse(gl2d_brush(), rectangleParam.left, rectangleParam.top, rectangleParam.right - rectangleParam.left, rectangleParam.bottom - rectangleParam.top)) == plusplus::Status::Ok;
-
-      //return true;
+      ::gpu::graphics::fill_ellipse(rectangleParam);
 
    }
 
@@ -2494,46 +2491,7 @@ namespace draw2d_opengl
    void graphics::fill_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
-      //   if(nCount <= 0)
-      //      return true;
-
-      //   bool bOk1 = false;
-
-      //   plusplus::PointF * ppoints = ___new plusplus::PointF[nCount];
-
-      //   try
-      //   {
-
-      //      for(double i = 0; i < nCount; i++)
-      //      {
-      //         ppoints[i].X = (plusplus::REAL) lpPoints[i].x;
-      //         ppoints[i].Y = (plusplus::REAL) lpPoints[i].y;
-      //      }
-
-      //      m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
-
-      //      set_smooth_mode(::draw2d::e_smooth_mode_high);
-
-
-      //      bOk1 = m_pgraphics->FillPolygon(gl2d_brush(), ppoints, (::double) nCount, gl2d_get_fill_mode()) == plusplus::Status::Ok;
-
-      //   }
-      //   catch(...)
-      //   {
-      //   }
-
-      //   try
-      //   {
-      //      delete ppoints;
-      //   }
-      //   catch(...)
-      //   {
-      //   }
-
-
-      //   return bOk1;
-
-      //return true;
+      ::gpu::graphics::fill_polygon(lpPoints, nCount);
 
    }
 
@@ -4025,9 +3983,7 @@ namespace draw2d_opengl
    void graphics::fill(::draw2d::path* pdraw2dpath)
    {
 
-      //return m_pgraphics->FillPath(gl2d_brush(),(dynamic_cast < ::draw2d_opengl::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
-
-      //return true;
+      ::gpu::graphics::fill(pdraw2dpath);
 
    }
 
@@ -4035,9 +3991,7 @@ namespace draw2d_opengl
    void graphics::fill(::draw2d::path* pdraw2dpath, ::draw2d::brush* pdraw2dbrush)
    {
 
-      //return m_pgraphics->FillPath((::plusplus::Brush *) pdraw2dbrush->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
-
-      //return true;
+      ::gpu::graphics::fill(pdraw2dpath, pdraw2dbrush);
 
    }
 

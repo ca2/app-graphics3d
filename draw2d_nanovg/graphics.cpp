@@ -271,24 +271,24 @@ namespace draw2d_nanovg
    //}
 
 
-   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::draw2d::domain * pdraw2ddomain)
    {
 
-      _create_memory_graphics(pdraw2dbitmap->size(), pacmeuserinteractionAffinity);
+      _create_memory_graphics(pdraw2dbitmap->size(), pdraw2ddomain);
 
    }
 
 
    //void graphics::_create_memory_graphics(const ::i32_size& size)
-   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::draw2d::domain * pdraw2ddomain)
    {
 
-      auto puserinteraction = pacmeuserinteractionAffinity;
+    /*  auto puserinteraction = pdraw2ddomain->m_pacmeuserinteractionAffinity;
 
       if (puserinteraction)
       {
 
-         m_pacmeuserinteractionAffinity = puserinteraction;
+         m_puserinteractionTopic = puserinteraction;
 
       }
 
@@ -317,10 +317,10 @@ namespace draw2d_nanovg
 
          m_pacmeuserinteractionAffinity = puserinteraction;
 
-      }
+      }*/
 
       auto pgpuapproach = application()->get_gpu_approach();
-      auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(pdraw2ddomain);
 
       if (!pgpudevice)
       {
@@ -339,16 +339,16 @@ namespace draw2d_nanovg
          //::i32_rectangle rectanglePlacement(sizeParameter);
          ::i32_size sizeRaw = sizeParameter;
 
-         if (::is_set(pacmeuserinteractionAffinity))
+         if (::is_set(m_puserinteractionTopic))
          {
 
-            sizeRaw = pacmeuserinteractionAffinity->acme_windowing_window()->get_raw_buffer_size().maximum(sizeParameter);
+            sizeRaw = m_puserinteractionTopic->acme_windowing_window()->get_raw_buffer_size().maximum(sizeParameter);
 
          }
 
          m_pgpucontextOwned->create_draw2d_gpu_context(
             pgpudevice,
-            ::is_set(pacmeuserinteractionAffinity) ? pacmeuserinteractionAffinity->acme_windowing_window() : nullptr,
+            pdraw2ddomain,
             this,
             {},
             {},
@@ -421,7 +421,8 @@ namespace draw2d_nanovg
       bool bExternalRendering,
       ::image::image * pimage,
       const ::i32_size & size,
-      ::acme::user::interaction * pacmeuserinteractionAffinity)
+      // ::acme::user::interaction * pacmeuserinteractionAffinity)
+      ::draw2d::domain * pdraw2ddomain)
    {
 
       auto pgpucontext = gpu_context();
@@ -444,7 +445,7 @@ namespace draw2d_nanovg
            // [this, pgpucontext, pimage, size, pacmeuserinteractionAffinity]()
             //{
 
-               ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pacmeuserinteractionAffinity);
+               ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pdraw2ddomain);
 
                m_egraphics = ::e_graphics_draw;
                m_sizeScaleOutput = { 1.0, -1.0 };
@@ -470,7 +471,7 @@ namespace draw2d_nanovg
 
                 rectangleFrame.set(::i32_point(), size);
 
-                begin_draw(bExternalRendering, pacmeuserinteractionAffinity->user_interaction(), rectangleFrame, pimage);
+                begin_draw(bExternalRendering, m_puserinteractionTopic, rectangleFrame, pimage);
                 ///::opengl::resize(size, false);
 
              //});
@@ -564,7 +565,7 @@ namespace draw2d_nanovg
 
       ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
-      auto pwindow = puserinteraction->window();
+      //auto pwindow = puserinteraction->window();
 
       //opengl_defer_create_window_context(pwindow);
 
@@ -572,9 +573,9 @@ namespace draw2d_nanovg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(puserinteraction->draw2d_domain());
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(pwindow);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(puserinteraction);
 
       auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
 
@@ -590,7 +591,7 @@ namespace draw2d_nanovg
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, draw2d_domain(), this);
 
       }
 
@@ -940,9 +941,9 @@ namespace draw2d_nanovg
 
       //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(draw2d_domain());
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_puserinteractionTopic);
 
       auto pgpucontextWindow = pgpuwindowattachment->window_context();
 
@@ -1046,7 +1047,7 @@ namespace draw2d_nanovg
 
       }
 
-      create_memory_graphics(pdraw2dbitmap->size(), m_pacmeuserinteractionAffinity);
+      create_memory_graphics(pdraw2dbitmap->size(), draw2d_domain());
 
       //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
 
@@ -8658,14 +8659,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      if (::is_set(m_pacmeuserinteractionAffinity))
+      if (::is_set(m_puserinteractionTopic))
       {
 
-         fPreferredDpiX = m_pacmeuserinteractionAffinity->preferred_dpi_x();
+         fPreferredDpiX = m_puserinteractionTopic->get_density_dpi_for_window();
 
-         fPreferredDpiY = m_pacmeuserinteractionAffinity->preferred_dpi_y();
+         fPreferredDpiY = m_puserinteractionTopic  ->get_density_dpi_for_window();
 
-         fPreferredDensity = m_pacmeuserinteractionAffinity->preferred_density();
+         fPreferredDensity = m_puserinteractionTopic->get_density_for_window();
 
       }
 
@@ -10963,7 +10964,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          ::i32_rectangle rectangle;
 
-         ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
+         ::cast < ::user::interaction > puserinteraction = m_puserinteractionTopic;
 
          if (puserinteraction && !puserinteraction->host_rectangle().size().is_empty())
          {

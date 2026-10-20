@@ -1764,6 +1764,11 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)shader\%(Filenam
     <None Include="shader\white_to_color.frag.spv.inl" />
     <None Include="shader\white_to_color.vert.spv.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\_001BrushFill.vert.spv.inl" />
+    <None Include="shader\_001BrushFill.frag.spv.inl" />
+    <None Include="shader\_001BrushPattern.frag.spv.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

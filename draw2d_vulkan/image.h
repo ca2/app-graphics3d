@@ -55,7 +55,8 @@ namespace draw2d_vulkan
 
       //void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
 
-      void update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
+      //void update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
+      void update_as_render_target(const ::i32_size & sizeRaw, ::draw2d::domain * pdraw2ddomain, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
 
       void create_from_graphics(::draw2d::graphics * pdraw2dgraphics) override;
 
@@ -65,7 +66,7 @@ namespace draw2d_vulkan
       //bool host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw) override;
 
 
-      bool from(::draw2d::graphics * pdraw2dgraphics);
+      //bool from(::draw2d::graphics * pdraw2dgraphics);
       //bool from(i32_point ptDest, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, ::i32_size sz);
 
       //void to(::draw2d::graphics * pdraw2dgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc) override;

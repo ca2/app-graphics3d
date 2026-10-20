@@ -165,10 +165,52 @@ namespace gpu_directx12
    }
 
 
-   void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window* pwindow)
+   //void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window* pwindow)
+   //{
+
+   //   ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
+
+   //   //initialize_swap_chain(pwindow);
+
+   //   ::cast < approach > pgpuapproach = pgpuapproachParam;
+
+   //   if (!pgpuapproach)
+   //   {
+
+   //      throw ::exception(error_failed);
+
+   //   }
+
+   //   m_pgpuapproach = pgpuapproach.m_p;
+
+   //   auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+
+   //   m_pphysicaldevice = pphysicaldevice;
+
+   //   if (!m_pd3d12device)
+   //   {
+   //      
+   //      _create_d3d12_device();
+
+   //   }
+
+   //   //if (!m_pswapchain->m_bSwapChainInitialized)
+   //   //{
+
+   //   //   m_pswapchain->initialize_gpu_swap_chain(this, pwindow);
+
+   //   //}
+
+   //   //      get_swap_chain();
+
+   //}
+
+
+
+   void device::initialize_gpu_device(::gpu::approach * pgpuapproachParam, ::draw2d::domain * pdraw2ddomain)
    {
 
-      ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
+      ::gpu::device::initialize_gpu_device(pgpuapproachParam, pdraw2ddomain);
 
       //initialize_swap_chain(pwindow);
 
@@ -189,7 +231,7 @@ namespace gpu_directx12
 
       if (!m_pd3d12device)
       {
-         
+
          _create_d3d12_device();
 
       }
@@ -204,7 +246,6 @@ namespace gpu_directx12
       //      get_swap_chain();
 
    }
-
 
    //::gpu::context* device::get_main_window_context()
    //{
@@ -383,29 +424,30 @@ namespace gpu_directx12
       return table;
    }
 
-   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
-   {
+   //void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
+   //{
 
-      bool bAddSwapChainSupport = false;
+   //   bool bAddSwapChainSupport = false;
 
-      initialize_cpu_buffer(rectanglePlacement.size());
+   //   initialize_cpu_buffer(rectanglePlacement.size());
 
-      ::cast < approach > pgpuapproach = pgpuapproachParam;
+   //   ::cast < approach > pgpuapproach = pgpuapproachParam;
 
-      if (!pgpuapproach)
-      {
+   //   if (!pgpuapproach)
+   //   {
 
-         throw ::exception(error_failed);
+   //      throw ::exception(error_failed);
 
-      }
+   //   }
 
-      m_pgpuapproach = pgpuapproach.m_p;
+   //   m_pgpuapproach = pgpuapproach.m_p;
 
-      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+   //   auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
 
-      m_pphysicaldevice = pphysicaldevice;
+   //   m_pphysicaldevice = pphysicaldevice;
 
-   }
+   //}
+
 
 
    bool device::isExtensionSupported(const ::scoped_string& scopedstrExtension)

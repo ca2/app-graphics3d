@@ -9,6 +9,7 @@
 #include "font.h"
 #include "path.h"
 #include "draw2d.h"
+#include "aura/graphics/draw2d/domain.h"
 //#include "aura/graphics/draw2d/window_attachment.h"
 #include "gpu_opengl/window_attachment.h"
 //#ifdef WINDOWS_DESKTOP
@@ -19,6 +20,8 @@
 
 __FACTORY_EXPORT void draw2d_opengl_factory(::factory::factory * pfactory)
 {
+
+   pfactory->add_factory_item < ::draw2d::domain, ::acme::draw2d::domain >();
 
    pfactory->add_factory_item < ::draw2d_opengl::image, ::image::image >();
    pfactory->add_factory_item < ::draw2d_opengl::graphics, ::draw2d::graphics >();

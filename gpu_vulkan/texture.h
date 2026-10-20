@@ -290,7 +290,7 @@ const void * pData,
 const ::i32_size & size,
 ::i32 iScan,
 ::i32 iBytesPerPixel,
-const ::i32_point & point) override;
+const ::i32_point & point, bool bTopDown) override;
 //      void write_pixels(
 //         ::gpu::command_buffer * pgpucommandbuffer,
 //const void * pData,
@@ -416,7 +416,7 @@ const ::i32_point & point) override;
       //;
       //virtual texture_synchronization *synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
-      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data) override;
+      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data, bool bTopDown) override;
       //void write_pixels(const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
       ////void write_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
