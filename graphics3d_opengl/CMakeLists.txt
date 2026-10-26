@@ -9,6 +9,8 @@ list(APPEND library_source
    render_system/skybox_render_system.h
    render_system/scene_render_system.cpp
    render_system/scene_render_system.h
+        render_system/texture_render_system.cpp
+        render_system/texture_render_system.h
    render_system/wavefront_obj_render_system.cpp
    render_system/wavefront_obj_render_system.h
         _.cpp
@@ -16,8 +18,10 @@ list(APPEND library_source
         _factory.cpp
         camera.cpp
         camera.h
-        engine.cpp
-        engine.h
+        engine_instance.cpp
+        engine_instance.h
+        graphics3d.cpp
+        graphics3d.h
         platform.cpp
         platform.h
         #model.cpp

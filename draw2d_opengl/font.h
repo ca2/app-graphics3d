@@ -4,14 +4,14 @@
 #include "acme/_operating_system.h"
 
 
-#include "aura/graphics/write_text/font.h"
+#include "bred/gpu/font.h"
 
 namespace draw2d_opengl
 {
 
 
    class CLASS_DECL_DRAW2D_OPENGL font : 
-      virtual public ::write_text::font
+      virtual public ::gpu::font
    {
    public:
 

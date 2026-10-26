@@ -29,8 +29,8 @@ namespace gpu_vulkan
           .sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
           //.hinstance = (HINSTANCE)::system()->m_hinstanceThis,
           //.hwnd = pwindow->m_hwnd
-         .dpy = (Display *) pwindow->__x11_Display(),
-         .window = (Window) pwindow->__x11_Window()
+         .dpy = pwindow->__x11_display(),
+         .window = pwindow->__x11_window()
       };
       auto result = vkCreateXlibSurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
 

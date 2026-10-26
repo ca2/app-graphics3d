@@ -85,6 +85,26 @@ namespace draw2d_nanovg
    void font::update(::draw2d::graphics * pdraw2dgraphics)
    {
 
+      ::cast < ::draw2d_nanovg::graphics > pdraw2dnanovggraphics = pdraw2dgraphics;
+
+      pdraw2dnanovggraphics->_set(this);
+
+      float ascender = 0.f;
+
+      float descender = 0.f;
+
+      float lineh = 0.f;
+
+      nvgTextMetrics(pdraw2dnanovggraphics->m_pdc, &ascender, &descender, &lineh);
+
+      m_textmetric4.m_dAscent = ascender;
+      m_textmetric4.m_dDescent = descender;
+      m_textmetric4.m_dHeight  = ascender + descender;
+      m_textmetric4.m_dInternalLeading = 0.;
+      m_textmetric4.m_dExternalLeading = lineh - m_textmetric4.m_dHeight;
+
+
+
       // if (m_hdcFont == nullptr || is_modified(iCreate))
       // {
       //

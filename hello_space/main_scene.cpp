@@ -292,10 +292,11 @@ namespace app_graphics3d_hello_space
       }
 
       m_pimageHelloMultiverseScreen = image()->path_image(pathBackground);
-      
+
       construct_newø(m_pbitmapsourcebuffergraphics);
 
-      m_pbitmapsourcebuffergraphics->set_bitmap_source("HelloMultiverse!!", false);
+      m_pbitmapsourcebuffergraphics->set_bitmap_source(
+         "app-core/hello_multiverse", "HelloMultiverse!!", false);
 
 
    }

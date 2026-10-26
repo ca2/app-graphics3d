@@ -362,10 +362,6 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionTopic->draw2d_domain());
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_puserinteractionTopic);
-
-      auto pgpucontextMain = pgpuwindowattachment->window_context();
-
       auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
       pgpucontextNew->create_draw2d_gpu_context(
@@ -377,8 +373,6 @@ namespace draw2d_opengl
          pointOutput,
          size, 
          sizeRaw);
-
-      //auto r = pgpucontextMain->get_placement();
 
       m_sizeScaleOutput = {1.0, -1.0};
 
@@ -451,14 +445,22 @@ namespace draw2d_opengl
 
       auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
+      // The pbuffer context has no window attachment. Give it an offscreen
+      // frame attachment so model buffers used while drawing the image cache
+      // can use the same per-frame pool as window-backed graphics.
+      construct_newø(pgpucontextNew->m_pgpuwindowattachmentOffscreen);
+      pgpucontextNew->m_pgpuwindowattachmentOffscreen->initialize_offscreen_frame(pgpucontextNew);
+
       //::i32_rectangle rectanglePlacement(size);
 
-      auto sizeRaw = m_puserinteractionTopic->acme_windowing_window()->get_raw_buffer_size().maximum(size);
+      // A memory graphics target is an offscreen image and may have no
+      // owning interaction. Its raw buffer is the requested image size.
+      auto sizeRaw = size;
 
       pgpucontextNew->create_draw2d_gpu_context(
          //::gpu::e_output_gpu_buffer,
          pgpudevice,
-         m_puserinteractionTopic->draw2d_domain(),
+         draw2d_domain(),
          this,
          {},
          {},
@@ -2161,7 +2163,7 @@ namespace draw2d_opengl
          seq2aCenter[0].x,
          seq2aCenter[0].y,
          rectangleParam.minimum_dimension()/2.0, 
-         m_pdraw2dpen->m_dWidth, 
+         m_pdraw2dpen->m_dWidth * draw2d_domain()->get_density(),
          numSegments);
 
       contextmatrix.transform(vertices);
@@ -2260,7 +2262,7 @@ namespace draw2d_opengl
 
       auto radius = rectangleParam.minimum_dimension() / 2.0;
 
-      auto thickness = m_pdraw2dpen->m_dWidth;
+      auto thickness = m_pdraw2dpen->m_dWidth * draw2d_domain()->get_density();
 
       auto extent = radius + thickness / 2.0f + 2.0f;
 
@@ -2825,7 +2827,7 @@ namespace draw2d_opengl
 
       for(auto & item : pointa1) __transform(item);
 
-      ::f64_point pointPen(pdraw2dpen->m_dWidth, pdraw2dpen->m_dWidth);
+      ::f64_point pointPen(pdraw2dpen->m_dWidth * draw2d_domain()->get_density(), pdraw2dpen->m_dWidth * draw2d_domain()->get_density());
 
       ::f64_point_array pointa;
 

@@ -139,6 +139,31 @@ namespace draw2d_vkvg
 
       }
 
+#else
+
+
+      ::cast < ::draw2d_vkvg::graphics > pdraw2dvkvggraphics = pdraw2dgraphics;
+
+      pdraw2dvkvggraphics->_set(this);
+
+      auto vkvgcontext = pdraw2dvkvggraphics->vkvg_context();
+
+      vkvg_font_extents_t fontextents{};
+
+      vkvg_font_extents(vkvgcontext, &fontextents);
+
+      m_textmetric4.m_dAscent = fontextents.ascent;
+      m_textmetric4.m_dHeight = fontextents.height;
+      m_textmetric4.m_dDescent = fontextents.descent;
+      m_textmetric4.m_dInternalLeading = 0.0;
+      m_textmetric4.m_dExternalLeading =
+         maximum(0.0, (double)fontextents.height - ((double)fontextents.ascent + (double)fontextents.descent));
+      //m_textmetric4.m_dWeight = m_pwritetextfont->m_fontweight.as_i32();
+      //m_textmetric4.m_bItalic = m_pwritetextfont->m_bItalic;
+      //m_textmetric4.m_bUnderlined = m_pwritetextfont->m_bUnderline;
+      //m_textmetric4.m_bStruckOut = m_pwritetextfont->m_bStrikeout;
+
+
 #endif
       //return m_hfont;
 

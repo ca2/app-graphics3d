@@ -136,6 +136,20 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = m_pgpurendertarget;
 
+      if (!prendertarget)
+      {
+
+         throw ::exception(error_wrong_state, "Vulkan command buffer has no render target.");
+
+      }
+
+      if (!m_pgpuqueue)
+      {
+
+         throw ::exception(error_wrong_state, "Vulkan command buffer has no submission queue.");
+
+      }
+
       //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
       //if (prenderpass)
@@ -160,9 +174,23 @@ namespace gpu_vulkan
 
          }
 
-         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurendertarget);
+         ::cast < layer > playerPrevious;
 
-         ::cast < layer > playerPrevious = pgpuwindowattachment->get_previous_layer(player);
+         if (player)
+         {
+
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurendertarget);
+
+            if (!pgpuwindowattachment)
+            {
+
+               throw ::exception(error_wrong_state, "Layer command buffer has no window attachment.");
+
+            }
+
+            playerPrevious = pgpuwindowattachment->get_previous_layer(player);
+
+         }
 
 
          ::comparable_array< VkSemaphore > vksemaphoreaWait;

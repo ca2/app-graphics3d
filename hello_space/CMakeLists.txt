@@ -54,6 +54,8 @@ list(APPEND library_source
    camera.cpp
    camera.h
 
+        immersion.cpp
+        immersion.h
         main_scene.cpp
         main_scene.h
         #graphics3d/point_light_system.cpp
@@ -70,8 +72,8 @@ list(APPEND library_source
         platform.h
    #global_ubo.cpp
    #global_ubo.h
-        impact.cpp
-        impact.h
+        #impact.cpp
+        #impact.h
    input.cpp
    input.h
         main_frame.cpp
@@ -110,6 +112,7 @@ list(APPEND library_references
     bred
     core
    graphics3d
+        app_graphics3d_continuum
 )
 
 
@@ -119,9 +122,7 @@ file(GLOB SHADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/hello_space/_std/_std/shaders/*.frag")
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source}
-   immersion.cpp
-   immersion.h)
+add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 
@@ -134,18 +135,18 @@ endif ()
 
 
 
-if(${LINUX} OR ${__BSD__})
-
-
-    add_custom_command(
-       OUTPUT ${PROJECT_SOURCE_DIR}/.link_object/_matter.zip.o
-       COMMAND ${APPLICATION_BUILD_HELPER_BINARY} --prepare-application ${PROJECT_SOURCE_DIR}
-       COMMENT "Generating ${PROJECT_SOURCE_DIR}/.link_object/_matter.zip.o"
-    )
-
-    target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/.link_object/_matter.zip.o)
-
-endif()
+#if(${LINUX} OR ${__BSD__})
+#
+#
+#    add_custom_command(
+#       OUTPUT ${PROJECT_SOURCE_DIR}/.link_object/_matter.zip.o
+#       COMMAND ${APPLICATION_BUILD_HELPER_BINARY} --prepare-application ${PROJECT_SOURCE_DIR}
+#       COMMENT "Generating ${PROJECT_SOURCE_DIR}/.link_object/_matter.zip.o"
+#    )
+#
+#    target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/.link_object/_matter.zip.o)
+#
+#endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 

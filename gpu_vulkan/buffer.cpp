@@ -23,7 +23,7 @@ namespace gpu_vulkan
    buffer::buffer()
    {
 
-      m_pgpucontext = nullptr;
+      //m_pgpucontext = nullptr;
       m_vkbuffer = VK_NULL_HANDLE;
       m_vkdevicememory = VK_NULL_HANDLE;
       m_size = 0;

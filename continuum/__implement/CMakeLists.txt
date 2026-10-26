@@ -58,6 +58,12 @@ list(APPEND executable_references
 )
 
 
+if(${LINUX} OR ${__BSD__} OR ${__SUNOS__} OR ${__HAIKU__})
+
+    target_sources(${PROJECT_NAME} PRIVATE .link_object/_matter.zip.o)
+
+endif()
+
 
 
 if (MSVC)

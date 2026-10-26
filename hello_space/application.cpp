@@ -81,7 +81,7 @@ namespace app_graphics3d_hello_space
 
       auto psession = pcontext->m_psession;
 
-      auto puser = psession->m_puser;
+      auto puser = psession->user();
 
       puser->will_use_impact_hint("font_selection_impact");
       puser->will_use_impact_hint("color_selection_impact");

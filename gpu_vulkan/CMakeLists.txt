@@ -45,8 +45,8 @@ list(APPEND library_source
    context_ktx.cpp
    context_object.cpp
    context_object.h
-   cpu_buffer.cpp
-   cpu_buffer.h
+   #cpu_buffer.cpp
+   #cpu_buffer.h
    context.cpp
    context.h
    #cube.cpp
@@ -60,6 +60,8 @@ list(APPEND library_source
    #gltf_model.cpp
    #gltf_model.h
    #aaa_tinygltf.cpp
+    fence.cpp
+    fence.h
    vkresult_exception.cpp
    vkresult_exception.h     #image_directx.cpp
    image_vulkan.cpp
@@ -89,7 +91,9 @@ list(APPEND library_source
    render_target.h
    renderer.cpp
    renderer.h
-   shader.cpp
+    semaphore.cpp
+    semaphore.h
+    shader.cpp
    shader.h
    swap_chain.cpp
    swap_chain.h
@@ -146,11 +150,7 @@ else ()
 endif ()
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source}
-   fence.cpp
-   fence.h
-   semaphore.cpp
-   semaphore.h)
+add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 if (NOT ${NO_PRECOMPILED_HEADER})

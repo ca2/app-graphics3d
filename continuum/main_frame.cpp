@@ -1,6 +1,11 @@
 #include "platform.h"
 #include "main_frame.h"
 #include "acme/constant/message.h"
+#include "aura/message/user.h"
+#if APP_GRAPHICS3D_CONTINUUM_DEBUG_CA2_MESSAGE_BOX
+#include "acme/user/interface/message_box.h"
+#include <atomic>
+#endif
 
 
 namespace app_graphics3d_continuum
@@ -47,6 +52,9 @@ namespace app_graphics3d_continuum
       ::simple_frame_window::install_message_routing(pchannel);
        
       USER_MESSAGE_LINK(::user::e_message_create, pchannel, this, &main_frame::on_message_create);
+#if APP_GRAPHICS3D_CONTINUUM_DEBUG_CA2_MESSAGE_BOX
+      USER_MESSAGE_LINK(::user::e_message_show_window, pchannel, this, &main_frame::on_message_show_window);
+#endif
 
    }
 
@@ -69,6 +77,63 @@ namespace app_graphics3d_continuum
                    });
 
    }
+
+
+#if APP_GRAPHICS3D_CONTINUUM_DEBUG_CA2_MESSAGE_BOX
+   void main_frame::on_message_show_window(::message::message * pmessage)
+   {
+
+      ::simple_frame_window::on_message_show_window(pmessage);
+
+      ::pointer<::message::show_window> pshowwindow(pmessage);
+
+      if (!pshowwindow->m_bShow)
+      {
+
+         return;
+
+      }
+
+      static std::atomic_bool s_bDebugMessageBoxShown{false};
+
+      if (s_bDebugMessageBoxShown.exchange(true))
+      {
+
+         return;
+
+      }
+
+      information("Main frame shown; queueing temporary CA2 message-box diagnostic after show dispatch");
+
+      // Wait until the main window's X11 MapNotify/show handling has returned.
+      // Creating and activating another top-level window inside that dispatch
+      // can let the remaining main-window activation work cover the dialog.
+      post([this]()
+      {
+
+         // particle::message_box currently expects a non-null icon array.
+         ::string_array_base straIconUrls;
+         m_pdebugmessagebox = message_box(
+            "CA2 message-box diagnostic.\n"
+            "This is a separate top-level window; it does not use the main window's swap chain.",
+            "CA2 draw-path diagnostic",
+            ::user::e_message_box_ok,
+            nullptr,
+            &straIconUrls);
+
+         if (::is_set(m_pdebugmessagebox))
+         {
+
+            m_pdebugmessagebox->display(e_display_normal, {});
+
+            information("CA2 message-box diagnostic display returned");
+
+         }
+
+      });
+
+   }
+#endif
 
 
 } // namespace app_graphics3d_continuum

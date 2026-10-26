@@ -138,6 +138,9 @@ namespace draw2d_vulkan
 
       }
 
+#else
+
+      ::gpu::font::update(pdraw2dgraphics);
 #endif
 
       //return m_hfont;

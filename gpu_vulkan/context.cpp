@@ -54,11 +54,7 @@ namespace gpu_vulkan
    context::context()
    {
       m_eapi = ::gpu::e_api_vulkan;
-#ifdef WINDOWS_DESKTOP
       m_formatImageDefault = VK_FORMAT_B8G8R8A8_UNORM;
-#else
-      m_formatImageDefault = VK_FORMAT_R8G8B8A8_UNORM;
-#endif
 
       m_vksampler001 = nullptr;
       // m_bOffscreen = true;

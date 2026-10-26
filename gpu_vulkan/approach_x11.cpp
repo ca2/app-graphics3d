@@ -1,11 +1,13 @@
 #include "platform.h"
 #include "approach.h"
 #include "context.h"
+#include "device.h"
 #include "debug.h"
 #include "descriptors.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "swap_chain.h"
 #include "acme/filesystem/file/file.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "bred/gpu/context.h"
@@ -19,6 +21,57 @@
 
 namespace gpu_vulkan
 {
+
+
+   VkResult swap_chain::_create_window_surface(::windowing::window * pwindowParam)
+   {
+
+      if (m_vksurfacekhr)
+      {
+
+         return VK_SUCCESS;
+
+      }
+
+      if (!m_pgpurenderer || !m_pgpurenderer->m_pgpucontext)
+      {
+
+         return VK_ERROR_INITIALIZATION_FAILED;
+
+      }
+
+      ::cast < ::gpu_vulkan::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      if (!pdevice)
+      {
+
+         return VK_ERROR_INITIALIZATION_FAILED;
+
+      }
+
+      ::cast < ::gpu_vulkan::approach > pgpu = pdevice->m_pgpuapproach;
+      ::cast < ::windowing_x11::window > pwindow = pwindowParam;
+
+      if (!pgpu || !pgpu->m_vkinstance || !pwindow
+         || !pwindow->__x11_display() || !pwindow->__x11_window())
+      {
+
+         return VK_ERROR_INITIALIZATION_FAILED;
+
+      }
+
+      VkXlibSurfaceCreateInfoKHR surfacecreateinfo{};
+      surfacecreateinfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+      surfacecreateinfo.dpy = pwindow->__x11_display();
+      surfacecreateinfo.window = pwindow->__x11_window();
+
+      return vkCreateXlibSurfaceKHR(
+         pgpu->m_vkinstance,
+         &surfacecreateinfo,
+         nullptr,
+         &m_vksurfacekhr);
+
+   }
 
 
    void approach::gpu_on_create_window(::acme::windowing::window* pacmewindowingwindow)

@@ -46,6 +46,7 @@
 #include "aura/graphics/write_text/text_out.h"
 #include "aura/graphics/write_text/draw_text.h"
 #include "acme/prototype/geometry2d/_defer_item.h"
+#include "aura/graphics/draw2d/domain.h"
 #include "aura/graphics/write_text/_defer_geometry2d_item.h"
 
 
@@ -2697,8 +2698,8 @@ namespace draw2d_vkvg
       {
 
          vkvg_scale(vkvgcontext,
-            (float)(radiusx - m_pdraw2dpen->m_dWidth / 2.0),
-            (float)(radiusy - m_pdraw2dpen->m_dWidth / 2.0));
+            (float)(radiusx - m_pdraw2dpen->m_dWidth * draw2d_domain()->get_density() / 2.0),
+            (float)(radiusy - m_pdraw2dpen->m_dWidth * draw2d_domain()->get_density() / 2.0));
 
       }
       else
@@ -5303,7 +5304,7 @@ namespace draw2d_vkvg
 
       }
 
-      vkvg_set_line_width(vkvgcontext, (float) pdraw2dpen->m_dWidth);
+      vkvg_set_line_width(vkvgcontext, (float) pdraw2dpen->m_dWidth * draw2d_domain()->get_density());
 
       return true;
 
@@ -8700,12 +8701,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       int i = 0;
 
       _fill1();
+      vkvg_set_operator(vkvgcontext, VKVG_OPERATOR_OVER);
 
       for (auto& strLine : stra)
       {
 
          //vkvg_move_to(vkvgcontext, rectangle.left + Δx, rectangle.top + Δy + e.ascent + sz.cy * (i) / stra.get_size());
-
          vkvg_move_to(vkvgcontext, (::f32)(rectangle.left + Δx), (::f32)(rectangle.top + Δy + e.ascent + e.ascent * i));
          if (strLine.contains("ø"))
          {

@@ -88,6 +88,8 @@ namespace draw2d_opengl
    void font::update(::draw2d::graphics * pdraw2dgraphics)
    {
 
+      ::gpu::font::update(pdraw2dgraphics);
+
       //if (m_hdcFont == nullptr || is_modified(iCreate))
       //{
 

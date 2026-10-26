@@ -833,7 +833,7 @@ namespace gpu_vulkan
          imageCount = swapchainSupport.capabilities.maxImageCount;
       }
 
-      pcontext->on_resize({ extent.width, extent.height });
+      pcontext->on_resize({ extent.width, extent.height }, nullptr, nullptr);
 
       VkSwapchainCreateInfoKHR createInfo = {};
       createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -873,7 +873,28 @@ namespace gpu_vulkan
 
       createInfo.preTransform = swapchainSupport.capabilities.currentTransform;
       createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-      //createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR;
+      auto puserinteraction = m_pwindowSwapChain->user_interaction();
+      const bool bWantsTranslucency = puserinteraction &&
+         puserinteraction->get_translucency(nullptr) >= ::user::e_translucency_present;
+      if (bWantsTranslucency)
+      {
+
+         if (swapchainSupport.capabilities.supportedCompositeAlpha &
+             VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR)
+         {
+
+            createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR;
+
+         }
+         else
+         {
+
+            informationf(
+               "Vulkan surface does not support premultiplied swapchain alpha; keeping opaque presentation.");
+
+         }
+
+      }
 
       createInfo.presentMode = presentMode;
       createInfo.clipped = VK_TRUE;

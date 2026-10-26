@@ -6,6 +6,8 @@
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
 #include "acme/prototype/prototype/memory.h"
+#include "bred/platform/system.h"
+#include "bred/typeface/typeface.h"
 #include "fontstash.h"
 #include "aura/graphics/image/image.h"
 
@@ -227,8 +229,13 @@ namespace draw2d_nanovg
 
    string draw2d::write_text_get_default_implementation_name()
    {
-
+#if defined(WINDOWS_DESKTOP)
       return "win32";
+#elif defined(LINUX)
+      return "pango";
+#else
+      return "write_text";
+#endif
 
    }
 
@@ -356,7 +363,35 @@ namespace draw2d_nanovg
 
       ::write_text::font_face_source source;
 
-      if (system()->draw2d()->write_text()->resolve_font_face(source, request))
+      auto bResolved = system()->draw2d()->write_text()->resolve_font_face(source, request);
+
+#if defined(LINUX)
+      if (!bResolved)
+      {
+
+         ::cast<::bred::system> psystem = system();
+
+         if (::is_set(psystem))
+         {
+
+            auto ptypeface = psystem->typeface();
+
+            if (::is_set(ptypeface))
+            {
+
+               source.m_strResolvedFamily = request.m_strFamily;
+               source.m_path = ptypeface->get_font_file_path_by_font_name(request.m_strFamily);
+               source.m_iFaceIndex = 0;
+               bResolved = source.m_path.has_character() && file()->exists(source.m_path);
+
+            }
+
+         }
+
+      }
+#endif
+
+      if (bResolved)
       {
 
          iFont = nvgCreateFontAtIndex(

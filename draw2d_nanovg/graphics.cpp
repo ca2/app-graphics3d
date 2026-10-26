@@ -22,6 +22,7 @@
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "acme/prototype/string/str.h"
+#include "aura/graphics/draw2d/domain.h"
 #include "aura/graphics/graphics/buffer_item.h"
 #include "gpu_opengl/approach.h"
 #include "gpu_opengl/renderer.h"
@@ -464,8 +465,7 @@ namespace draw2d_nanovg
 
                 }
 
-                pgpucontext->on_resize(size);
-
+                pgpucontext->on_resize(size, pdraw2ddomain, this);
 
                 ::i32_rectangle rectangleFrame;
 
@@ -5335,7 +5335,7 @@ namespace draw2d_nanovg
 
       }
 
-      nvgStrokeWidth(m_pdc, (float) pdraw2dpen->m_dWidth);
+      nvgStrokeWidth(m_pdc, (float) pdraw2dpen->m_dWidth * draw2d_domain()->get_density());
 
       return true;
 
@@ -9422,14 +9422,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
+      const int iImageFlags =
+   static_cast<int>(NVG_IMAGE_NODELETE)
+   | static_cast<int>(NVG_IMAGE_PREMULTIPLIED)
+   | static_cast<int>(NVG_IMAGE_FLIPY);
+
       auto iImage = nvglCreateImageFromHandleGL3(
          m_pdc,
          pgputexture->m_gluTextureID,
          sizeImage.cx,
          sizeImage.cy,
-         NVG_IMAGE_NODELETE |
-            NVG_IMAGE_PREMULTIPLIED |
-            NVG_IMAGE_FLIPY);
+         iImageFlags);
 
       if (iImage == 0)
       {

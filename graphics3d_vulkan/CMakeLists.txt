@@ -16,12 +16,16 @@ list(APPEND library_source
    render_system/skybox_render_system.h
    render_system/scene_render_system.cpp
    render_system/scene_render_system.h
+        render_system/texture_render_system.cpp
+        render_system/texture_render_system.h
    render_system/wavefront_obj_render_system.cpp
    render_system/wavefront_obj_render_system.h
+        graphics3d.cpp
+        graphics3d.h
    render_system.cpp
    render_system.h
-   engine.cpp
-   engine.h
+   engine_instance.cpp
+   engine_instance.h
    platform.cpp
    platform.h
    #model.cpp
