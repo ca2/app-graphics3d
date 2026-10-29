@@ -5,6 +5,12 @@
 #include "render_pass.h"
 
 
+namespace acme::windowing
+{
+   class native_surface_provider;
+}
+
+
 namespace gpu_vulkan
 {
 
@@ -18,6 +24,8 @@ namespace gpu_vulkan
       VkSurfaceKHR                              m_vksurfacekhr = VK_NULL_HANDLE;
       VkSwapchainKHR                            m_vkswapchainkhr = VK_NULL_HANDLE;
       ::pointer<::gpu::queue>                   m_pqueuePresent;
+      ::acme::windowing::native_surface_provider * m_pnativeSurfaceProvider = nullptr;
+      bool                                      m_bNativePresentationAcquired = false;
       ::u32                                     m_uPresentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
       //int                                       m_iCurrentSwapChainImage;
       //::gpu::context_pointer              m_pgpucontextSwapChain;
@@ -50,6 +58,7 @@ namespace gpu_vulkan
       // Lazily create the surface for this swap chain's window.
       VkSurfaceKHR surface();
       virtual VkResult _create_window_surface(::windowing::window * pwindowParam);
+      void release_native_surface_presentation();
    
       //virtual ::gpu::texture* current_texture();
       //virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});

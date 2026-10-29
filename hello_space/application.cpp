@@ -54,7 +54,7 @@ namespace app_graphics3d_hello_space
 
       m_strAppId = "app-graphics3d/hello_space";
 
-      m_strAppName = "app-graphics3d/hello_space";
+      m_strAppName = "Hello Space";
 
       m_strBaseSupportId = "app_graphics3d_hello_space";
 

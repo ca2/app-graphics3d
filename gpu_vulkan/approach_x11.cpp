@@ -13,7 +13,11 @@
 #include "bred/gpu/context.h"
 #include "acme/platform/application.h"
 #include "acme/_operating_system.h"
+#include "acme/windowing/display.h"
+#include "acme/windowing/native_surface_provider.h"
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
 #include "windowing_x11/window.h"
+#endif
 //#include <dwmapi.h>
 
 ///#pragma comment(lib, "Dwmapi.lib")
@@ -50,26 +54,91 @@ namespace gpu_vulkan
       }
 
       ::cast < ::gpu_vulkan::approach > pgpu = pdevice->m_pgpuapproach;
-      ::cast < ::windowing_x11::window > pwindow = pwindowParam;
-
-      if (!pgpu || !pgpu->m_vkinstance || !pwindow
-         || !pwindow->__x11_display() || !pwindow->__x11_window())
+      if (!pgpu || !pgpu->m_vkinstance || !pwindowParam)
       {
 
          return VK_ERROR_INITIALIZATION_FAILED;
 
       }
 
-      VkXlibSurfaceCreateInfoKHR surfacecreateinfo{};
-      surfacecreateinfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
-      surfacecreateinfo.dpy = pwindow->__x11_display();
-      surfacecreateinfo.window = pwindow->__x11_window();
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+      auto pdisplay = pwindowParam->get_display();
+      auto pwaylanddisplay = pdisplay
+         ? static_cast<::wl_display *>(pdisplay->native_wayland_display())
+         : nullptr;
+      auto pwaylandsurface = static_cast<::wl_surface *>(
+         pwindowParam->native_wayland_surface());
 
-      return vkCreateXlibSurfaceKHR(
-         pgpu->m_vkinstance,
-         &surfacecreateinfo,
-         nullptr,
-         &m_vksurfacekhr);
+      if (pwaylanddisplay && pwaylandsurface)
+      {
+
+         if (!pgpu->m_straSupportedInstanceExtensions.contains(
+            VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME))
+         {
+
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+
+         }
+
+         VkWaylandSurfaceCreateInfoKHR surfacecreateinfo{};
+         surfacecreateinfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+         surfacecreateinfo.display = pwaylanddisplay;
+         surfacecreateinfo.surface = pwaylandsurface;
+
+         auto pnativeSurfaceProvider =
+            dynamic_cast<::acme::windowing::native_surface_provider *>(pwindowParam);
+         if (pnativeSurfaceProvider && !m_bNativePresentationAcquired)
+         {
+            pnativeSurfaceProvider->acquire_external_presentation();
+            m_pnativeSurfaceProvider = pnativeSurfaceProvider;
+            m_bNativePresentationAcquired = true;
+         }
+
+         auto result = vkCreateWaylandSurfaceKHR(
+            pgpu->m_vkinstance,
+            &surfacecreateinfo,
+            nullptr,
+            &m_vksurfacekhr);
+
+         if (result != VK_SUCCESS)
+         {
+            release_native_surface_presentation();
+         }
+
+         return result;
+
+      }
+#endif
+
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+      ::cast < ::windowing_x11::window > px11window = pwindowParam;
+
+      if (px11window && px11window->__x11_display() && px11window->__x11_window())
+      {
+
+         if (!pgpu->m_straSupportedInstanceExtensions.contains(
+            VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
+         {
+
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+
+         }
+
+         VkXlibSurfaceCreateInfoKHR surfacecreateinfo{};
+         surfacecreateinfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+         surfacecreateinfo.dpy = px11window->__x11_display();
+         surfacecreateinfo.window = px11window->__x11_window();
+
+         return vkCreateXlibSurfaceKHR(
+            pgpu->m_vkinstance,
+            &surfacecreateinfo,
+            nullptr,
+            &m_vksurfacekhr);
+
+      }
+#endif
+
+      return VK_ERROR_INITIALIZATION_FAILED;
 
    }
 

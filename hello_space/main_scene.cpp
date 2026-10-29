@@ -700,9 +700,9 @@ namespace app_graphics3d_hello_space
                   auto ppixmap = create_newø<::pixmap>();
                   ppixmap->m_pimage32Raw = pimage32;
                   ppixmap->m_pimage32 = (::image32_t *)nullptr;
-                  ppixmap->m_point = {pheader->m_xWindow, pheader->m_yWindow};
-                  ppixmap->m_size = { pheader->m_cxWindow, pheader->m_cyWindow };
-                  ppixmap->m_sizeRaw = { pheader->m_cxBitmap, pheader->m_cyBitmap };
+                  ppixmap->m_point = {};
+                  ppixmap->m_size = { (::i32)cxBitmap, (::i32)cyBitmap };
+                  ppixmap->m_sizeRaw = { (::i32)cxBitmap, (::i32)cyBitmap };
                   ppixmap->m_iScan = (::i32) iScan;
                   ppixmap->m_bTopLeft = bTopLeft;
 
@@ -828,83 +828,35 @@ namespace app_graphics3d_hello_space
 
                      m_pgpushaderBlend->bind_source(pgpucommandbuffer, m_pgputexturesiteHelloMultiverse);
 
-                     //auto screen_x_to_monitor_texture_x =
-                     //   [&](::i64 iScreenX)
-                     //   {
-
-                     //      return rectangleMonitor.left + (::i32)(
-                     //         (iScreenX - rectangleBitmapSourceMonitor.left) *
-                     //         rectangleMonitor.width() /
-                     //         rectangleBitmapSourceMonitor.width());
-
-                     //   };
-
-                     //auto screen_y_to_monitor_texture_y =
-                     //   [&](::i64 iScreenY)
-                     //   {
-
-                     //      return rectangleMonitor.top + (::i32)(
-                     //         (iScreenY - rectangleBitmapSourceMonitor.top) *
-                     //         rectangleMonitor.height() /
-                     //         rectangleBitmapSourceMonitor.height());
-
-                     //   };
-
-                     //::i32_rectangle rectangleHelloMultiverseUnclipped(
-                     //   screen_x_to_monitor_texture_x(x),
-                     //   screen_y_to_monitor_texture_y(y),
-                     //   screen_x_to_monitor_texture_x(x + cx),
-                     //   screen_y_to_monitor_texture_y(y + cy));
-
-                     //auto rectangleHelloMultiverse = rectangleHelloMultiverseUnclipped;
-
-                     //rectangleHelloMultiverse.intersect(rectangleMonitor);
-
-                     auto rectangleHelloMultiverse = ppixmap->rectangle();
-
-                     if (rectangleHelloMultiverse.has_area())
+                     // Window placement uses compositor logical coordinates. Pixels in
+                     // the shared bitmap start at (0, 0), independently of placement.
+                     auto screen_x_to_monitor_texture_x = [&](::i64 screenX)
                      {
-
-                        pgpucommandbuffer->set_viewport(rectangleHelloMultiverse, sizeMonitorRaw);
-                        pgpucommandbuffer->set_scissor(rectangleHelloMultiverse, sizeMonitorRaw);
-
-                        //::i32_rectangle rectangleHelloMultiverseSource(
-                        //   (::i32)((rectangleHelloMultiverse.left
-                        //      - rectangleHelloMultiverseUnclipped.left)
-                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
-                        //   (::i32)((rectangleHelloMultiverse.top
-                        //      - rectangleHelloMultiverseUnclipped.top)
-                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()),
-                        //   (::i32)((rectangleHelloMultiverse.right
-                        //      - rectangleHelloMultiverseUnclipped.left)
-                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
-                        //   (::i32)((rectangleHelloMultiverse.bottom
-                        //      - rectangleHelloMultiverseUnclipped.top)
-                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()));
-                        //::i32_rectangle rectangleHelloMultiverseSource(
-                        //   (::i32)((rectangleHelloMultiverse.left
-                        //      )
-                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
-                        //   (::i32)((rectangleHelloMultiverse.top
-                        //      )
-                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()),
-                        //   (::i32)((rectangleHelloMultiverse.right
-                        //      )
-                        //      * cxBitmap / rectangleHelloMultiverseUnclipped.width()),
-                        //   (::i32)((rectangleHelloMultiverse.bottom
-                        //      )
-                        //      * cyBitmap / rectangleHelloMultiverseUnclipped.height()));
-
-                        auto sizePixmapRaw = ppixmap->raw_size();
-                        rectangleHelloMultiverse.offset(-rectangleHelloMultiverse.origin());
-                        m_pgpushaderBlend->set_impact_quad(
-                           rectangleHelloMultiverse,
-                           sizePixmapRaw);
-
+                        return rectangleMonitor.left + (::i32)((screenX - rectangleBitmapSourceMonitor.left)
+                           * rectangleMonitor.width() / rectangleBitmapSourceMonitor.width());
+                     };
+                     auto screen_y_to_monitor_texture_y = [&](::i64 screenY)
+                     {
+                        return rectangleMonitor.top + (::i32)((screenY - rectangleBitmapSourceMonitor.top)
+                           * rectangleMonitor.height() / rectangleBitmapSourceMonitor.height());
+                     };
+                     ::i32_rectangle rectangleUnclipped(
+                        screen_x_to_monitor_texture_x(x), screen_y_to_monitor_texture_y(y),
+                        screen_x_to_monitor_texture_x(x + cx), screen_y_to_monitor_texture_y(y + cy));
+                     auto rectangleDestination = rectangleUnclipped;
+                     rectangleDestination.intersect(rectangleMonitor);
+                     if (rectangleDestination.has_area() && rectangleUnclipped.has_area())
+                     {
+                        pgpucommandbuffer->set_viewport(rectangleDestination, sizeMonitorRaw);
+                        pgpucommandbuffer->set_scissor(rectangleDestination, sizeMonitorRaw);
+                        ::i32_rectangle rectangleSource(
+                           (::i32)((rectangleDestination.left - rectangleUnclipped.left) * cxBitmap / rectangleUnclipped.width()),
+                           (::i32)((rectangleDestination.top - rectangleUnclipped.top) * cyBitmap / rectangleUnclipped.height()),
+                           (::i32)((rectangleDestination.right - rectangleUnclipped.left) * cxBitmap / rectangleUnclipped.width()),
+                           (::i32)((rectangleDestination.bottom - rectangleUnclipped.top) * cyBitmap / rectangleUnclipped.height()));
+                        m_pgpushaderBlend->set_impact_quad(rectangleSource, ppixmap->raw_size());
                         m_pgpushaderBlend->push_properties(pgpucommandbuffer);
-
                         pgpucommandbuffer->draw(m_pmodelbufferDummy);
-
                      }
 
                      //pgpucommandbuffer->clear(m_pgputexturesiteMonitorMultisample->gpu_texture(), argb(128, 100, 180, 210));

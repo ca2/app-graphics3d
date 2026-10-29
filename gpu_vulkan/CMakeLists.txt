@@ -111,13 +111,17 @@ if (${WIN32})
             operating_system/windows.cpp
     )
 
-elseif (${WITH_X11})
+elseif (WITH_X11 OR HAS_WAYLAND)
 
     list(APPEND library_source
        approach_x11.cpp
-       #windowing_system_x11
-       operating_system/x11.cpp
     )
+
+    if (WITH_X11)
+        list(APPEND library_source
+           operating_system/x11.cpp
+        )
+    endif()
 
 endif()
 
@@ -137,8 +141,11 @@ if (${LINUX} OR ${__BSD__})
 
     list(APPEND library_references
             aura_posix
-            windowing_x11
     )
+
+    if (WITH_X11)
+        list(APPEND library_references windowing_x11)
+    endif()
 
 else ()
 

@@ -286,41 +286,8 @@ namespace gpu_vulkan
 
       ::array<const char*> instanceExtensions;
 
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      {
-
-         instanceExtensions.add(VK_KHR_SURFACE_EXTENSION_NAME);
-
-         // Enable surface extensions depending on os
-#if defined(_WIN32)
-         instanceExtensions.add(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-         instanceExtensions.add(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-         instanceExtensions.add(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-#elif defined(_DIRECT2DISPLAY)
-         instanceExtensions.add(VK_KHR_DISPLAY_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-         instanceExtensions.add(VK_EXT_DIRECTFB_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-         instanceExtensions.add(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-         instanceExtensions.add(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_IOS_MVK)
-         instanceExtensions.add(VK_MVK_IOS_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_MACOS_MVK)
-         instanceExtensions.add(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_METAL_EXT)
-         instanceExtensions.add(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_HEADLESS_EXT)
-         instanceExtensions.add(VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_SCREEN_QNX)
-         instanceExtensions.add(VK_QNX_SCREEN_SURFACE_EXTENSION_NAME);
-#endif
-
-      }
-
-      // Get extensions supported by the instance and store for later use
+      // Learn which surface extensions this loader exposes before requesting
+      // the extensions needed by the active native window system.
       uint32_t extCount = 0;
       vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
       if (extCount > 0)
@@ -333,6 +300,57 @@ namespace gpu_vulkan
                m_straSupportedInstanceExtensions.add(extension.extensionName);
             }
          }
+      }
+
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      {
+
+         instanceExtensions.add(VK_KHR_SURFACE_EXTENSION_NAME);
+
+         // Enable surface extensions depending on os
+#if defined(_WIN32)
+         instanceExtensions.add(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+         if (m_straSupportedInstanceExtensions.contains(VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
+         {
+            instanceExtensions.add(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+         }
+#endif
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+         instanceExtensions.add(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(_DIRECT2DISPLAY)
+         instanceExtensions.add(VK_KHR_DISPLAY_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+         instanceExtensions.add(VK_EXT_DIRECTFB_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+         if (m_straSupportedInstanceExtensions.contains(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME))
+         {
+            instanceExtensions.add(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+         }
+#endif
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+         instanceExtensions.add(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+         instanceExtensions.add(VK_MVK_IOS_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+         instanceExtensions.add(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+         instanceExtensions.add(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_HEADLESS_EXT)
+         instanceExtensions.add(VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME);
+#endif
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+         instanceExtensions.add(VK_QNX_SCREEN_SURFACE_EXTENSION_NAME);
+#endif
+
       }
 
 #if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT))

@@ -10,6 +10,11 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #elif defined(WITH_X11)
 #define VK_USE_PLATFORM_XLIB_KHR
+#if defined(HAS_WAYLAND)
+#define VK_USE_PLATFORM_WAYLAND_KHR
+#endif
+#elif defined(HAS_WAYLAND)
+#define VK_USE_PLATFORM_WAYLAND_KHR
 #else
 #define VK_USE_PLATFORM_WAYLAND_KHR
 #endif

@@ -3,6 +3,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "approach.h"
 #include "vkresult_exception.h"
 #include "window_attachment.h"
 #include "physical_device.h"
@@ -13,6 +14,7 @@
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "acme/windowing/native_surface_provider.h"
 #include "acme/platform/application.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
@@ -76,6 +78,24 @@ namespace gpu_vulkan
 
       //}
 
+      release_native_surface_presentation();
+
+   }
+
+
+   void swap_chain::release_native_surface_presentation()
+   {
+
+      if (m_bNativePresentationAcquired && m_pnativeSurfaceProvider)
+      {
+
+         m_pnativeSurfaceProvider->release_external_presentation();
+
+      }
+
+      m_pnativeSurfaceProvider = nullptr;
+      m_bNativePresentationAcquired = false;
+
    }
 
 
@@ -123,7 +143,9 @@ namespace gpu_vulkan
          if (result != VK_SUCCESS)
          {
 
-            throw ::vkresult_exception(result, "Could not create the Vulkan window surface");
+            ::string strMessage = "Could not create the Vulkan window surface: ";
+            strMessage += ::vulkan::errorString(result);
+            throw ::vkresult_exception(result, strMessage);
 
          }
 
@@ -157,6 +179,22 @@ namespace gpu_vulkan
       {
 
          m_bSwapChainInitialized = false;
+
+         if (m_vksurfacekhr)
+         {
+
+            ::cast<::gpu_vulkan::context> pcontext = pgpurenderer->m_pgpucontext;
+            ::cast<::gpu_vulkan::device> pdevice = pcontext ? pcontext->m_pgpudevice : nullptr;
+            ::cast<::gpu_vulkan::approach> pgpu = pdevice ? pdevice->m_pgpuapproach : nullptr;
+            if (pgpu && pgpu->m_vkinstance)
+            {
+               vkDestroySurfaceKHR(pgpu->m_vkinstance, m_vksurfacekhr, nullptr);
+            }
+            m_vksurfacekhr = VK_NULL_HANDLE;
+
+         }
+
+         release_native_surface_presentation();
          throw;
 
       }
