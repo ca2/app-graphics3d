@@ -4,11 +4,7 @@
 //
 #define IDR_HTML1                       101
 #define IDR_LEVEL1                      108
-#define IDR_MAIN                        128
-#define IDM_EXIT                        256
-#define IDM_ABOUT                       257
-#define IDS_APP_TITLE                   258
-#define IDR_MATTER                      1024
+#define IDR_MAIN                        128  
 
 // Next default values for ___new objects
 // 

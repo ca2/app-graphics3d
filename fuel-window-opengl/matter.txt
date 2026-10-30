@@ -1,2 +1,2 @@
 app/main
-app-graphics3d/fuel-window-opengl
+app-core/fuel-window-opengl

@@ -1,0 +1,394 @@
+#include "platform.h"
+#include "impact.h"
+#include "document.h"
+#include "application.h"
+#include "immersion.h"
+#include "main_scene.h"
+#include "acme/constant/message.h"
+#include "acme/filesystem/filesystem/file_system.h"
+#include "acme/filesystem/filesystem/file_context.h"
+#include "acme/platform/node.h"
+#include "acme/prototype/mathematics/mathematics.h"
+#include "aura/message/user.h"
+#include "aura/graphics/draw2d/draw2d.h"
+#include "apex/database/stream.h"
+#include "acme/user/interface/message_box.h"
+
+
+CLASS_DECL_AURA ::color::color dk_red(); // <3 tbs
+//namespace vkc
+//{
+//   ::pointer<::vulkan::application > start_vulkan_application(::vkc::VkContainer* pvkcontainer, mouse_state* pmousestate);
+//} // namespace vkc
+
+namespace app_graphics3d_fuel
+{
+
+
+   switcher_impact::switcher_impact()
+   {
+
+      m_iImpactSerial = 2;
+
+      m_strGpuStatisticsTitle = "switcher";
+
+   }
+
+
+   switcher_impact::~switcher_impact()
+   {
+
+
+   }
+
+
+   skybox_impact::skybox_impact()
+   {
+
+      m_iImpactSerial = 5;
+
+      m_strGpuStatisticsTitle = "Skybox";
+
+   }
+
+
+   skybox_impact::~skybox_impact()
+   {
+
+
+   }
+
+
+   impact::impact()
+   {
+
+      m_iImpactSerial = 1;
+
+      m_strGpuStatisticsTitle = "app-graphics3d/continuum";
+      
+      m_enonclient -= ::user::e_non_client_background;
+      m_iSequence = 0;
+      m_bNeedFullRedrawOnResize = true;
+      
+      m_bDefaultClickHandling = true;
+      
+      m_bEmptyAreaIsClientArea = true;
+
+   }
+
+
+   impact::~impact()
+   {
+
+   }
+
+
+#ifdef _DEBUG
+
+
+   long long impact::increment_reference_count()
+   {
+
+      return ::user::impact::increment_reference_count();
+
+   }
+
+
+   long long impact::decrement_reference_count()
+   {
+
+      return ::user::impact::decrement_reference_count();
+
+   }
+
+
+#endif
+
+
+
+   void impact::install_message_routing(::channel * psender)
+   {
+
+      ::user::show < ::user::graphics3d >::install_message_routing(psender);
+
+      USER_MESSAGE_LINK(::user::e_message_create,psender,this,&impact::on_message_create);
+      USER_MESSAGE_LINK(::user::e_message_destroy, psender, this, &impact::on_message_destroy);
+
+   }
+
+
+
+   //::pointer < ::graphics3d::application > impact::start_graphics3d_application()
+   //{
+
+   //   return ::graphics3d_landen::impact::start_graphics3d_application();
+
+   //}
+
+
+
+   void impact::on_message_create(::message::message * pmessage)
+   {
+
+      ::pointer<::message::create>pcreate(pmessage);
+
+      //display();
+
+      pcreate->previous();
+
+      if (pcreate->m_bRet)
+      {
+
+         return;
+
+      }
+
+      int iImpactSerial = m_iImpactSerial;
+
+      if (iImpactSerial == 1)
+      {
+
+         m_papp->m_pimpact = this;
+
+         m_papp->register_user_graphics3d(0, this);
+
+      }
+      else if (iImpactSerial == 2)
+      {
+
+         m_papp->m_pimpactSwitcher = this;
+
+         m_papp->register_user_graphics3d(1, this);
+
+      }
+      else if (iImpactSerial == 5)
+      {
+
+         m_papp->m_pimpactSkybox = this;
+
+         m_papp->register_user_graphics3d(2, this);
+
+      }
+
+      ////if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      ////{
+
+      ////   auto prendererBackBuffer = draw2d_context()->m_pgpurenderer;
+
+      ////   return prendererBackBuffer->render_target();
+
+      ////}
+      ////else
+      ////{
+
+      //   auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
+
+
+
+      //   auto prendererEngine = m_pgraphics3dengineinstance->m_pgpucontext->m_pgpurenderer;
+
+      //   pgpuwindowattachment->set_render_target(prendererEngine->render_target());
+
+      //}
+
+      //application()->show_about_box();
+    
+      //m_propertiesGlobalUbo.set(global_ubo_properties());
+
+   }
+
+
+   void impact::on_message_destroy(::message::message * pmessage)
+   {
+
+   }
+
+
+
+
+   void impact::handle(::topic * ptopic, ::handler_context * phandlercontext)
+   {
+
+      ::user::impact::handle(ptopic, phandlercontext);
+
+   }
+
+
+   document * impact::get_document()
+   {
+
+      return dynamic_cast < document * >(::user::impact::get_document());
+
+   }
+
+
+   void impact::_001OnClip(::draw2d::graphics_pointer & pdraw2dgraphics)
+   {
+
+
+   }
+
+
+   void impact::_001OnDraw(::draw2d::graphics_pointer & pdraw2dgraphics)
+   {
+      
+      auto rectangleX = this->rectangle();
+
+      if (rectangleX.is_empty())
+      {
+
+         return;
+         
+      }
+
+
+#if 1
+
+         ::f64_rectangle rectangleClipBox;
+
+         // pdraw2dgraphics->reset_clip();
+
+         // pdraw2dgraphics->get_clip_box(rectangleClipBox);
+
+         auto matrix = pdraw2dgraphics->m_matrix;
+
+         // auto origin = pdraw2dgraphics->origin();
+
+         if (m_iImpactSerial == 1)
+         {
+
+            informationf("graphics3d::_001OnDraw continuum");
+
+         }
+         else if (m_iImpactSerial == 2)
+         {
+
+            informationf("graphics3d::_001OnDraw switcher");
+
+         }
+         else if (m_iImpactSerial == 5)
+         {
+
+            pdraw2dgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+            ::get_task()->payload("debug") = 123;
+            pdraw2dgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
+            ::get_task()->payload("debug") = 0;
+
+            informationf("graphics3d::_001OnDraw skybox");
+
+         }
+
+         ::user::graphics3d::_001OnDraw(pdraw2dgraphics);
+
+#endif
+
+
+   }
+
+
+   void impact::on_layout(::draw2d::graphics_pointer & pdraw2dgraphics)
+   {
+
+      auto rectangleX = this->rectangle();
+
+      if(rectangleX.is_empty())
+      {
+
+         return;
+
+      }
+
+      ::user::graphics3d::on_layout(pdraw2dgraphics);
+      
+      setup_default_client_area_user_item();
+
+   }
+
+
+   bool impact::on_click(::item * pitem, ::user::mouse * pmouse)
+   {
+
+      if (::is_set(pitem))
+      {
+
+         if (pitem->m_item.m_eelement == ::e_element_client)
+         {
+
+            print_line("on_click : e_element_client");
+            
+            //::file::file_dialog_filter filterdialogfilter;
+            //
+            //filterdialogfilter.add_item({"application.txt", "application.txt"});
+            //
+            //pick_single_file_to_open(filterdialogfilter, 
+            //   [ this ] (::file::file_dialog * pdialog)
+            //                 {
+
+            //      auto path = pdialog->get_file_path();
+            //   
+            //   try {
+            //      auto memory = file()->as_memory(path);
+            //      
+            //      auto size = memory.size();
+            //      
+            //      informationf("got file with %d bytes", size);
+            //      
+            //      file()->put_memory(m_papp->m_pathApplicationText, memory);
+            //      
+
+            //   } catch (...) {
+            //      auto pmessagebox = message_box("No file loaded...");
+            //      post(pmessagebox);
+            //   }
+            //   
+            //});
+
+            return true;
+
+         }
+
+      }
+
+      return ::user::impact::on_click(pitem, pmouse);
+
+   }
+
+
+   ::pointer < ::prodevian::immersion > impact::create_immersion()
+   {
+
+      auto pimmersion = createø<::app_graphics3d_fuel::immersion>();
+
+      return pimmersion;
+
+   }
+
+
+   ::pointer < ::graphics3d::key_map > impact::get_default_key_map()
+   {
+
+      auto pmap = create_newø < ::graphics3d::key_map>();
+      using namespace ::graphics3d;
+
+      pmap->map(e_key_moveLeft, ::user::e_key_a);
+      pmap->map(e_key_moveRight, ::user::e_key_d);
+      pmap->map(e_key_moveForward, ::user::e_key_w);
+      pmap->map(e_key_moveBackward, ::user::e_key_s);
+      pmap->map(e_key_moveUp, ::user::e_key_e);
+      pmap->map(e_key_moveDown, ::user::e_key_q);
+      pmap->map(e_key_lookLeft, ::user::e_key_left);
+      pmap->map(e_key_lookRight, ::user::e_key_right);
+      pmap->map(e_key_lookUp, ::user::e_key_up);
+      pmap->map(e_key_lookDown, ::user::e_key_down);
+      pmap->map(e_key_Exit, ::user::e_key_escape);
+
+      return pmap;
+
+   }
+
+
+
+} // namespace app_graphics3d_fuel
+
+
+
