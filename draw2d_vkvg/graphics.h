@@ -5,7 +5,7 @@
 #include "bred/gpu/graphics.h"
 #include "bred/gpu/renderer.h"
 
-#include <mutex>
+#include "acme/parallelization/fast_critical_section.h"
 
 
 typedef void FN_VKVG_TEXT(VkvgContext, const char*);

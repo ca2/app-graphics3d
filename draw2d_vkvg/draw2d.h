@@ -43,7 +43,7 @@ namespace draw2d_vkvg
 
       //::pointer<::vulkan::context>          m_pvulkancontext;
 
-      ::pointer< ::mutex > m_pmutex;
+      ::pointer< ::parallelization::mutex > m_pmutex;
 
       struct font_t
       {

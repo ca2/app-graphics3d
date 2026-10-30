@@ -1,6 +1,6 @@
 #include "platform.h"
 #define APPLICATION_NAMESPACE app_graphics3d_fuel_memory_opengl
-#include "acme/inline/application/main.inl"
+#include "acme/inline/application/main_executable.inl"
 
 
 // //app_graphics3d_fuel_memory_opengl::application g_app_graphics3d_fuel;

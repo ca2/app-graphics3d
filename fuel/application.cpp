@@ -29,13 +29,13 @@ namespace app_graphics3d_fuel
    application::application()
    {
 
-      m_bUseSwapChainWindow = false;
+      //m_bUseSwapChainWindow = false;
       //m_ptemplateFuelMain = nullptr;
       //m_ptemplateFuelImpact = nullptr;
 
-      m_strAppId              = "app-graphics3d/fuel-memory-opengl";
-      m_strAppName            = "app-graphics3d/fuel-memory-opengl";
-      m_strBaseSupportId      = "app-graphics3d/fuel-memory-opengl";
+      m_strAppId              = "app-graphics3d/fuel";
+      m_strAppName            = "Fuel";
+      m_strBaseSupportId      = "app-graphics3d/fuel";
       m_bLicense              = false;
 
    }

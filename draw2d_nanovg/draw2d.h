@@ -43,7 +43,7 @@ namespace draw2d_nanovg
 
       //::pointer<::opengl::context>          m_popenglcontext;
 
-      ::pointer< ::mutex > m_pmutex;
+      ::pointer< ::parallelization::mutex > m_pmutex;
       bool m_bNanoVGGeometryAntialias = true;
 
       draw2d();

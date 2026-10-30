@@ -3,7 +3,7 @@
 
 
 #include <deque>
-#include <mutex>
+#include "acme/parallelization/fast_critical_section.h"
 #include "bred/gpu/semaphore.h"
 
 
@@ -18,7 +18,7 @@ namespace gpu_directx12
 
 
       ::comptr<ID3D12Fence> m_pfence;
-      std::mutex m_mutex;
+      ::parallelization::fast_critical_section m_criticalsection;
       UINT64 m_uNextFenceValue;
       std::deque<UINT64> m_signalaPendingWait;
       std::deque<UINT64> m_waitaPendingSignal;

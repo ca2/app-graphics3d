@@ -1,5 +1,6 @@
 // Created by camilo on 2026-06-11.
 #include "platform.h"
+#include "acme/parallelization/parallelization.h"
 #include "semaphore.h"
 #include "device.h"
 #include "queue.h"
@@ -49,7 +50,7 @@ namespace gpu_directx12
 
       {
 
-         std::scoped_lock lock(m_mutex);
+         ::parallelization::unique_lock lock(m_criticalsection);
 
          if (m_signalaPendingWait.empty())
          {
@@ -82,7 +83,7 @@ namespace gpu_directx12
 
       {
 
-         std::scoped_lock lock(m_mutex);
+         ::parallelization::unique_lock lock(m_criticalsection);
 
          if (m_waitaPendingSignal.empty())
          {

@@ -1,4 +1,5 @@
 #include "platform.h"
+#include "acme/parallelization/parallelization.h"
 #include "_vkvg.h"
 #include "draw2d.h"
 #include "pen.h"
@@ -347,8 +348,8 @@ namespace draw2d_vkvg
 
       // Serialize publication separately from queue access. Never acquire a
       // VKVG cache/device mutex while retaining ca2's queue mutex after setup.
-      static std::mutex mutexVkvgDeviceCreation;
-      std::lock_guard<std::mutex> creationLock(mutexVkvgDeviceCreation);
+      static ::parallelization::fast_critical_section criticalsectionVkvgDeviceCreation;
+      ::parallelization::unique_lock creationLock(criticalsectionVkvgDeviceCreation);
 
       auto & uVkVg = pgpudevice->property_set()["vkvgdevice"].u64_reference();
 

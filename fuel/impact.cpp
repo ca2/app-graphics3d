@@ -2,8 +2,8 @@
 #include "impact.h"
 #include "document.h"
 #include "application.h"
-#include "immersion.h"
-#include "main_scene.h"
+//#include "immersion.h"
+//#include "main_scene.h"
 #include "acme/constant/message.h"
 #include "acme/filesystem/filesystem/file_system.h"
 #include "acme/filesystem/filesystem/file_context.h"
@@ -25,46 +25,15 @@ namespace app_graphics3d_fuel
 {
 
 
-   switcher_impact::switcher_impact()
-   {
 
-      m_iImpactSerial = 2;
-
-      m_strGpuStatisticsTitle = "switcher";
-
-   }
-
-
-   switcher_impact::~switcher_impact()
-   {
-
-
-   }
-
-
-   skybox_impact::skybox_impact()
-   {
-
-      m_iImpactSerial = 5;
-
-      m_strGpuStatisticsTitle = "Skybox";
-
-   }
-
-
-   skybox_impact::~skybox_impact()
-   {
-
-
-   }
 
 
    impact::impact()
    {
 
-      m_iImpactSerial = 1;
+      //m_iImpactSerial = 1;
 
-      m_strGpuStatisticsTitle = "app-graphics3d/continuum";
+      //m_strGpuStatisticsTitle = "app-graphics3d/continuum";
       
       m_enonclient -= ::user::e_non_client_background;
       m_iSequence = 0;
