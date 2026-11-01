@@ -4,11 +4,11 @@
 #include "app-graphics3d/fuel/application.h"
 
 
-namespace app_graphics3d_fuel_window_vulkan
+namespace app_graphics3d_fuel_window_directx12
 {
 
 
-   class CLASS_DECL_APP_GRAPHICS3D_FUEL_WINDOW_VULKAN application :
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL_WINDOW_DIRECTX12 application :
       virtual public ::app_graphics3d_fuel::application
    {
    public:
@@ -39,7 +39,7 @@ namespace app_graphics3d_fuel_window_vulkan
    };
 
 
-} // namespace app_graphics3d_fuel_window_vulkan
+} // namespace app_graphics3d_fuel_window_directx12
 
 
 

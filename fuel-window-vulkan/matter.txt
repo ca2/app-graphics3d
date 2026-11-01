@@ -1,2 +1,2 @@
 app/main
-app-core/fuel-window-vulkan
+app-graphics3d/fuel-window-vulkan

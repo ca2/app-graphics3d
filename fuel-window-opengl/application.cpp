@@ -16,7 +16,8 @@ namespace app_graphics3d_fuel_window_opengl
    application::application()
    {
 
-      m_bUseSwapChainWindow = true;
+      m_strGraphics3DImplementationOverride = "opengl";
+      m_strGraphics3DOutputOverride = "on_screen";
 
       m_strAppId              = "app-graphics3d/fuel-window-opengl";
       m_strAppName            = "app-graphics3d/fuel-window-opengl";
@@ -81,7 +82,7 @@ namespace app_graphics3d_fuel_window_opengl
    ::string application::draw2d_get_default_implementation_name()
    {
 
-      return system()->implementation_name("draw2d", "opengl");
+      return ::app_graphics3d_fuel::application::draw2d_get_default_implementation_name();
 
    }
 

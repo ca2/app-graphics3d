@@ -5,22 +5,23 @@
 #include "berg/user/user/single_document_template.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_fuel_window_vulkan);
-IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_fuel_window_vulkan);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_fuel_window_directx12);
+IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_fuel_window_directx12);
 
 
-namespace app_graphics3d_fuel_window_vulkan
+namespace app_graphics3d_fuel_window_directx12
 {
 
 
    application::application()
    {
 
-      m_bUseSwapChainWindow = true;
+      m_strGraphics3DImplementationOverride = "directx12";
+      m_strGraphics3DOutputOverride = "on_screen";
 
-      m_strAppId              = "app-graphics3d/fuel-window-vulkan";
-      m_strAppName            = "app-graphics3d/fuel-window-vulkan";
-      m_strBaseSupportId      = "app-graphics3d/fuel-window-vulkan";
+      m_strAppId              = "app-graphics3d/fuel-window-directx12";
+      m_strAppName            = "app-graphics3d/fuel-window-directx12";
+      m_strBaseSupportId      = "app-graphics3d/fuel-window-directx12";
       m_bLicense              = false;
 
    }
@@ -81,12 +82,12 @@ namespace app_graphics3d_fuel_window_vulkan
    ::string application::draw2d_get_default_implementation_name()
    {
 
-      return system()->implementation_name("draw2d", "vulkan");
+      return ::app_graphics3d_fuel::application::draw2d_get_default_implementation_name();
 
    }
 
 
-} // namespace app_graphics3d_fuel_window_vulkan
+} // namespace app_graphics3d_fuel_window_directx12
 
 
 

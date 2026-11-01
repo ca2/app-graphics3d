@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{2E95BA3A-0647-44AD-9BE7-021F66733936}</ProjectGuid>
+    <ProjectGuid>{2A09620A-8E36-44A9-9504-191FB46A7FF0}</ProjectGuid>
     <RootNamespace>app-graphics3d</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>

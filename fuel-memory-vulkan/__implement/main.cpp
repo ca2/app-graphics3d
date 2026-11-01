@@ -1,9 +1,9 @@
 #include "platform.h"
-#define APPLICATION_NAMESPACE app_graphics3d_fuel_memory_opengl
+#define APPLICATION_NAMESPACE app_graphics3d_fuel_memory_vulkan
 #include "acme/inline/application/main_executable.inl"
 
 
-// //app_graphics3d_fuel_memory_opengl::application g_app_graphics3d_fuel;
+// //app_graphics3d_fuel_memory_vulkan::application g_app_graphics3d_fuel;
 
 
 // //int __implement()
@@ -26,7 +26,7 @@
 // void application_main(::platform::system * psystem)
 // {
 
-//    app_graphics3d_fuel_memory_opengl::application application;
+//    app_graphics3d_fuel_memory_vulkan::application application;
 
 //    application.application_main();
 

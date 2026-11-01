@@ -1,2 +1,2 @@
 app/main
-app-graphics3d/fuel-memory-vulkan
+app-graphics3d/fuel-memory-directx11

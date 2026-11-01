@@ -11,6 +11,7 @@
 //#include "top_impact.h"
 //#include "window.h"
 #include "acme/handler/request.h"
+#include "acme/constant/impact.h"
 #include "acme/platform/system.h"
 #include "berg/user/user/single_document_template.h"
 
@@ -37,6 +38,7 @@ namespace app_graphics3d_fuel
       m_strAppName            = "Fuel";
       m_strBaseSupportId      = "app-graphics3d/fuel";
       m_bLicense              = false;
+      m_bGpu = true;
 
    }
 
@@ -50,7 +52,7 @@ namespace app_graphics3d_fuel
    void application::init_instance()
    {
 
-      ::app_graphics3d_fuel::application::init_instance();
+      ::app_graphics3d_continuum::application::init_instance();
 
    }
 
@@ -58,7 +60,7 @@ namespace app_graphics3d_fuel
    void application::term_instance()
    {
 
-      ::app_graphics3d_fuel::application::term_instance();
+      ::app_graphics3d_continuum::application::term_instance();
 
    }
 
@@ -66,7 +68,7 @@ namespace app_graphics3d_fuel
    void application::on_request(::request * prequest)
    {
 
-      ::app_graphics3d_fuel::application::on_request(prequest);
+      ::app_graphics3d_continuum::application::on_request(prequest);
 
    }
 
@@ -75,7 +77,7 @@ namespace app_graphics3d_fuel
    long long application::increment_reference_count()
    {
 
-      return ::app_graphics3d_fuel::application::increment_reference_count();
+      return ::bred::application::increment_reference_count();
 
    }
 
@@ -83,7 +85,7 @@ namespace app_graphics3d_fuel
    long long application::decrement_reference_count()
    {
 
-      return ::app_graphics3d_fuel::application::decrement_reference_count();
+      return ::bred::application::decrement_reference_count();
 
    }
 
@@ -92,12 +94,32 @@ namespace app_graphics3d_fuel
    ::string application::draw2d_get_default_implementation_name()
    {
 
-      return system()->implementation_name("draw2d", "opengl");
+      return ::bred::application::draw2d_get_default_implementation_name();
 
    }
 
 
-} // namespace app_graphics3d_fuel_memory_opengl
+   void application::create_options_impact(const ::atom & atom, ::user::interaction * pparent)
+   {
+
+      if (atom == APP_OPTIONS_IMPACT)
+         ::bred::application::create_options_impact("options_impact_handler://gpu", pparent);
+      else
+         ::bred::application::create_options_impact(atom, pparent);
+
+   }
+
+
+   void application::on_after_create_form(const ::atom & atom, ::user::interaction * pparent)
+   {
+
+      ::bred::application::on_after_create_form(
+         atom == APP_OPTIONS_IMPACT ? ::atom("options_impact_handler://gpu") : atom, pparent);
+
+   }
+
+
+} // namespace app_graphics3d_fuel
 
 
 

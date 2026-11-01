@@ -3,7 +3,7 @@
 #include "acme/platform/release_time.h"
 
 
-__BEGIN_RELEASE_TIME(app_graphics3d_fuel_memory_vulkan)
+__BEGIN_RELEASE_TIME(app_graphics3d_fuel_memory_directx11)
 #include "release_time.txt"
 __END_RELEASE_TIME()
 

@@ -29,7 +29,8 @@ namespace app_graphics3d_fuel_memory_opengl
    application::application()
    {
 
-      m_bUseSwapChainWindow = false;
+      m_strGraphics3DImplementationOverride = "opengl";
+      m_strGraphics3DOutputOverride = "off_screen";
       //m_ptemplateFuelMain = nullptr;
       //m_ptemplateFuelImpact = nullptr;
 
@@ -92,7 +93,7 @@ namespace app_graphics3d_fuel_memory_opengl
    ::string application::draw2d_get_default_implementation_name()
    {
 
-      return system()->implementation_name("draw2d", "opengl");
+      return ::app_graphics3d_fuel::application::draw2d_get_default_implementation_name();
 
    }
 

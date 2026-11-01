@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "bred/platform/application.h"
+#include "app-graphics3d/continuum/application.h"
 
 
 namespace app_graphics3d_fuel
@@ -10,7 +10,7 @@ namespace app_graphics3d_fuel
 
 
    class CLASS_DECL_APP_GRAPHICS3D_FUEL application :
-      virtual public ::bred::application
+      virtual public ::app_graphics3d_continuum::application
    {
    public:
 
@@ -33,6 +33,8 @@ namespace app_graphics3d_fuel
 #endif
       
       string draw2d_get_default_implementation_name() override;
+      void create_options_impact(const ::atom & atom, ::user::interaction * pparent) override;
+      void on_after_create_form(const ::atom & atom, ::user::interaction * pparent) override;
 
 
    };

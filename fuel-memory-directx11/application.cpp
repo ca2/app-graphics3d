@@ -15,27 +15,28 @@
 #include "berg/user/user/single_document_template.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_fuel_memory_vulkan);
-IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_fuel_memory_vulkan);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_fuel_memory_directx11);
+IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_fuel_memory_directx11);
 
 
-namespace app_graphics3d_fuel_memory_vulkan
+namespace app_graphics3d_fuel_memory_directx11
 {
 
 
-   // __IMPLEMENT_APPLICATION_RELEASE_TIME1(app_graphics3d_fuel_memory_vulkan));
+   // __IMPLEMENT_APPLICATION_RELEASE_TIME1(app_graphics3d_fuel_memory_directx11));
 
 
    application::application()
    {
 
-      m_bUseSwapChainWindow = false;
+      m_strGraphics3DImplementationOverride = "directx11";
+      m_strGraphics3DOutputOverride = "off_screen";
       //m_ptemplateFuelMain = nullptr;
       //m_ptemplateFuelImpact = nullptr;
 
-      m_strAppId              = "app-graphics3d/fuel-memory-vulkan";
-      m_strAppName            = "app-graphics3d/fuel-memory-vulkan";
-      m_strBaseSupportId      = "app-graphics3d/fuel-memory-vulkan";
+      m_strAppId              = "app-graphics3d/fuel-memory-directx11";
+      m_strAppName            = "app-graphics3d/fuel-memory-directx11";
+      m_strBaseSupportId      = "app-graphics3d/fuel-memory-directx11";
       m_bLicense              = false;
 
    }
@@ -92,12 +93,12 @@ namespace app_graphics3d_fuel_memory_vulkan
    ::string application::draw2d_get_default_implementation_name()
    {
 
-      return system()->implementation_name("draw2d", "vulkan");
+      return ::app_graphics3d_fuel::application::draw2d_get_default_implementation_name();
 
    }
 
 
-} // namespace app_graphics3d_fuel_memory_vulkan
+} // namespace app_graphics3d_fuel_memory_directx11
 
 
 
