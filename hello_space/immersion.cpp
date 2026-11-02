@@ -7,7 +7,7 @@
 #include "immersion.h"
 #include "input.h"
 #include "main_scene.h"
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 
 
 namespace app_graphics3d_hello_space
@@ -40,7 +40,7 @@ namespace app_graphics3d_hello_space
       //pinput->m_fMoveSpeed = 3.f;
       //pinput->m_fLookSpeed = 1.5f;
 
-      m_pgraphics3dengineinstance->m_pinput = pinput;
+      m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_pgraphics3dinput = pinput;
 
       //m_pgraphics3dengineinstance->m_pinput->m_pusergraphics3d = m_pgraphics3dengineinstance->m_pusergraphics3d;
       pinput->m_pgraphics3dengineinstance = m_pgraphics3dengineinstance;

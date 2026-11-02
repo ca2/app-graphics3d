@@ -109,7 +109,7 @@ namespace app_graphics3d_continuum
    void impact::install_message_routing(::channel * psender)
    {
 
-      ::user::show < ::user::graphics3d >::install_message_routing(psender);
+      ::user::show < ::user::graphics3d_engine_host >::install_message_routing(psender);
 
       USER_MESSAGE_LINK(::user::e_message_create,psender,this,&impact::on_message_create);
       USER_MESSAGE_LINK(::user::e_message_destroy, psender, this, &impact::on_message_destroy);
@@ -278,7 +278,7 @@ namespace app_graphics3d_continuum
 
          }
 
-         ::user::graphics3d::_001OnDraw(pdraw2dgraphics);
+         ::user::graphics3d_engine_host::_001OnDraw(pdraw2dgraphics);
 
 #endif
 
@@ -298,7 +298,7 @@ namespace app_graphics3d_continuum
 
       }
 
-      ::user::graphics3d::on_layout(pdraw2dgraphics);
+      ::user::graphics3d_engine_host::on_layout(pdraw2dgraphics);
       
       setup_default_client_area_user_item();
 

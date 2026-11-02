@@ -1,7 +1,11 @@
 #pragma once
 
 
-#include "app-graphics3d/continuum/_.h"
+#include "core/_.h"
+
+
+/// before 2024?
+/// Benjamin Kuhl (Spoofh@twitch, fuel@twitch) suggested GPU acceleration for ca2 applications.
 
 
 #if defined(_app_graphics3d_fuel_project)

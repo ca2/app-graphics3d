@@ -9,7 +9,7 @@
 #include "aura/platform/application.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/texture_site.h"
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 #include "gpu_directx11/approach.h"
 #include "gpu_directx11/context.h"
 #include "gpu_directx11/descriptors.h"

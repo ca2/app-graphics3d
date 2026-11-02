@@ -66,7 +66,7 @@ namespace graphics3d_opengl
 		~engine_instance();
 
 
-		void defer_start(::user::graphics3d * pusergraphics3d, const ::i32_rectangle& rectanglePlacement) override;
+		void defer_start(::user::graphics3d_engine_host * pusergraphics3denginehost, const ::i32_rectangle& rectanglePlacement) override;
 
 
 		void defer_update_engine(const ::i32_rectangle& rectanglePlacement) override;
@@ -101,7 +101,7 @@ namespace graphics3d_opengl
 		//private:
 		//void ProcessInput(float deltaTime);
 		//static void MouseCallback(::user::graphics3d* pglContainer, double xpos, double ypos);
-		void initialize_graphics3d_engine_instance(::user::graphics3d* pimpact) override;
+		void initialize_graphics3d_engine_instance(::user::graphics3d_engine_host* pusergraphics3denginehost) override;
 
 		//virtual void handle_mouse_move(double dCursorX, double dCursorY) override;
 

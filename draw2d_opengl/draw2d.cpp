@@ -320,7 +320,18 @@ namespace draw2d_opengl
    void draw2d::adjust_composited_window_styles(unsigned int& nExStyle, unsigned int& nStyle)
    {
 
-      nExStyle &= ~WS_EX_LAYERED;
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      {
+
+         nExStyle &= ~WS_EX_LAYERED;
+
+      }
+      else
+      {
+
+         nExStyle |= WS_EX_LAYERED;
+
+      }
 
    }
 

@@ -1,7 +1,8 @@
+// Created by camilo on 2026-11-01 00:49 <3ThomasBorregaardSorensen!! Mummi! bilbo!
 #pragma once
 
 
-#include "berg/user/simple/frame_window.h"
+#include "berg/user/simple/main_frame.h"
 
 
 // Temporary diagnostic window; set to 0 to disable it.
@@ -22,7 +23,7 @@ namespace app_graphics3d_fuel
 
 
    class CLASS_DECL_APP_GRAPHICS3D_FUEL main_frame :
-      virtual public ::simple_frame_window
+      virtual public ::simple_main_frame
    {
    public:
 

@@ -19,7 +19,7 @@
 #include "gpu_opengl/lock.h"
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 
 //
 //
@@ -58,12 +58,12 @@ namespace graphics3d_opengl
    }
 
 
-   void engine_instance::initialize_graphics3d_engine_instance(::user::graphics3d* pimpact)
+   void engine_instance::initialize_graphics3d_engine_instance(::user::graphics3d_engine_host* pusergraphics3denginehost)
    {
 
       //m_fYScale = -1.0f;
 
-      ::graphics3d::engine_instance::initialize_graphics3d_engine_instance(pimpact);
+      ::graphics3d::engine_instance::initialize_graphics3d_engine_instance(pusergraphics3denginehost);
 
    }
 
@@ -78,10 +78,10 @@ namespace graphics3d_opengl
    }
 
 
-   void engine_instance::defer_start(::user::graphics3d* pusergraphics3d, const ::i32_rectangle& rectanglePlacement)
+   void engine_instance::defer_start(::user::graphics3d_engine_host* pusergraphics3denginehost, const ::i32_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine_instance::defer_start(pusergraphics3d, rectanglePlacement);
+      ::graphics3d::engine_instance::defer_start(pusergraphics3denginehost , rectanglePlacement);
 
    }
 

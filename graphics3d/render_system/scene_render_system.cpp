@@ -9,6 +9,7 @@
 #include "bred/gpu/renderer.h"
 #include "bred/graphics3d/engine_instance.h"
 #include "bred/graphics3d/global_ubo1.h"
+#include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 #include "gpu/model/model.h"
 #include "gpu/ibl/diffuse_irradiance_map.h"

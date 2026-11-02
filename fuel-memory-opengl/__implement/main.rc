@@ -1,6 +1,12 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "..\resource.h"
+#ifndef IDM_EXIT
+#define IDM_EXIT 40001
+#define IDM_ABOUT 40002
+#define IDC_APPCOREHELLO_MULTIVERSE 129
+#define IDI_SMALL 130
+#endif
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -99,7 +105,6 @@ END
 // ZIP
 //
 
-IDR_MATTER              ZIP                     "../_matter.zip"
 
 
 /////////////////////////////////////////////////////////////////////////////

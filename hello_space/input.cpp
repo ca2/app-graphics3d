@@ -12,7 +12,7 @@
 #include "bred/graphics3d/types.h"
 #include "aura/platform/application.h"
 #include "aura/platform/session.h"
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 #include <limits>
 
 //#include "immersion_layer.h"

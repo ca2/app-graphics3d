@@ -56,7 +56,7 @@ namespace app_graphics3d_continuum
 
       scene::on_initialize_particle();
 
-      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_iImpactSerial;
 
       if (iImpactSerial == 1)
       {
@@ -165,7 +165,7 @@ namespace app_graphics3d_continuum
 
       // m_Skybox = allocateø::graphics3d::sky_box();
 
-      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_iImpactSerial;
 
       if (iImpactSerial == 5)
       {
@@ -474,7 +474,7 @@ namespace app_graphics3d_continuum
 
          auto dt = m_pimmersionlayer->m_pgraphics3dengineinstance->dt();
 
-         ::cast<input> pinput = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pinput;
+         ::cast<input> pinput = m_pimmersionlayer->m_pgraphics3dengineinstance->get_input();
 
          auto &transform = m_pimmersionlayer->m_pgraphics3dengineinstance->m_transform;
 
@@ -488,7 +488,7 @@ namespace app_graphics3d_continuum
 
          pcamera->m_rotation = transform.m_rotation;
 
-         auto aspect = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->getAspectRatio();
+         auto aspect = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->getAspectRatio();
 
          pcamera->m_fAspectRatio = aspect;
 
@@ -524,7 +524,7 @@ namespace app_graphics3d_continuum
       globalUbo1["cameraPosition"] = cameraPosition;
 
 
-      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_iImpactSerial;
 
       if (iImpactSerial != 5)
       {
@@ -757,7 +757,7 @@ namespace app_graphics3d_continuum
       //pgpucontext->clear(ptexture, ::argb(1.0f, 0.5f, 0.75f, 1.0f)); // Clear with a light blue color
 
 
-      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_iImpactSerial;
 
       if (iImpactSerial == 5)
       {
@@ -796,7 +796,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_render_last(::gpu::context *pgpucontext)
    {
 
-      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+      int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_iImpactSerial;
 
       if (iImpactSerial != 5)
       {

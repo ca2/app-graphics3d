@@ -1,7 +1,8 @@
+// Created by camilo on 2026-11-01 <3ThomasBorregaardSorensen!! Mummi! bilbo!
 #pragma once
 
 
-#include "app-graphics3d/continuum/application.h"
+#include "core/platform/application.h"
 
 
 namespace app_graphics3d_fuel
@@ -10,7 +11,7 @@ namespace app_graphics3d_fuel
 
 
    class CLASS_DECL_APP_GRAPHICS3D_FUEL application :
-      virtual public ::app_graphics3d_continuum::application
+      virtual public ::core::application
    {
    public:
 

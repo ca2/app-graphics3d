@@ -16,3 +16,13 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+#define IDM_EXIT 40001
+
+#define IDM_ABOUT 40002
+
+#define IDC_APPCOREHELLO_MULTIVERSE 129
+
+#define IDS_APP_TITLE 103
+
+#define IDI_SMALL 130

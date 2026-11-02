@@ -213,30 +213,31 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\app\acme\acme.vcxproj">
-      <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
+      <Project>{638B242F-0F21-41C3-9F66-724660046133}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\apex\apex.vcxproj">
-      <Project>{e000ffaf-392f-4e32-bf51-777ca238991f}</Project>
+      <Project>{E000FFAF-392F-4E32-BF51-777CA238991F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\aqua\aqua.vcxproj">
-      <Project>{1b06fe5f-f783-41a1-ac68-0e02880dbbac}</Project>
+      <Project>{1B06FE5F-F783-41A1-AC68-0E02880DBBAC}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\aura\aura.vcxproj">
-      <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
+      <Project>{E000FFAF-392F-4E32-BF51-FD7ED638991F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\axis\axis.vcxproj">
-      <Project>{a2cbd4ed-ed0f-482b-9b16-f48f21c32835}</Project>
+      <Project>{A2CBD4ED-ED0F-482B-9B16-F48F21C32835}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\berg\berg.vcxproj">
-      <Project>{a216abd4-26c4-4746-96b3-9d30ed28cf92}</Project>
+      <Project>{A216ABD4-26C4-4746-96B3-9D30ED28CF92}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\bred\bred.vcxproj">
-      <Project>{dfbf067f-aff9-4bd6-a5e1-72af984d1476}</Project>
+      <Project>{DFBF067F-AFF9-4BD6-A5E1-72AF984D1476}</Project>
     </ProjectReference>
     <ProjectReference Include="..\app_graphics3d_fuel_window_opengl.vcxproj">
-      <Project>{63b68e79-7a04-414e-8853-be6e7a4807a0}</Project>
+      <Project>{63B68E79-7A04-414E-8853-BE6E7A4807A0}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup><ProjectReference Include="..\..\continuum\app_graphics3d_continuum.vcxproj"><Project>{F1161227-5818-45CC-99BA-5E3195BA1A2F}</Project></ProjectReference></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

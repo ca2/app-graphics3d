@@ -20,7 +20,7 @@
 #include "gpu_opengl/lock.h"
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 
 //
 //

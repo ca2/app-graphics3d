@@ -20,3 +20,7 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+#define IDC_APPCOREHELLO_MULTIVERSE 129
+
+#define IDI_SMALL 130

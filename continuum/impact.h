@@ -1,17 +1,17 @@
 #pragma once
 
 
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 #include "berg/user/user/show.h"
 #include "bred/graphics3d/global_ubo1.h"
 
 
 namespace app_graphics3d_continuum
+
 {
 
-
    class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM impact :
-      virtual public ::app_consumer < application, ::user::show <::user::graphics3d> >
+      virtual public ::app_consumer < application, ::user::show <::user::graphics3d_engine_host> >
    {
    public:
 

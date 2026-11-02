@@ -5,6 +5,12 @@
 #include "app-graphics3d/graphics3d/_.h"
 
 
+/// in 2025,2026
+/// V0idsEmbrace@twitch, orvow@twitch: (from Canada?)
+/// - Provided continuum and other applications to add GPU acceleration to ca2 applications.
+/// - Continuouly suggest directions for ca2 applications to use GPU acceleration and other graphics3d features.
+
+
 #if defined(_app_graphics3d_continuum_project)
 #define CLASS_DECL_APP_GRAPHICS3D_CONTINUUM  CLASS_DECL_EXPORT
 #else

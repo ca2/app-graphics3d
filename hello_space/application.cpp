@@ -21,7 +21,7 @@
 #include "berg/user/user/single_document_template.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/graphics3d.h"
-#include "bred/user/user/gpu_statistics_impact.h"
+#include "bred/user/user/gpu_statistics_interaction.h"
 
 
 __IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_hello_space);
@@ -93,7 +93,7 @@ namespace app_graphics3d_hello_space
       factory()->add_factory_item <::app_graphics3d_continuum::switcher_impact >();
       factory()->add_factory_item <::app_graphics3d_continuum::skybox_impact >();
       factory()->add_factory_item <::app_graphics3d_hello_space::pane_impact >();
-      factory()->add_factory_item <::user::gpu_statistics_impact >();
+      factory()->add_factory_item <::user::gpu_statistics_interaction >();
       factory()->add_factory_item <::app_graphics3d_hello_space::immersion, ::app_graphics3d_continuum::immersion >();
 
 
@@ -145,7 +145,7 @@ namespace app_graphics3d_hello_space
    "impact",
    ::type<document>(),
    ::type<main_frame>(),
-   ::type<::user::gpu_statistics_impact>()));
+   ::type<::user::gpu_statistics_interaction>()));
 #if defined(APPLE_IOS)
 
       m_pathApplicationText = "icloud://iCloud.app-simple/Documents/application/application.txt";

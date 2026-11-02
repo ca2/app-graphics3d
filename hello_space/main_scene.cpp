@@ -32,7 +32,7 @@
 #include "bred/graphics3d/render_system/point_light_render_system.h"
 #include "bred/graphics3d/render_system/skybox_render_system.h"
 #include "bred/graphics3d/render_system/texture_render_system.h"
-#include "bred/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d_engine_host.h"
 
 
 namespace app_graphics3d_hello_space
@@ -225,7 +225,7 @@ namespace app_graphics3d_hello_space
 
       //}
 
-   int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3d->m_iImpactSerial;
+   int iImpactSerial = m_pimmersionlayer->m_pgraphics3dengineinstance->m_pusergraphics3denginehost->m_iImpactSerial;
 
    if (iImpactSerial == 1 || iImpactSerial == 2)
    {
