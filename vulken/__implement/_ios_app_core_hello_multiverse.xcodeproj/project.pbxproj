@@ -1,0 +1,1615 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D9EB45A4A376FA48807C8E2C /* libios_core_foundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EDD3BB1DF50143584C2431 /* libios_core_foundation.a */; };
+		86E0BF662299DF2170B698AD /* libios_core_graphics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6E351E33BCD11E7BE7C8F0C /* libios_core_graphics.a */; };
+		28CBC72D463E0BEF3CEAB980 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 79665B0153DCABAE3B37A123 /* InfoPlist.strings */; };
+		7F1C9ECCC370308091F293E8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E11A484CF526073614D614A1 /* ImageIO.framework */; };
+		286347978705615540FCDFC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADACDE283C26CBAEAB7E4FD /* Foundation.framework */; };
+		3176EF2BF8037812670FB67B /* libios_networking_bsd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02307407372F062479965A98 /* libios_networking_bsd.a */; };
+		B172CCE9429DFA10BFC2E8FB /* libios_app_core_hello_multiverse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A00BACE12FF0EF10ECC7FD64 /* libios_app_core_hello_multiverse.a */; };
+		BB609B88ED3655DDD9E5A990 /* libios_regular_expression_pcre2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EEAF5912C1E429755A49D864 /* libios_regular_expression_pcre2.a */; };
+		750B37A2642C682A104DCC40 /* libios_gcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD01060566C117A5D585A9F /* libios_gcom.a */; };
+		BA023ABFDE1D5238F8C6817F /* libios_gcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 893ABBDB7D41DABA1EBC1BE3 /* libios_gcom.a */; };
+		85EA62FAD7BF553FB8B88375 /* libios_pcre.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D192F995821EABAD85C413F /* libios_pcre.a */; };
+		414C2874CBC2E667B9D18070 /* libios_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2D7C703E196F53E88CDB72 /* libios_core.a */; };
+		C8B0D4142A87ED556238A53D /* libios_bred.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2949FFBA9646F0692A87447D /* libios_bred.a */; };
+		5ACE362B141A52EF51FDCD20 /* libios_imaging_coreimage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 281284467200E6C20C488BFA /* libios_imaging_coreimage.a */; };
+		DDA1B2C6551E489194A316EA /* libios_acme.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E36716E793E3ED28A6309BF2 /* libios_acme.a */; };
+		2FB8351A068A78AB8687430A /* libios_acme_apple.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD148A4654C9836A0E5E5D9 /* libios_acme_apple.a */; };
+		0FEF61C99E205DD9B4AA021A /* libacme_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9362AE89F03154FE17F6D434 /* libacme_ios.a */; };
+		450B890B2694A96970F3C841 /* libios_acme_posix.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2ED8BBA3FAFD69F82F0A86 /* libios_acme_posix.a */; };
+		B9AAABFEB81817D695B5E1DF /* libios_apex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 665648D4143CF38DA18AE54C /* libios_apex.a */; };
+		CB80979CC456D707320B1140 /* libios_apex_apple.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D19791B788BDF32D699B6F52 /* libios_apex_apple.a */; };
+		C7F24C6B52ED8A0AF3AC3414 /* libapex_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDF7A530381B658C03F9485 /* libapex_ios.a */; };
+		2F8C6CFAE2DAB248A127E0C8 /* libios_apex_posix.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D91BE6998C3B3B7EE5898E7 /* libios_apex_posix.a */; };
+		F0F49BC663457383AC47C5C1 /* libios_aqua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4EE060BEE419862FDB0C471 /* libios_aqua.a */; };
+		142A4193F2B06E62C7CB41AE /* libios_aura_apple.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E45A9E5F2E361C10CA93E1C1 /* libios_aura_apple.a */; };
+		D753B2EF146D14BCBB947835 /* libaura_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ECD5154EF04B471A46ED5D5 /* libaura_ios.a */; };
+		4A49685E2EBD548897CA8B99 /* libios_axis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C33DE336AC6A1C494DB4052B /* libios_axis.a */; };
+		CBFE09BAFF73A005EABC0598 /* libios_berg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD29F693B40D14E9C4B402BB /* libios_berg.a */; };
+		3DE4B796244F79DDA0860ABA /* libios_crypto_openssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F0661F847BD6B6399770653 /* libios_crypto_openssl.a */; };
+		9EAED73210A93A6ABB19CBFA /* libios_draw2d_quartz2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3566683B9C58F09E2967F35 /* libios_draw2d_quartz2d.a */; };
+		0EBC38EC9B0773FE72CB5802 /* libios_experience_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06FCEAD5E7F61C9838764D7C /* libios_experience_core.a */; };
+		B5C38CE078DE362FD60E6F5B /* libios_folder_zip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 522135755AA306D02D77FB24 /* libios_folder_zip.a */; };
+		316552F7163E990651246C5F /* libios_idn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5F7DFF1626501BD150FB70F /* libios_idn.a */; };
+		F32F36A4F93EEFEA62DB45F8 /* libnode_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD38DDD7C5A3B189B7B01434 /* libnode_ios.a */; };
+		72CCD5747FB6FE8B85786777 /* libwindowing_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F655B94CA7FF322C32865B6 /* libwindowing_ios.a */; };
+		DEE1836EEF832A30C5C07A84 /* ios_write_text_quartz2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 399C534063DD13A80A52926C /* ios_write_text_quartz2d.a */; };
+		AB34915289C47003110DC48A /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E28079D93B2BB4F4DC7E6290 /* CoreServices.framework */; };
+		F044D85257F70D89BF37C407 /* libios_aura.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 957CFD02713C9B306D8C16B3 /* libios_aura.a */; };
+		C976023B87B827A2F97E1538 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A95348585728B502210D95 /* libcrypto.a */; };
+		14F40ADC722208E67524BEB0 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 023D282F982187622AAED274 /* libssl.a */; };
+		C36FE70A75067DB056856822 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F0C3E6B0CE03945582D5B73 /* libsqlite3.tbd */; };
+		D911D4109312F9E0F1E37C31 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4658FCB848F975FA6126AEA /* libz.tbd */; };
+		3E33145E44FB1A29C9E57FFB /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 13A9142221E9DB89430E7994 /* libiconv.tbd */; };
+		AE6B9E5DFD68E0DD61090304 /* libios_aura_posix.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7EC397535628B92622E17B /* libios_aura_posix.a */; };
+		C694F2871D82225702CBD0D8 /* libios_database_sqlite3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 187DCD971C80DF07368C7566 /* libios_database_sqlite3.a */; };
+		1F197424B4188EB06BA10FDB /* libios_database_sqlite3.a in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 187DCD971C80DF07368C7566 /* libios_database_sqlite3.a */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E88DCD2BAE91566DDEF0010E /* _matter.zip in Resources */ = {isa = PBXBuildFile; fileRef = DD2E4D8733717BA80D963A4A /* _matter.zip */; };
+		607D6E55C88A0C537352AD8C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A5C8CDD43ACDF6124690D51 /* Launch Screen.storyboard */; };
+		F8C5641A033ABD060FE65110 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C160C025CF894A7A3C3B856 /* Images.xcassets */; };
+		B2DE6DA7423047095D5632F2 /* __implement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 71659C1A833B801BB1A59757 /* __implement.cpp */; };
+		9562C89CE658F4A9714BF547 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DA1402860019406CFB93102 /* CoreFoundation.framework */; };
+		6840A321CF73156E1A201FCB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF345343C1D5A1BF6476A451 /* UIKit.framework */; };
+		4A1A45F6739E51BD5D8AFA08 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FFDBFC215A9510DB94EA63A /* CoreGraphics.framework */; };
+		20E78177686042EF1FE6DB0F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3320DD8748A59F69A545AFB0 /* CoreText.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B3BDA33872A4DCBA672F971E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1AA154C1B1D4012909D49DF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D71021B49E5531404D0B1EE;
+			remoteInfo = wiosapp_core_hello_multiverse;
+		};
+		D24347BD6BAB22F474D02D0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 474B6D612D632F435703C84F /* networking_bsd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F97A45ABBE8FD35A639A24EC;
+			remoteInfo = networking_bsd;
+		};
+		DE64274365F379357028FAFF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 474B6D612D632F435703C84F /* networking_bsd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A41C1AE6C60995CFF947B60;
+			remoteInfo = ios_networking_bsd;
+		};
+		B076EAB1F448057ACD043C4E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 474B6D612D632F435703C84F /* networking_bsd.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 38B5C707BC31CE53D7C90EB0;
+			remoteInfo = ios_networking_bsd;
+		};
+		2C68775CD7BFD5E0EEE77C1B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9AF2A812A9306501C1DC9DC /* database_sqlite3.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FB83F4A6AD621C4D6FA9988D;
+			remoteInfo = ios_database_sqlite3;
+		};
+		7966A5C3999959B29D757542 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 24F14CC19410BC1323DCAD4C /* regular_expression_pcre2.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 39631773B3B84FFD6B02F1F5;
+			remoteInfo = ios_regular_expression_pcre2;
+		};
+		070AB048DF3F5D0EAA186269 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A46720C58019266DD9E7DB04;
+			remoteInfo = ios_imaging_coreimage;
+		};
+		BE68F8B0AAF872AEB916AA7D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 45184BBBF9E014FA256F0BAA /* experience_core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 76B9B361D6701031FD7A35E1;
+			remoteInfo = experience_core;
+		};
+		050EF0D5D8A560AE97C80528 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 45184BBBF9E014FA256F0BAA /* experience_core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 95F4B5D309C0A224BB37CBB5;
+			remoteInfo = ios_experience_core;
+		};
+		0C7411B935B06E36D1DE18C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AEB75A316F78DF10085103B;
+			remoteInfo = app_core_hello_multiverse;
+		};
+		6EAF8B85E25AECD3BD2DAB47 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AE24E8A1904CFFD001AEFFB;
+			remoteInfo = ios_app_core_hello_multiverse;
+		};
+		EC45F6850E361FF3101A8C7F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AE24E991904CFFD001AEFFB;
+			remoteInfo = app_core_hello_multiverse_iosTests;
+		};
+		BB125814E1F2D507B7977985 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2478BE3BEBDECA4AE5F9D160 /* folder_zip.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1A9485C6A3C87EAF4A351D85;
+			remoteInfo = folder_zip;
+		};
+		00B04D7581534E220FB95EC1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2478BE3BEBDECA4AE5F9D160 /* folder_zip.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 877C5DA152960224128C2480;
+			remoteInfo = ios_folder_zip;
+		};
+		BD4601AFA5607FAE76BF6E15 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB16CA8B7926E98EE34FF227 /* crypto_openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05F6B639A4C58F3D6CE7A033;
+			remoteInfo = crypto_openssl;
+		};
+		958BD483188E45F7301A9B05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB16CA8B7926E98EE34FF227 /* crypto_openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 007599CAAABCB1C1BE567A76;
+			remoteInfo = ios_crypto_openssl;
+		};
+		D7098E46EDC031AD108C423E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9AF2A812A9306501C1DC9DC /* database_sqlite3.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AE12E782661E97E009F476A;
+			remoteInfo = database_sqlite3;
+		};
+		605EDAC0FC6C10792A67EEC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9AF2A812A9306501C1DC9DC /* database_sqlite3.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A93B4C32846E5EF005ACD11;
+			remoteInfo = ios_database_sqlite3;
+		};
+		812D8A642CF1D480C78408D6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 24F14CC19410BC1323DCAD4C /* regular_expression_pcre2.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD6D9FDCC98E5A3A647C441E;
+			remoteInfo = regular_expression_pcre2;
+		};
+		8D6E594B3D2983443BE07CFA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4805F417B21BAD872D71E3D4 /* write_text_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0010C0CDA03DB72745411F3F;
+			remoteInfo = write_text_quartz2d;
+		};
+		F46EA679ABFA4095AC202492 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4805F417B21BAD872D71E3D4 /* write_text_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7721B0782CB11940E577F585;
+			remoteInfo = ios_write_text_quartz2d;
+		};
+		F0D6D35E0F473A3ADD3219C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B9D7F75A3D13150E7ECF1C7 /* draw2d_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7384CFC7D297323C33C5FC52;
+			remoteInfo = draw2d_quartz2d;
+		};
+		F1A2C1C8D3F88826FC1D252E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B9D7F75A3D13150E7ECF1C7 /* draw2d_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 42FCD051F2B773A4E2C81813;
+			remoteInfo = ios_draw2d_quartz2d;
+		};
+		4ABD4C17E197492C19A472FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6CE23296FBA342FF94633499;
+			remoteInfo = imaging_coreimage;
+		};
+		BA797A52A2043959BE8F15BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C6263A695AAC13908C78BB0E;
+			remoteInfo = ios_imaging_coreimage;
+		};
+		FFE6E9759E44BDE7D4801967 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C424910FFFBAD50782D412EE;
+			remoteInfo = math_iosTests;
+		};
+		C32759E0568F687004609AC1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB16CA8B7926E98EE34FF227 /* crypto_openssl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BB4D8D686633930ACD233ADC;
+			remoteInfo = ios_crypto_openssl;
+		};
+		4A71D43F9EAB9F59771DB892 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B9D7F75A3D13150E7ECF1C7 /* draw2d_quartz2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5B08D4CAD8FAC29E5955A6B3;
+			remoteInfo = ios_draw2d_quartz2d;
+		};
+		5E8EE9363C4BAF8EFBF20F3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 45184BBBF9E014FA256F0BAA /* experience_core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A38FA2DB83679F3A33A27F6;
+			remoteInfo = ios_experience_core;
+		};
+		D1999F0410108875C5E2A305 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2478BE3BEBDECA4AE5F9D160 /* folder_zip.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 343D1D1EE1699E21118CEE07;
+			remoteInfo = ios_folder_zip;
+		};
+		92C58A36AFF49D9D35E18CDD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4805F417B21BAD872D71E3D4 /* write_text_quartz2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5FDC35D52EA3D172D787A020;
+			remoteInfo = ios_write_text_quartz2d;
+		};
+		3533202EB2BC543413F59B72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D517C38784921D0032AFFBBA /* node_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DFBD08A7C0A8CF2065AD929D;
+			remoteInfo = node_ios;
+		};
+		49008D078632060EB44D3037 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D517C38784921D0032AFFBBA /* node_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A1AD4CC982A5BDDCEB7581B2;
+			remoteInfo = node_ios;
+		};
+		B1F54C4FBBB75C82ED2ECF36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 24F14CC19410BC1323DCAD4C /* regular_expression_pcre2.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AA2310CEFCDBEF63290AC87;
+			remoteInfo = "ios_regular_expression_pcre2 copy";
+		};
+		0D5374EBBDC93A44B75FB0C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9AE24E891904CFFD001AEFFB;
+			remoteInfo = ios_app_core_hello_multiverse;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1EC8B772FD66EBBBC23CFFDA /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1F197424B4188EB06BA10FDB /* libios_database_sqlite3.a in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		38EDD3BB1DF50143584C2431 /* libios_core_foundation.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_core_foundation.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6E351E33BCD11E7BE7C8F0C /* libios_core_graphics.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_core_graphics.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB2DCB6EE21CF59C7CA6E9A6 /* libauracharguess.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libauracharguess.dylib; path = "../../../app/aura/charguess/build/Debug-iphoneos/libauracharguess.dylib"; sourceTree = "<group>"; };
+		519439698EC03A740182604D /* libaurasqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libaurasqlite.dylib; path = "../../../app/aura/sqlite/build/Debug-iphoneos/libaurasqlite.dylib"; sourceTree = "<group>"; };
+		A13CF7465F4704913A2412EA /* libauracharguess.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libauracharguess.dylib; path = "../../../app/aura/charguess/build/Debug-iphoneos/libauracharguess.dylib"; sourceTree = "<group>"; };
+		7059366B4630EFC70FA06AB6 /* libaurasqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libaurasqlite.dylib; path = "../../../app/aura/sqlite/build/Debug-iphoneos/libaurasqlite.dylib"; sourceTree = "<group>"; };
+		FF345343C1D5A1BF6476A451 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		6724C8D0D92E47047A8B2B39 /* Hellomultiverse!!.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hellomultiverse!!.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E9AEEA52D800FA72E6F3065D /* ios_app_core_hello_multiverseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ios_app_core_hello_multiverseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B1879A16151345395D954AE /* wiosapp_core_hello_multiverseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "wiosapp_core_hello_multiverseTests-Info.plist"; path = "../wiosapp_core_hello_multiverseTests-Info.plist"; sourceTree = "<group>"; };
+		942515A3FD50609CA016A12E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		22495CAD43D6FDC6B4A6AD7B /* wiosapp_core_hello_multiverseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wiosapp_core_hello_multiverseTests.m; sourceTree = "<group>"; };
+		7DA1402860019406CFB93102 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		AB2500E724A06024C1A1F250 /* build-openssl-1.1.0f.log */ = {isa = PBXFileReference; lastKnownFileType = text; path = "build-openssl-1.1.0f.log"; sourceTree = "<group>"; };
+		0F7E64542B671F9160B34FCB /* build-openssl-1.1.0g.log */ = {isa = PBXFileReference; lastKnownFileType = text; path = "build-openssl-1.1.0g.log"; sourceTree = "<group>"; };
+		5F65E35C8407C628FBDE1C28 /* aes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
+		95EA4E8B13BCE8AEEED6817F /* asn1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
+		98DFCDC09FEC78007F325663 /* asn1_mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
+		C6B36765FE5D34B1B566CA8A /* asn1t.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asn1t.h; sourceTree = "<group>"; };
+		6E129BFB71B00C61580349A9 /* async.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = async.h; sourceTree = "<group>"; };
+		C7808E9BB144D022A9D97DFE /* bio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bio.h; sourceTree = "<group>"; };
+		201518D5EF668BCA2FF7DFC0 /* blowfish.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = blowfish.h; sourceTree = "<group>"; };
+		851856E8857F95E0BED1EC7C /* bn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bn.h; sourceTree = "<group>"; };
+		B130B98C1EC292B6FDB8BDBB /* buffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
+		4B0604547B466D886E792478 /* camellia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camellia.h; sourceTree = "<group>"; };
+		71FE2286C14F9FE3F8680435 /* cast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cast.h; sourceTree = "<group>"; };
+		8FA8C85120EAFA3987CE19A9 /* cmac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmac.h; sourceTree = "<group>"; };
+		904EC202C95BBC644A0CFC72 /* cms.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cms.h; sourceTree = "<group>"; };
+		1F1D2AFCBC567F6C11451A05 /* comp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comp.h; sourceTree = "<group>"; };
+		86A68B1B6EB16D40A06AAE51 /* conf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = conf.h; sourceTree = "<group>"; };
+		267662283528B038D65C665B /* conf_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = conf_api.h; sourceTree = "<group>"; };
+		2277E29A41C2E4732104F0B5 /* crypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crypto.h; sourceTree = "<group>"; };
+		F662638A4EABEB8961A53A9F /* ct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ct.h; sourceTree = "<group>"; };
+		093F4D9E795104B2ED2FCFF9 /* des.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = des.h; sourceTree = "<group>"; };
+		8B861B54887C121C942A9227 /* dh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dh.h; sourceTree = "<group>"; };
+		F236745D7ACF6C8BAA0759BD /* dsa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dsa.h; sourceTree = "<group>"; };
+		ADEF6E9BA7574BB471EE77D2 /* dtls1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dtls1.h; sourceTree = "<group>"; };
+		3EE9F040C92BD3F6EA70B869 /* e_os2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = e_os2.h; sourceTree = "<group>"; };
+		C3687D999DB0F2AB41E6CAB6 /* ebcdic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ebcdic.h; sourceTree = "<group>"; };
+		3EDE4440C94F130E062D83EE /* ec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ec.h; sourceTree = "<group>"; };
+		833C4B4391CD526A7CC14501 /* ecdh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ecdh.h; sourceTree = "<group>"; };
+		71B38A83027183EB21A20B82 /* ecdsa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ecdsa.h; sourceTree = "<group>"; };
+		41B57927564242262E8C7783 /* engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
+		A15874AC80D5A49A26836DC7 /* err.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = err.h; sourceTree = "<group>"; };
+		A44E24B5AB0F7D0060D94F54 /* evp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evp.h; sourceTree = "<group>"; };
+		FCF6700E4E7E274155735C23 /* hmac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmac.h; sourceTree = "<group>"; };
+		D2F2C51BA9531D8A20B11BA7 /* idea.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idea.h; sourceTree = "<group>"; };
+		34CE138F26EE905D7B25BE66 /* kdf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kdf.h; sourceTree = "<group>"; };
+		836C5A8004E1312E8B1A243F /* lhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lhash.h; sourceTree = "<group>"; };
+		CA77B6C91CAA9B8562F20F9F /* md2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = md2.h; sourceTree = "<group>"; };
+		448D7330B67B36A38B9476FD /* md4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = md4.h; sourceTree = "<group>"; };
+		5676C9EE64BB325F74DE8D94 /* md5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		8EF2BDF1371837666B22162F /* mdc2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mdc2.h; sourceTree = "<group>"; };
+		22C6748D9E9741AF1E1AA271 /* modes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = modes.h; sourceTree = "<group>"; };
+		E98374B3190F12B429837C52 /* obj_mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = obj_mac.h; sourceTree = "<group>"; };
+		F7D40E6936D5B237D51DBC59 /* objects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objects.h; sourceTree = "<group>"; };
+		3820A8B27406200D0FFE2533 /* ocsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocsp.h; sourceTree = "<group>"; };
+		0A72AA805BB352EF328E07E1 /* opensslconf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = opensslconf.h; sourceTree = "<group>"; };
+		47709E419DB097DC569D23ED /* opensslv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = opensslv.h; sourceTree = "<group>"; };
+		EAA310D5956E64DED3458E6D /* ossl_typ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ossl_typ.h; sourceTree = "<group>"; };
+		EBB86C869CBB34F6DC7628BA /* pem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pem.h; sourceTree = "<group>"; };
+		C6745FDE8F83ED3F5FA0913C /* pem2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pem2.h; sourceTree = "<group>"; };
+		F3BE5C78DD06C48611D193A4 /* pkcs12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pkcs12.h; sourceTree = "<group>"; };
+		44904EB770C37EE51D01F493 /* pkcs7.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pkcs7.h; sourceTree = "<group>"; };
+		29418399CAEA2E79FE9E5C38 /* rand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rand.h; sourceTree = "<group>"; };
+		E46E147F5405766A5AAB597F /* rc2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rc2.h; sourceTree = "<group>"; };
+		1F877AAA2B72AF6D7A821E81 /* rc4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
+		092BE90AC4C265EBB91C4000 /* rc5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rc5.h; sourceTree = "<group>"; };
+		A4D885EE814DB9C03EABAEA4 /* ripemd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ripemd.h; sourceTree = "<group>"; };
+		F994E2B46FDD14A2CF35FFCA /* rsa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rsa.h; sourceTree = "<group>"; };
+		3BB7E159AE7723C9C820E0EB /* safestack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = safestack.h; sourceTree = "<group>"; };
+		1CB13B62D4A8A24BF706DA48 /* seed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = seed.h; sourceTree = "<group>"; };
+		445FA8A9F152CD1555D61EE0 /* sha.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sha.h; sourceTree = "<group>"; };
+		F038FC19B83DF497B0FD2695 /* srp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = srp.h; sourceTree = "<group>"; };
+		83AAC8EDAA1FB7674B78529D /* srtp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = srtp.h; sourceTree = "<group>"; };
+		385408D4B1AE1A226F2FAD90 /* ssl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssl.h; sourceTree = "<group>"; };
+		6A4B16396302C3813898FF71 /* ssl2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssl2.h; sourceTree = "<group>"; };
+		7EFE749F9AA3703D5EEF061A /* ssl3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssl3.h; sourceTree = "<group>"; };
+		5F9240B5F04F0DB98C509F7E /* stack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stack.h; sourceTree = "<group>"; };
+		A374E2D314CCB4725E72110D /* symhacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = symhacks.h; sourceTree = "<group>"; };
+		82B5D8C9CA866660635818CA /* tls1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tls1.h; sourceTree = "<group>"; };
+		17541D1541EA438A5B8C4797 /* ts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ts.h; sourceTree = "<group>"; };
+		2D1EBC8EB3CDAA001A4833AD /* txt_db.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = txt_db.h; sourceTree = "<group>"; };
+		A0DC94341D081993A46AB858 /* u.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = u.h; sourceTree = "<group>"; };
+		DCBCF5F96B31A1FEFD6F86AA /* whrlpool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = whrlpool.h; sourceTree = "<group>"; };
+		3D21E11AAE8E62D8785FCAA4 /* x509.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = x509.h; sourceTree = "<group>"; };
+		25E453C899CC1961B9E5455A /* x509_vfy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
+		F7EC56AD0FCDDC91FC608FCF /* x509v3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
+		EE03997AF9CEC15CC1AE58C6 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
+		B0E1F103ACE7FD338E7662A5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		CE5298F97561340124967254 /* libcrypto.pc */ = {isa = PBXFileReference; lastKnownFileType = text; path = libcrypto.pc; sourceTree = "<group>"; };
+		CB8E907CC4F6185CF5549114 /* libssl.pc */ = {isa = PBXFileReference; lastKnownFileType = text; path = libssl.pc; sourceTree = "<group>"; };
+		160E9BF7F87469259AC31C31 /* openssl.pc */ = {isa = PBXFileReference; lastKnownFileType = text; path = openssl.pc; sourceTree = "<group>"; };
+		CE3A540D3A9DC3FA3AFF0D8F /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../../platform/iPhoneSimulator10.1-x86_64.sdk/lib/libcrypto.a"; sourceTree = "<group>"; };
+		C7CF9AD6D72DFD7A788AA61E /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../../platform/iPhoneSimulator10.1-x86_64.sdk/lib/libssl.a"; sourceTree = "<group>"; };
+		E11A484CF526073614D614A1 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		811F9F7BF61F0ACA5BA2949B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		3FC7DA245B8F9C613BDA0F60 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		D9B7C3CBC7B7223CFBF24805 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		FADACDE283C26CBAEAB7E4FD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		474B6D612D632F435703C84F /* networking_bsd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = networking_bsd.xcodeproj; path = ../../../app/networking_bsd/networking_bsd.xcodeproj; sourceTree = SOURCE_ROOT; };
+		5087572E1CAAB2AE90E41A41 /* libace_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libace_ios.a; path = "../../../app/ace/build/Debug-iphoneos/libace_ios.a"; sourceTree = "<group>"; };
+		E92F4887868D36E6EC4D02CD /* libios_gcom.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libios_gcom.dylib; path = "../../../../Volumes/apple/archive/Xcode/DerivedData/Build/Products/Debug-iphonesimulator/libios_gcom.dylib"; sourceTree = "<group>"; };
+		3320DD8748A59F69A545AFB0 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		D4658FCB848F975FA6126AEA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		BB013EBA0D6DB32B35379A6B /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		1F0C3E6B0CE03945582D5B73 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		1CD01060566C117A5D585A9F /* libios_gcom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_gcom.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		893ABBDB7D41DABA1EBC1BE3 /* libios_gcom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_gcom.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D192F995821EABAD85C413F /* libios_pcre.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_pcre.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF2D7C703E196F53E88CDB72 /* libios_core.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_core.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2949FFBA9646F0692A87447D /* libios_bred.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_bred.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		433521263E59DF46E508A9BC /* libios_sphere.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libios_sphere.a; path = "../../../../macos/app/sphere/build/Debug-iphoneos/libios_sphere.a"; sourceTree = "<group>"; };
+		AC63C9BA00A6D7334DE76AEA /* libace_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libace_ios.a; path = "../../../../Users/camilo/Library/Developer/Xcode/DerivedData/basic-ios-bmuegusfgbffmoeixicbxhlnbzop/Build/Products/Debug-iphonesimulator/libace_ios.a"; sourceTree = "<group>"; };
+		0DD5844D3A05D0CFC51D895D /* libios_axisidn.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libios_axisidn.dylib; path = "../../../../Users/camilo/Library/Developer/Xcode/DerivedData/basic-ios-bmuegusfgbffmoeixicbxhlnbzop/Build/Products/Debug-iphonesimulator/libios_axisidn.dylib"; sourceTree = "<group>"; };
+		45184BBBF9E014FA256F0BAA /* experience_core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = experience_core.xcodeproj; path = ../../../app/experience_core/experience_core.xcodeproj; sourceTree = SOURCE_ROOT; };
+		BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = app_core_hello_multiverse.xcodeproj; path = ../app_core_hello_multiverse.xcodeproj; sourceTree = SOURCE_ROOT; };
+		2478BE3BEBDECA4AE5F9D160 /* folder_zip.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = folder_zip.xcodeproj; path = ../../../app/folder_zip/folder_zip.xcodeproj; sourceTree = SOURCE_ROOT; };
+		BB16CA8B7926E98EE34FF227 /* crypto_openssl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = crypto_openssl.xcodeproj; path = ../../../app/crypto_openssl/crypto_openssl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		C9AF2A812A9306501C1DC9DC /* database_sqlite3.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = database_sqlite3.xcodeproj; path = ../../../app/database_sqlite3/database_sqlite3.xcodeproj; sourceTree = SOURCE_ROOT; };
+		24F14CC19410BC1323DCAD4C /* regular_expression_pcre2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = regular_expression_pcre2.xcodeproj; path = ../../../app/regular_expression_pcre2/regular_expression_pcre2.xcodeproj; sourceTree = SOURCE_ROOT; };
+		4805F417B21BAD872D71E3D4 /* write_text_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = write_text_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/write_text_quartz2d/write_text_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		3B9D7F75A3D13150E7ECF1C7 /* draw2d_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = draw2d_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/draw2d_quartz2d/draw2d_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = imaging_coreimage.xcodeproj; path = "../../../../operating_system/operating_system-apple/imaging_coreimage/imaging_coreimage.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		3FFDBFC215A9510DB94EA63A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		E36716E793E3ED28A6309BF2 /* libios_acme.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_acme.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2AD148A4654C9836A0E5E5D9 /* libios_acme_apple.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_acme_apple.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9362AE89F03154FE17F6D434 /* libacme_ios.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F2ED8BBA3FAFD69F82F0A86 /* libios_acme_posix.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_acme_posix.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		665648D4143CF38DA18AE54C /* libios_apex.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_apex.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D19791B788BDF32D699B6F52 /* libios_apex_apple.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_apex_apple.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4FDF7A530381B658C03F9485 /* libapex_ios.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapex_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D91BE6998C3B3B7EE5898E7 /* libios_apex_posix.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_apex_posix.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9109E962F485B6A3A9D95675 /* libios_api_ca2.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_api_ca2.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4EE060BEE419862FDB0C471 /* libios_aqua.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_aqua.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		716118FCCAAA7238696E4BA9 /* libios_aura.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_aura.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E45A9E5F2E361C10CA93E1C1 /* libios_aura_apple.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_aura_apple.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9ECD5154EF04B471A46ED5D5 /* libaura_ios.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaura_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E101FCC9674616D65BBE5E9 /* libios_aura_macos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_aura_macos.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3204F81307519F85F302826 /* libios_aura_posix.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_aura_posix.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C33DE336AC6A1C494DB4052B /* libios_axis.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_axis.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD29F693B40D14E9C4B402BB /* libios_berg.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_berg.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0D96FADD819EAFEE5B413C9F /* libios_gcom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_gcom.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5F7DFF1626501BD150FB70F /* libios_idn.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_idn.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD38DDD7C5A3B189B7B01434 /* libnode_ios.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libnode_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F655B94CA7FF322C32865B6 /* libwindowing_ios.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwindowing_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D517C38784921D0032AFFBBA /* node_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = node_ios.xcodeproj; path = "../../../../operating_system/operating_system-ios/node_ios/node_ios.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		E28079D93B2BB4F4DC7E6290 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		63C09FF7ACDABFCDAEC172A8 /* libios_gcom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_gcom.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		957CFD02713C9B306D8C16B3 /* libios_aura.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_aura.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2A95348585728B502210D95 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "/Users/camilo/solution/basis/source/app-simple/drawing/../../../operating_system/storage-ios/iPhoneSimulator13.4-x86_64.sdk/lib/libcrypto.a"; sourceTree = "<absolute>"; };
+		023D282F982187622AAED274 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "/Users/camilo/solution/basis/source/app-simple/drawing/../../../operating_system/storage-ios/iPhoneSimulator13.4-x86_64.sdk/lib/libssl.a"; sourceTree = "<absolute>"; };
+		5E7EC397535628B92622E17B /* libios_aura_posix.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libios_aura_posix.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F50C5C4042ADA325B940321 /* libios_core.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_core.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD2E4D8733717BA80D963A4A /* _matter.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = _matter.zip; path = _matter.zip; sourceTree = "<group>"; };
+		D2F48210FE4F3E5E07F139E2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5F518F649AC1DC406E5E38C5 /* wiosapp_core_hello_multiverse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "wiosapp_core_hello_multiverse-Info.plist"; path = "../wiosapp_core_hello_multiverse-Info.plist"; sourceTree = "<group>"; };
+		8C160C025CF894A7A3C3B856 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		9B90D77F94440E15C953C998 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		71659C1A833B801BB1A59757 /* __implement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = __implement.cpp; sourceTree = "<group>"; };
+		9A5C8CDD43ACDF6124690D51 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		13A9142221E9DB89430E7994 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		64C5797BE1D7DA22C850F4BF /* libios_axisfreeimage.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_axisfreeimage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		86DB57D038113078000C2EFE /* libios_axisidn.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_axisidn.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		10C76DFE496E054183D69841 /* libios_axiscrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libios_axiscrypto.dylib; path = "../../../../Volumes/apple/archive/Xcode/DerivedData/Build/Products/Debug-iphonesimulator/libios_axiscrypto.dylib"; sourceTree = "<group>"; };
+		18C82C1ACD1AC85F0ACACC0E /* libios_axisopenssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libios_axisopenssl.dylib; path = "../../../../Volumes/apple/archive/Xcode/DerivedData/Build/Products/Debug-iphonesimulator/libios_axisopenssl.dylib"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A39D8C6878909A7617428F11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9EB45A4A376FA48807C8E2C /* libios_core_foundation.a in Frameworks */,
+				86E0BF662299DF2170B698AD /* libios_core_graphics.a in Frameworks */,
+				3176EF2BF8037812670FB67B /* libios_networking_bsd.a in Frameworks */,
+				5ACE362B141A52EF51FDCD20 /* libios_imaging_coreimage.a in Frameworks */,
+				C8B0D4142A87ED556238A53D /* libios_bred.a in Frameworks */,
+				414C2874CBC2E667B9D18070 /* libios_core.a in Frameworks */,
+				85EA62FAD7BF553FB8B88375 /* libios_pcre.a in Frameworks */,
+				BA023ABFDE1D5238F8C6817F /* libios_gcom.a in Frameworks */,
+				BB609B88ED3655DDD9E5A990 /* libios_regular_expression_pcre2.a in Frameworks */,
+				14F40ADC722208E67524BEB0 /* libssl.a in Frameworks */,
+				F044D85257F70D89BF37C407 /* libios_aura.a in Frameworks */,
+				9EAED73210A93A6ABB19CBFA /* libios_draw2d_quartz2d.a in Frameworks */,
+				CB80979CC456D707320B1140 /* libios_apex_apple.a in Frameworks */,
+				3E33145E44FB1A29C9E57FFB /* libiconv.tbd in Frameworks */,
+				C694F2871D82225702CBD0D8 /* libios_database_sqlite3.a in Frameworks */,
+				DDA1B2C6551E489194A316EA /* libios_acme.a in Frameworks */,
+				C976023B87B827A2F97E1538 /* libcrypto.a in Frameworks */,
+				D911D4109312F9E0F1E37C31 /* libz.tbd in Frameworks */,
+				7F1C9ECCC370308091F293E8 /* ImageIO.framework in Frameworks */,
+				AE6B9E5DFD68E0DD61090304 /* libios_aura_posix.a in Frameworks */,
+				F32F36A4F93EEFEA62DB45F8 /* libnode_ios.a in Frameworks */,
+				C36FE70A75067DB056856822 /* libsqlite3.tbd in Frameworks */,
+				B9AAABFEB81817D695B5E1DF /* libios_apex.a in Frameworks */,
+				B172CCE9429DFA10BFC2E8FB /* libios_app_core_hello_multiverse.a in Frameworks */,
+				0FEF61C99E205DD9B4AA021A /* libacme_ios.a in Frameworks */,
+				316552F7163E990651246C5F /* libios_idn.a in Frameworks */,
+				D753B2EF146D14BCBB947835 /* libaura_ios.a in Frameworks */,
+				DEE1836EEF832A30C5C07A84 /* ios_write_text_quartz2d.a in Frameworks */,
+				CBFE09BAFF73A005EABC0598 /* libios_berg.a in Frameworks */,
+				286347978705615540FCDFC8 /* Foundation.framework in Frameworks */,
+				6840A321CF73156E1A201FCB /* UIKit.framework in Frameworks */,
+				2F8C6CFAE2DAB248A127E0C8 /* libios_apex_posix.a in Frameworks */,
+				3DE4B796244F79DDA0860ABA /* libios_crypto_openssl.a in Frameworks */,
+				0EBC38EC9B0773FE72CB5802 /* libios_experience_core.a in Frameworks */,
+				72CCD5747FB6FE8B85786777 /* libwindowing_ios.a in Frameworks */,
+				9562C89CE658F4A9714BF547 /* CoreFoundation.framework in Frameworks */,
+				20E78177686042EF1FE6DB0F /* CoreText.framework in Frameworks */,
+				4A1A45F6739E51BD5D8AFA08 /* CoreGraphics.framework in Frameworks */,
+				F0F49BC663457383AC47C5C1 /* libios_aqua.a in Frameworks */,
+				142A4193F2B06E62C7CB41AE /* libios_aura_apple.a in Frameworks */,
+				4A49685E2EBD548897CA8B99 /* libios_axis.a in Frameworks */,
+				C7F24C6B52ED8A0AF3AC3414 /* libapex_ios.a in Frameworks */,
+				2FB8351A068A78AB8687430A /* libios_acme_apple.a in Frameworks */,
+				AB34915289C47003110DC48A /* CoreServices.framework in Frameworks */,
+				750B37A2642C682A104DCC40 /* libios_gcom.a in Frameworks */,
+				450B890B2694A96970F3C841 /* libios_acme_posix.a in Frameworks */,
+				B5C38CE078DE362FD60E6F5B /* libios_folder_zip.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E79D1AA38F5A43857765252E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E06301D57CDB890C876AE23C /* wiosapp_core_hello_multiverseTests */ = {
+			isa = PBXGroup;
+			children = (
+				22495CAD43D6FDC6B4A6AD7B /* wiosapp_core_hello_multiverseTests.m */,
+				9D3388658846D49F6776D9B3 /* Supporting Files */,
+			);
+			path = wiosapp_core_hello_multiverseTests;
+			sourceTree = "<group>";
+		};
+		9D3388658846D49F6776D9B3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9B1879A16151345395D954AE /* wiosapp_core_hello_multiverseTests-Info.plist */,
+				79665B0153DCABAE3B37A123 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		24A7D00418B2DADC722BA5C4 /* iPhoneSimulator11.2-x86_64.sdk */ = {
+			isa = PBXGroup;
+			children = (
+				AB2500E724A06024C1A1F250 /* build-openssl-1.1.0f.log */,
+				0F7E64542B671F9160B34FCB /* build-openssl-1.1.0g.log */,
+				D37FE5499A5213427D42FCD5 /* include */,
+				002B76D4841969C53AB28BB5 /* lib */,
+			);
+			name = "iPhoneSimulator11.2-x86_64.sdk";
+			path = "../../../platform/openssl/iPhoneSimulator11.2-x86_64.sdk";
+			sourceTree = "<group>";
+		};
+		D37FE5499A5213427D42FCD5 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				CE96C8FD06BA2CCD4F62B0CE /* openssl */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		CE96C8FD06BA2CCD4F62B0CE /* openssl */ = {
+			isa = PBXGroup;
+			children = (
+				5F65E35C8407C628FBDE1C28 /* aes.h */,
+				95EA4E8B13BCE8AEEED6817F /* asn1.h */,
+				98DFCDC09FEC78007F325663 /* asn1_mac.h */,
+				C6B36765FE5D34B1B566CA8A /* asn1t.h */,
+				6E129BFB71B00C61580349A9 /* async.h */,
+				C7808E9BB144D022A9D97DFE /* bio.h */,
+				201518D5EF668BCA2FF7DFC0 /* blowfish.h */,
+				851856E8857F95E0BED1EC7C /* bn.h */,
+				B130B98C1EC292B6FDB8BDBB /* buffer.h */,
+				4B0604547B466D886E792478 /* camellia.h */,
+				71FE2286C14F9FE3F8680435 /* cast.h */,
+				8FA8C85120EAFA3987CE19A9 /* cmac.h */,
+				904EC202C95BBC644A0CFC72 /* cms.h */,
+				1F1D2AFCBC567F6C11451A05 /* comp.h */,
+				86A68B1B6EB16D40A06AAE51 /* conf.h */,
+				267662283528B038D65C665B /* conf_api.h */,
+				2277E29A41C2E4732104F0B5 /* crypto.h */,
+				F662638A4EABEB8961A53A9F /* ct.h */,
+				093F4D9E795104B2ED2FCFF9 /* des.h */,
+				8B861B54887C121C942A9227 /* dh.h */,
+				F236745D7ACF6C8BAA0759BD /* dsa.h */,
+				ADEF6E9BA7574BB471EE77D2 /* dtls1.h */,
+				3EE9F040C92BD3F6EA70B869 /* e_os2.h */,
+				C3687D999DB0F2AB41E6CAB6 /* ebcdic.h */,
+				3EDE4440C94F130E062D83EE /* ec.h */,
+				833C4B4391CD526A7CC14501 /* ecdh.h */,
+				71B38A83027183EB21A20B82 /* ecdsa.h */,
+				41B57927564242262E8C7783 /* engine.h */,
+				A15874AC80D5A49A26836DC7 /* err.h */,
+				A44E24B5AB0F7D0060D94F54 /* evp.h */,
+				FCF6700E4E7E274155735C23 /* hmac.h */,
+				D2F2C51BA9531D8A20B11BA7 /* idea.h */,
+				34CE138F26EE905D7B25BE66 /* kdf.h */,
+				836C5A8004E1312E8B1A243F /* lhash.h */,
+				CA77B6C91CAA9B8562F20F9F /* md2.h */,
+				448D7330B67B36A38B9476FD /* md4.h */,
+				5676C9EE64BB325F74DE8D94 /* md5.h */,
+				8EF2BDF1371837666B22162F /* mdc2.h */,
+				22C6748D9E9741AF1E1AA271 /* modes.h */,
+				E98374B3190F12B429837C52 /* obj_mac.h */,
+				F7D40E6936D5B237D51DBC59 /* objects.h */,
+				3820A8B27406200D0FFE2533 /* ocsp.h */,
+				0A72AA805BB352EF328E07E1 /* opensslconf.h */,
+				47709E419DB097DC569D23ED /* opensslv.h */,
+				EAA310D5956E64DED3458E6D /* ossl_typ.h */,
+				EBB86C869CBB34F6DC7628BA /* pem.h */,
+				C6745FDE8F83ED3F5FA0913C /* pem2.h */,
+				F3BE5C78DD06C48611D193A4 /* pkcs12.h */,
+				44904EB770C37EE51D01F493 /* pkcs7.h */,
+				29418399CAEA2E79FE9E5C38 /* rand.h */,
+				E46E147F5405766A5AAB597F /* rc2.h */,
+				1F877AAA2B72AF6D7A821E81 /* rc4.h */,
+				092BE90AC4C265EBB91C4000 /* rc5.h */,
+				A4D885EE814DB9C03EABAEA4 /* ripemd.h */,
+				F994E2B46FDD14A2CF35FFCA /* rsa.h */,
+				3BB7E159AE7723C9C820E0EB /* safestack.h */,
+				1CB13B62D4A8A24BF706DA48 /* seed.h */,
+				445FA8A9F152CD1555D61EE0 /* sha.h */,
+				F038FC19B83DF497B0FD2695 /* srp.h */,
+				83AAC8EDAA1FB7674B78529D /* srtp.h */,
+				385408D4B1AE1A226F2FAD90 /* ssl.h */,
+				6A4B16396302C3813898FF71 /* ssl2.h */,
+				7EFE749F9AA3703D5EEF061A /* ssl3.h */,
+				5F9240B5F04F0DB98C509F7E /* stack.h */,
+				A374E2D314CCB4725E72110D /* symhacks.h */,
+				82B5D8C9CA866660635818CA /* tls1.h */,
+				17541D1541EA438A5B8C4797 /* ts.h */,
+				2D1EBC8EB3CDAA001A4833AD /* txt_db.h */,
+				A0DC94341D081993A46AB858 /* u.h */,
+				DCBCF5F96B31A1FEFD6F86AA /* whrlpool.h */,
+				3D21E11AAE8E62D8785FCAA4 /* x509.h */,
+				25E453C899CC1961B9E5455A /* x509_vfy.h */,
+				F7EC56AD0FCDDC91FC608FCF /* x509v3.h */,
+			);
+			path = openssl;
+			sourceTree = "<group>";
+		};
+		002B76D4841969C53AB28BB5 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				EE03997AF9CEC15CC1AE58C6 /* libcrypto.a */,
+				B0E1F103ACE7FD338E7662A5 /* libssl.a */,
+				E72125DA26363D7E6DFF4544 /* pkgconfig */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		E72125DA26363D7E6DFF4544 /* pkgconfig */ = {
+			isa = PBXGroup;
+			children = (
+				CE5298F97561340124967254 /* libcrypto.pc */,
+				CB8E907CC4F6185CF5549114 /* libssl.pc */,
+				160E9BF7F87469259AC31C31 /* openssl.pc */,
+			);
+			path = pkgconfig;
+			sourceTree = "<group>";
+		};
+		F13C3469E7F42BA04B7624A7 = {
+			isa = PBXGroup;
+			children = (
+				BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */,
+				BB16CA8B7926E98EE34FF227 /* crypto_openssl.xcodeproj */,
+				C9AF2A812A9306501C1DC9DC /* database_sqlite3.xcodeproj */,
+				3B9D7F75A3D13150E7ECF1C7 /* draw2d_quartz2d.xcodeproj */,
+				45184BBBF9E014FA256F0BAA /* experience_core.xcodeproj */,
+				2478BE3BEBDECA4AE5F9D160 /* folder_zip.xcodeproj */,
+				7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */,
+				474B6D612D632F435703C84F /* networking_bsd.xcodeproj */,
+				D517C38784921D0032AFFBBA /* node_ios.xcodeproj */,
+				24F14CC19410BC1323DCAD4C /* regular_expression_pcre2.xcodeproj */,
+				4805F417B21BAD872D71E3D4 /* write_text_quartz2d.xcodeproj */,
+				2BCA8DC3734832E7DC5CACE4 /* hello_multiverse */,
+				E06301D57CDB890C876AE23C /* wiosapp_core_hello_multiverseTests */,
+				16F8B5DBEA5958B2C5D7AE33 /* Frameworks */,
+				688F5AA935AE6E66D69BADA6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		688F5AA935AE6E66D69BADA6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6724C8D0D92E47047A8B2B39 /* Hellomultiverse!!.app */,
+				E9AEEA52D800FA72E6F3065D /* ios_app_core_hello_multiverseTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		16F8B5DBEA5958B2C5D7AE33 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				38EDD3BB1DF50143584C2431 /* libios_core_foundation.a */,
+				F6E351E33BCD11E7BE7C8F0C /* libios_core_graphics.a */,
+				2949FFBA9646F0692A87447D /* libios_bred.a */,
+				BF2D7C703E196F53E88CDB72 /* libios_core.a */,
+				2D192F995821EABAD85C413F /* libios_pcre.a */,
+				893ABBDB7D41DABA1EBC1BE3 /* libios_gcom.a */,
+				1CD01060566C117A5D585A9F /* libios_gcom.a */,
+				7F50C5C4042ADA325B940321 /* libios_core.a */,
+				5E7EC397535628B92622E17B /* libios_aura_posix.a */,
+				957CFD02713C9B306D8C16B3 /* libios_aura.a */,
+				63C09FF7ACDABFCDAEC172A8 /* libios_gcom.a */,
+				E28079D93B2BB4F4DC7E6290 /* CoreServices.framework */,
+				E36716E793E3ED28A6309BF2 /* libios_acme.a */,
+				2AD148A4654C9836A0E5E5D9 /* libios_acme_apple.a */,
+				9362AE89F03154FE17F6D434 /* libacme_ios.a */,
+				9F2ED8BBA3FAFD69F82F0A86 /* libios_acme_posix.a */,
+				665648D4143CF38DA18AE54C /* libios_apex.a */,
+				D19791B788BDF32D699B6F52 /* libios_apex_apple.a */,
+				4FDF7A530381B658C03F9485 /* libapex_ios.a */,
+				5D91BE6998C3B3B7EE5898E7 /* libios_apex_posix.a */,
+				9109E962F485B6A3A9D95675 /* libios_api_ca2.dylib */,
+				F4EE060BEE419862FDB0C471 /* libios_aqua.a */,
+				716118FCCAAA7238696E4BA9 /* libios_aura.a */,
+				E45A9E5F2E361C10CA93E1C1 /* libios_aura_apple.a */,
+				9ECD5154EF04B471A46ED5D5 /* libaura_ios.a */,
+				2E101FCC9674616D65BBE5E9 /* libios_aura_macos.a */,
+				C3204F81307519F85F302826 /* libios_aura_posix.a */,
+				C33DE336AC6A1C494DB4052B /* libios_axis.a */,
+				CD29F693B40D14E9C4B402BB /* libios_berg.a */,
+				0D96FADD819EAFEE5B413C9F /* libios_gcom.a */,
+				A5F7DFF1626501BD150FB70F /* libios_idn.a */,
+				BD38DDD7C5A3B189B7B01434 /* libnode_ios.a */,
+				2F655B94CA7FF322C32865B6 /* libwindowing_ios.a */,
+				811F9F7BF61F0ACA5BA2949B /* MobileCoreServices.framework */,
+				023D282F982187622AAED274 /* libssl.a */,
+				E11A484CF526073614D614A1 /* ImageIO.framework */,
+				CE3A540D3A9DC3FA3AFF0D8F /* libcrypto.a */,
+				C7CF9AD6D72DFD7A788AA61E /* libssl.a */,
+				C2A95348585728B502210D95 /* libcrypto.a */,
+				24A7D00418B2DADC722BA5C4 /* iPhoneSimulator11.2-x86_64.sdk */,
+				86DB57D038113078000C2EFE /* libios_axisidn.a */,
+				64C5797BE1D7DA22C850F4BF /* libios_axisfreeimage.a */,
+				13A9142221E9DB89430E7994 /* libiconv.tbd */,
+				433521263E59DF46E508A9BC /* libios_sphere.a */,
+				1F0C3E6B0CE03945582D5B73 /* libsqlite3.tbd */,
+				BB013EBA0D6DB32B35379A6B /* libbz2.tbd */,
+				D4658FCB848F975FA6126AEA /* libz.tbd */,
+				3320DD8748A59F69A545AFB0 /* CoreText.framework */,
+				E92F4887868D36E6EC4D02CD /* libios_gcom.dylib */,
+				10C76DFE496E054183D69841 /* libios_axiscrypto.dylib */,
+				18C82C1ACD1AC85F0ACACC0E /* libios_axisopenssl.dylib */,
+				0DD5844D3A05D0CFC51D895D /* libios_axisidn.dylib */,
+				AC63C9BA00A6D7334DE76AEA /* libace_ios.a */,
+				5087572E1CAAB2AE90E41A41 /* libace_ios.a */,
+				A13CF7465F4704913A2412EA /* libauracharguess.dylib */,
+				7059366B4630EFC70FA06AB6 /* libaurasqlite.dylib */,
+				EB2DCB6EE21CF59C7CA6E9A6 /* libauracharguess.dylib */,
+				519439698EC03A740182604D /* libaurasqlite.dylib */,
+				FF345343C1D5A1BF6476A451 /* UIKit.framework */,
+				7DA1402860019406CFB93102 /* CoreFoundation.framework */,
+				3FFDBFC215A9510DB94EA63A /* CoreGraphics.framework */,
+				F87F69B1EA67C7539D329545 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F87F69B1EA67C7539D329545 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3FC7DA245B8F9C613BDA0F60 /* AppKit.framework */,
+				D9B7C3CBC7B7223CFBF24805 /* CoreData.framework */,
+				FADACDE283C26CBAEAB7E4FD /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		5FEB3A3ACC7656EDE015A321 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7EAA8F2433FDB97DDCE05C7E /* libnetworking_bsd.dylib */,
+				02307407372F062479965A98 /* libios_networking_bsd.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3194469BD500ADC2A7F73F09 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AD695FBEF97E69CF559BF2F8 /* libexperience_core.dylib */,
+				06FCEAD5E7F61C9838764D7C /* libios_experience_core.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8A15A4916D6B398F6ECEB278 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A48A06595644872D8BF92DD5 /* libapp_core_hello_multiverse.dylib */,
+				A00BACE12FF0EF10ECC7FD64 /* libios_app_core_hello_multiverse.a */,
+				BA4769DBFEC2E1406BF4CE1B /* app_core_hello_multiverse_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E37ECD92358F61E8AB2D9C6D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				669DE31D467A30CAF049518B /* libfolder_zip.dylib */,
+				522135755AA306D02D77FB24 /* libios_folder_zip.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D02DBFF37D0B356EBF0F5E50 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A226B1D3CCB857347A8E4D3B /* libcrypto_openssl.dylib */,
+				0F0661F847BD6B6399770653 /* libios_crypto_openssl.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		61F73C5C8B1F62F17FB6ACE2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				01EA5C7154E638BF18DF1F12 /* libdatabase_sqlite3.dylib */,
+				187DCD971C80DF07368C7566 /* libios_database_sqlite3.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A850FC918AC3A6C1FC52D657 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A9D76C26435E2783E8E3F5FF /* libregular_expression_pcre2.dylib */,
+				EEAF5912C1E429755A49D864 /* libios_regular_expression_pcre2.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		80CB088B1D8F5FC490B2269E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CC5402BC6F2AD9A2C74D4439 /* libwrite_text_quartz2d.dylib */,
+				399C534063DD13A80A52926C /* ios_write_text_quartz2d.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7C09AEE0BBC28B639CD8108E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				93B62709402AF42155F99677 /* libdraw2d_quartz2d.dylib */,
+				A3566683B9C58F09E2967F35 /* libios_draw2d_quartz2d.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA20045FC383EF3AB14F8FFE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A11196D40B489A68C7F1DEB7 /* libimaging_coreimage.dylib */,
+				281284467200E6C20C488BFA /* libios_imaging_coreimage.a */,
+				42A4BA27B5AD2EE5FE830878 /* math_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7456AE8F660B595F5FC39A9F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3058B39B2575C79721140E86 /* libnode_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2BCA8DC3734832E7DC5CACE4 /* hello_multiverse */ = {
+			isa = PBXGroup;
+			children = (
+				CF72286D2B2F1BFFCE015F8D /* ios */,
+				DD2E4D8733717BA80D963A4A /* _matter.zip */,
+				71659C1A833B801BB1A59757 /* __implement.cpp */,
+			);
+			name = hello_multiverse;
+			sourceTree = "<group>";
+		};
+		CF72286D2B2F1BFFCE015F8D /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				DE967225242CDF0F530DC5B0 /* InfoPlist.strings */,
+				5F518F649AC1DC406E5E38C5 /* wiosapp_core_hello_multiverse-Info.plist */,
+				8C160C025CF894A7A3C3B856 /* Images.xcassets */,
+				9B90D77F94440E15C953C998 /* main.cpp */,
+				9A5C8CDD43ACDF6124690D51 /* Launch Screen.storyboard */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6D71021B49E5531404D0B1EE /* _ios_app_core_hello_multiverse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B6E38A62309AD109C53A979 /* Build configuration list for PBXNativeTarget "_ios_app_core_hello_multiverse" */;
+			buildPhases = (
+				89FBC0BC8128137DFA02161A /* Sources */,
+				A39D8C6878909A7617428F11 /* Frameworks */,
+				BA6BC9F3E915D5FB747C152B /* Resources */,
+				1EC8B772FD66EBBBC23CFFDA /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A395FBDCC0472009B45B01A1 /* PBXTargetDependency */,
+				30C95F2CB2DC0F5401EAA90E /* PBXTargetDependency */,
+				166BFEC6D8D21F6604524912 /* PBXTargetDependency */,
+				4C09C9DC7C791416C9313165 /* PBXTargetDependency */,
+				66EA716F309A0E370EDB17CC /* PBXTargetDependency */,
+				754D9DE39289A83F576EC37B /* PBXTargetDependency */,
+				E4C79F9C8020C41E273463D4 /* PBXTargetDependency */,
+				90CFAF1271F053D7D412FA3E /* PBXTargetDependency */,
+				1221388944CF670A27A957AC /* PBXTargetDependency */,
+				89677BBD70DF53263FF0BBA2 /* PBXTargetDependency */,
+				63116D3495E87B914D965554 /* PBXTargetDependency */,
+			);
+			name = _ios_app_core_hello_multiverse;
+			productName = wiosapp_core_hello_multiverse;
+			productReference = 6724C8D0D92E47047A8B2B39 /* Hellomultiverse!!.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CB1AB77D771D4B9CB30AE56D /* ios_app_core_hello_multiverseTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB6D0ABD328EF281DABD0866 /* Build configuration list for PBXNativeTarget "ios_app_core_hello_multiverseTests" */;
+			buildPhases = (
+				C66654C2BCB1EF6C30C401F4 /* Sources */,
+				E79D1AA38F5A43857765252E /* Frameworks */,
+				BA04A903F3A17241EB5A8B49 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4F084B7D66E219F665D99AAF /* PBXTargetDependency */,
+			);
+			name = ios_app_core_hello_multiverseTests;
+			productName = wiosapp_core_hello_multiverseTests;
+			productReference = E9AEEA52D800FA72E6F3065D /* ios_app_core_hello_multiverseTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C1AA154C1B1D4012909D49DF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = ca2;
+				LastUpgradeCheck = 1340;
+				ORGANIZATIONNAME = "Camilo Sasuke Tsumanuma";
+				TargetAttributes = {
+					6D71021B49E5531404D0B1EE = {
+						DevelopmentTeam = L8N5V6TZE5;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+							com.apple.iCloud = {
+								enabled = 0;
+							};
+						};
+					};
+					CB1AB77D771D4B9CB30AE56D = {
+						DevelopmentTeam = L8N5V6TZE5;
+						TestTargetID = 6D71021B49E5531404D0B1EE;
+					};
+				};
+			};
+			buildConfigurationList = 88845CD93B17F14FA9C11F7E /* Build configuration list for PBXProject "_ios_app_core_hello_multiverse" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F13C3469E7F42BA04B7624A7;
+			productRefGroup = 688F5AA935AE6E66D69BADA6 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8A15A4916D6B398F6ECEB278 /* Products */;
+					ProjectRef = BD954F9885B7A190394F3634 /* app_core_hello_multiverse.xcodeproj */;
+				},
+				{
+					ProductGroup = D02DBFF37D0B356EBF0F5E50 /* Products */;
+					ProjectRef = BB16CA8B7926E98EE34FF227 /* crypto_openssl.xcodeproj */;
+				},
+				{
+					ProductGroup = 61F73C5C8B1F62F17FB6ACE2 /* Products */;
+					ProjectRef = C9AF2A812A9306501C1DC9DC /* database_sqlite3.xcodeproj */;
+				},
+				{
+					ProductGroup = 7C09AEE0BBC28B639CD8108E /* Products */;
+					ProjectRef = 3B9D7F75A3D13150E7ECF1C7 /* draw2d_quartz2d.xcodeproj */;
+				},
+				{
+					ProductGroup = 3194469BD500ADC2A7F73F09 /* Products */;
+					ProjectRef = 45184BBBF9E014FA256F0BAA /* experience_core.xcodeproj */;
+				},
+				{
+					ProductGroup = E37ECD92358F61E8AB2D9C6D /* Products */;
+					ProjectRef = 2478BE3BEBDECA4AE5F9D160 /* folder_zip.xcodeproj */;
+				},
+				{
+					ProductGroup = AA20045FC383EF3AB14F8FFE /* Products */;
+					ProjectRef = 7C29F384A2E88EDE0663951F /* imaging_coreimage.xcodeproj */;
+				},
+				{
+					ProductGroup = 5FEB3A3ACC7656EDE015A321 /* Products */;
+					ProjectRef = 474B6D612D632F435703C84F /* networking_bsd.xcodeproj */;
+				},
+				{
+					ProductGroup = 7456AE8F660B595F5FC39A9F /* Products */;
+					ProjectRef = D517C38784921D0032AFFBBA /* node_ios.xcodeproj */;
+				},
+				{
+					ProductGroup = A850FC918AC3A6C1FC52D657 /* Products */;
+					ProjectRef = 24F14CC19410BC1323DCAD4C /* regular_expression_pcre2.xcodeproj */;
+				},
+				{
+					ProductGroup = 80CB088B1D8F5FC490B2269E /* Products */;
+					ProjectRef = 4805F417B21BAD872D71E3D4 /* write_text_quartz2d.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				6D71021B49E5531404D0B1EE /* _ios_app_core_hello_multiverse */,
+				CB1AB77D771D4B9CB30AE56D /* ios_app_core_hello_multiverseTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		7EAA8F2433FDB97DDCE05C7E /* libnetworking_bsd.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libnetworking_bsd.dylib;
+			remoteRef = D24347BD6BAB22F474D02D0E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		02307407372F062479965A98 /* libios_networking_bsd.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_networking_bsd.a;
+			remoteRef = DE64274365F379357028FAFF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AD695FBEF97E69CF559BF2F8 /* libexperience_core.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libexperience_core.dylib;
+			remoteRef = BE68F8B0AAF872AEB916AA7D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		06FCEAD5E7F61C9838764D7C /* libios_experience_core.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_experience_core.a;
+			remoteRef = 050EF0D5D8A560AE97C80528 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A48A06595644872D8BF92DD5 /* libapp_core_hello_multiverse.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libapp_core_hello_multiverse.dylib;
+			remoteRef = 0C7411B935B06E36D1DE18C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A00BACE12FF0EF10ECC7FD64 /* libios_app_core_hello_multiverse.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libios_app_core_hello_multiverse.a;
+			remoteRef = 6EAF8B85E25AECD3BD2DAB47 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BA4769DBFEC2E1406BF4CE1B /* app_core_hello_multiverse_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = app_core_hello_multiverse_iosTests.xctest;
+			remoteRef = EC45F6850E361FF3101A8C7F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		669DE31D467A30CAF049518B /* libfolder_zip.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libfolder_zip.dylib;
+			remoteRef = BB125814E1F2D507B7977985 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		522135755AA306D02D77FB24 /* libios_folder_zip.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_folder_zip.a;
+			remoteRef = 00B04D7581534E220FB95EC1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A226B1D3CCB857347A8E4D3B /* libcrypto_openssl.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libcrypto_openssl.dylib;
+			remoteRef = BD4601AFA5607FAE76BF6E15 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0F0661F847BD6B6399770653 /* libios_crypto_openssl.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_crypto_openssl.a;
+			remoteRef = 958BD483188E45F7301A9B05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01EA5C7154E638BF18DF1F12 /* libdatabase_sqlite3.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libdatabase_sqlite3.dylib;
+			remoteRef = D7098E46EDC031AD108C423E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		187DCD971C80DF07368C7566 /* libios_database_sqlite3.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_database_sqlite3.a;
+			remoteRef = 605EDAC0FC6C10792A67EEC6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A9D76C26435E2783E8E3F5FF /* libregular_expression_pcre2.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libregular_expression_pcre2.dylib;
+			remoteRef = 812D8A642CF1D480C78408D6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CC5402BC6F2AD9A2C74D4439 /* libwrite_text_quartz2d.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libwrite_text_quartz2d.dylib;
+			remoteRef = 8D6E594B3D2983443BE07CFA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		399C534063DD13A80A52926C /* ios_write_text_quartz2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			name = ios_write_text_quartz2d.a;
+			path = libios_write_text_quartz2d.a;
+			remoteRef = F46EA679ABFA4095AC202492 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B62709402AF42155F99677 /* libdraw2d_quartz2d.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libdraw2d_quartz2d.dylib;
+			remoteRef = F0D6D35E0F473A3ADD3219C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A3566683B9C58F09E2967F35 /* libios_draw2d_quartz2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_draw2d_quartz2d.a;
+			remoteRef = F1A2C1C8D3F88826FC1D252E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A11196D40B489A68C7F1DEB7 /* libimaging_coreimage.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libimaging_coreimage.dylib;
+			remoteRef = 4ABD4C17E197492C19A472FB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		281284467200E6C20C488BFA /* libios_imaging_coreimage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libios_imaging_coreimage.a;
+			remoteRef = BA797A52A2043959BE8F15BE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		42A4BA27B5AD2EE5FE830878 /* math_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = math_iosTests.xctest;
+			remoteRef = FFE6E9759E44BDE7D4801967 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3058B39B2575C79721140E86 /* libnode_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libnode_ios.a;
+			remoteRef = 3533202EB2BC543413F59B72 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EEAF5912C1E429755A49D864 /* libios_regular_expression_pcre2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_regular_expression_pcre2.a;
+			remoteRef = B1F54C4FBBB75C82ED2ECF36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BA6BC9F3E915D5FB747C152B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E88DCD2BAE91566DDEF0010E /* _matter.zip in Resources */,
+				607D6E55C88A0C537352AD8C /* Launch Screen.storyboard in Resources */,
+				F8C5641A033ABD060FE65110 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA04A903F3A17241EB5A8B49 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28CBC72D463E0BEF3CEAB980 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		89FBC0BC8128137DFA02161A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2DE6DA7423047095D5632F2 /* __implement.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C66654C2BCB1EF6C30C401F4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4F084B7D66E219F665D99AAF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6D71021B49E5531404D0B1EE /* _ios_app_core_hello_multiverse */;
+			targetProxy = B3BDA33872A4DCBA672F971E /* PBXContainerItemProxy */;
+		};
+		A395FBDCC0472009B45B01A1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_networking_bsd;
+			targetProxy = B076EAB1F448057ACD043C4E /* PBXContainerItemProxy */;
+		};
+		166BFEC6D8D21F6604524912 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_database_sqlite3;
+			targetProxy = 2C68775CD7BFD5E0EEE77C1B /* PBXContainerItemProxy */;
+		};
+		66EA716F309A0E370EDB17CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_regular_expression_pcre2;
+			targetProxy = 7966A5C3999959B29D757542 /* PBXContainerItemProxy */;
+		};
+		4C09C9DC7C791416C9313165 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_imaging_coreimage;
+			targetProxy = 070AB048DF3F5D0EAA186269 /* PBXContainerItemProxy */;
+		};
+		E4C79F9C8020C41E273463D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_crypto_openssl;
+			targetProxy = C32759E0568F687004609AC1 /* PBXContainerItemProxy */;
+		};
+		90CFAF1271F053D7D412FA3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_draw2d_quartz2d;
+			targetProxy = 4A71D43F9EAB9F59771DB892 /* PBXContainerItemProxy */;
+		};
+		1221388944CF670A27A957AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_experience_core;
+			targetProxy = 5E8EE9363C4BAF8EFBF20F3B /* PBXContainerItemProxy */;
+		};
+		89677BBD70DF53263FF0BBA2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_folder_zip;
+			targetProxy = D1999F0410108875C5E2A305 /* PBXContainerItemProxy */;
+		};
+		63116D3495E87B914D965554 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_write_text_quartz2d;
+			targetProxy = 92C58A36AFF49D9D35E18CDD /* PBXContainerItemProxy */;
+		};
+		754D9DE39289A83F576EC37B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = node_ios;
+			targetProxy = 49008D078632060EB44D3037 /* PBXContainerItemProxy */;
+		};
+		30C95F2CB2DC0F5401EAA90E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ios_app_core_hello_multiverse;
+			targetProxy = 0D5374EBBDC93A44B75FB0C3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		79665B0153DCABAE3B37A123 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				942515A3FD50609CA016A12E /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DE967225242CDF0F530DC5B0 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D2F48210FE4F3E5E07F139E2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1E3521D24C68041C4D641944 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Camilo Tsumanuma (665TC58ZA4)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/ios/wiosapp_core_hello_multiverse-Info.plist";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PLATFORM_MODIFIER = ios;
+				PRODUCT_BUNDLE_IDENTIFIER = "app-core.hello_multiverse";
+				PRODUCT_NAME = "Hellomultiverse!!";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEPARATE_STRIP = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		266CF77B812EA007CB9E3640 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Camilo Tsumanuma (665TC58ZA4)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/ios/wiosapp_core_hello_multiverse-Info.plist";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PLATFORM_MODIFIER = ios;
+				PRODUCT_BUNDLE_IDENTIFIER = "app-core.hello_multiverse";
+				PRODUCT_NAME = "Hellomultiverse!!";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEPARATE_STRIP = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		5BC8598E39D9F3D8D1BF1E9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/wiosapp_core_hello_multiverse.app/wiosapp_core_hello_multiverse";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(WorkspaceDir)/../operating_system/storage-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/framework",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "wiosapp_core_hello_multiverseTests/wiosapp_core_hello_multiverseTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		85DC2664A360C92F40934AB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/wiosapp_core_hello_multiverse.app/wiosapp_core_hello_multiverse";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(WorkspaceDir)/../operating_system/storage-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/framework",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "wiosapp_core_hello_multiverseTests/wiosapp_core_hello_multiverseTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+		6DC1E4EC2FB50359A86E5E54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_DEADCODE_DEADSTORES = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_MEMORY_MANAGEMENT = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/../operating_system/storage-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/library/$(ARCHS)",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = ". $(WorkspaceDir)/source $(WorkspaceDir)/source/include $(WorkspaceDir)/source/app $(WorkspaceDir)/source/app/include $(WorkspaceDir)/operating_system $(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER) $(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include $(WorkspaceDir)/port/_ $(WorkspaceDir)/port/include . .. $(WorkspaceDir)  $(WorkspaceDir)/source/app $(WorkspaceDir)/source/app/include";
+				USE_HEADERMAP = NO;
+				WorkspaceDir = "$(SRCROOT)/../../../..";
+			};
+			name = Debug;
+		};
+		48B2A42EB69C653F9EF68987 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_DEADCODE_DEADSTORES = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_MEMORY_MANAGEMENT = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/../operating_system/storage-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/library/$(ARCHS)",
+				);
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = ". $(WorkspaceDir)/source $(WorkspaceDir)/source/include $(WorkspaceDir)/source/app $(WorkspaceDir)/source/app/include $(WorkspaceDir)/operating_system $(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER) $(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include $(WorkspaceDir)/port/_ $(WorkspaceDir)/port/include . .. $(WorkspaceDir)  $(WorkspaceDir)/source/app $(WorkspaceDir)/source/app/include";
+				USE_HEADERMAP = NO;
+				WorkspaceDir = "$(SRCROOT)/../../../..";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7B6E38A62309AD109C53A979 /* Build configuration list for PBXNativeTarget "_ios_app_core_hello_multiverse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E3521D24C68041C4D641944 /* Debug */,
+				266CF77B812EA007CB9E3640 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB6D0ABD328EF281DABD0866 /* Build configuration list for PBXNativeTarget "ios_app_core_hello_multiverseTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5BC8598E39D9F3D8D1BF1E9B /* Debug */,
+				85DC2664A360C92F40934AB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		88845CD93B17F14FA9C11F7E /* Build configuration list for PBXProject "_ios_app_core_hello_multiverse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DC1E4EC2FB50359A86E5E54 /* Debug */,
+				48B2A42EB69C653F9EF68987 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C1AA154C1B1D4012909D49DF /* Project object */;
+}
